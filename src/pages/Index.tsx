@@ -9,6 +9,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import Icon from '@/components/ui/icon';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/hooks/useCart';
+import ServiceCard from '@/components/ServiceCard';
+import TasksButton from '@/components/TasksButton';
+import ExecutorSelect from '@/components/ExecutorSelect';
+import OrderProgressBar from '@/components/OrderProgressBar';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/hooks/useCart';
+import ServiceCard from '@/components/ServiceCard';
+import TasksButton from '@/components/TasksButton';
+import ExecutorSelect from '@/components/ExecutorSelect';
+import OrderProgressBar from '@/components/OrderProgressBar';
 
 interface Service {
   id: string;
@@ -37,6 +49,8 @@ interface Executor {
 }
 
 const Index = () => {
+  const { user, isAuthenticated } = useAuth();
+  const { cart, getTotalCount } = useCart();
   const [activeTab, setActiveTab] = useState('home');
   const [servicesList, setServicesList] = useState(services);
   const [executorsList, setExecutorsList] = useState<Executor[]>([]);
@@ -162,9 +176,31 @@ const Index = () => {
                 <p className="text-[10px] text-muted-foreground uppercase">Калининград</p>
               </div>
             </div>
-            <a href="tel:+74012520725" className="text-base md:text-lg font-bold text-primary hover:text-primary/80 transition-colors">
-              +7 (4012) 52-07-25
-            </a>
+            <div className="flex items-center gap-3">
+              {isAuthenticated ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  onClick={() => window.location.href = user?.role === 'admin' ? '/admin' : user?.role === 'executor' ? '/executor' : '/profile'}
+                >
+                  <Icon name="User" size={18} />
+                  <span className="hidden md:inline text-sm">{user?.name}</span>
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.location.href = '/login'}
+                >
+                  <Icon name="LogIn" size={18} className="md:mr-2" />
+                  <span className="hidden md:inline">Войти</span>
+                </Button>
+              )}
+              <a href="tel:+74012520725" className="text-base md:text-lg font-bold text-primary hover:text-primary/80 transition-colors">
+                +7 (4012) 52-07-25
+              </a>
+            </div>
           </div>
         </div>
       </header>
@@ -242,10 +278,10 @@ const Index = () => {
                       <span className="text-xs text-muted-foreground">Итого • {getTotalItems()} услуг</span>
                       <span className="text-2xl font-bold text-foreground">{getTotalPrice().toLocaleString()} ₽</span>
                     </div>
-                    <Button size="lg" className="h-12 px-6 text-sm font-semibold" onClick={() => setActiveTab('cart')}>
-                      Добавить в список задач
-                      <Icon name="ListPlus" size={18} className="ml-2" />
-                    </Button>
+                    <TasksButton 
+                      count={getTotalItems()} 
+                      onClick={() => setActiveTab('cart')} 
+                    />
                   </div>
                 </div>
               )}
@@ -261,6 +297,8 @@ const Index = () => {
               </Button>
               <h2 className="font-heading text-2xl font-bold">Ваша заявка</h2>
             </div>
+            
+            <OrderProgressBar currentStatus="new" />
             
             <Card className="p-6">
               <h3 className="font-semibold mb-4">Выбранные услуги</h3>
@@ -285,38 +323,11 @@ const Index = () => {
             </Card>
 
             <Card className="p-6">
-              <h3 className="font-semibold mb-4">Выбрать мастера</h3>
-              <div className="space-y-3">
-                {executorsList.length === 0 ? (
-                  <div className="text-center py-4 text-muted-foreground">
-                    <Icon name="Loader2" className="animate-spin mx-auto mb-2" size={24} />
-                    <p className="text-sm">Загрузка мастеров...</p>
-                  </div>
-                ) : (
-                  executorsList.map((executor) => (
-                    <div
-                      key={executor.id}
-                      onClick={() => setSelectedExecutor(executor.id)}
-                      className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all hover:border-primary ${
-                        selectedExecutor === executor.id ? 'border-primary bg-primary/5' : 'border-border'
-                      }`}
-                    >
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl flex-shrink-0">
-                        👨‍🔧
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-semibold">{executor.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          Стаж: {executor.experience_years} лет • Рейтинг: {executor.rating} ⭐
-                        </div>
-                      </div>
-                      {selectedExecutor === executor.id && (
-                        <Icon name="CheckCircle2" className="text-primary" size={24} />
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
+              <ExecutorSelect
+                executors={executorsList}
+                value={selectedExecutor}
+                onChange={setSelectedExecutor}
+              />
             </Card>
 
             <Button size="lg" className="w-full" onClick={() => setActiveTab('order')}>
@@ -543,42 +554,15 @@ const Index = () => {
                   </Card>
 
                   <Card className="p-6">
-                    <Label className="text-base font-semibold mb-4 block">Выбрать мастера</Label>
-                    <div className="space-y-3">
-                      {executorsList.length === 0 ? (
-                        <div className="text-center py-4 text-muted-foreground">
-                          <Icon name="Loader2" className="animate-spin mx-auto mb-2" size={24} />
-                          <p className="text-sm">Загрузка мастеров...</p>
-                        </div>
-                      ) : (
-                        executorsList.map((executor) => (
-                          <div
-                            key={executor.id}
-                            onClick={() => setSelectedExecutor(executor.id)}
-                            className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all hover:border-primary ${
-                              selectedExecutor === executor.id ? 'border-primary bg-primary/5' : 'border-border'
-                            }`}
-                          >
-                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl flex-shrink-0">
-                              👨‍🔧
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-semibold">{executor.name}</div>
-                              <div className="text-sm text-muted-foreground">
-                                Стаж: {executor.experience_years} лет • Рейтинг: {executor.rating} ⭐
-                              </div>
-                            </div>
-                            {selectedExecutor === executor.id && (
-                              <Icon name="CheckCircle2" className="text-primary" size={24} />
-                            )}
-                          </div>
-                        ))
-                      )}
-                    </div>
+                    <ExecutorSelect
+                      executors={executorsList}
+                      value={selectedExecutor}
+                      onChange={setSelectedExecutor}
+                    />
                   </Card>
 
                   <Button type="submit" size="lg" className="w-full">
-                    Отправить заявку
+                    Оформить заявку
                     <Icon name="Send" size={18} className="ml-2" />
                   </Button>
                 </>
