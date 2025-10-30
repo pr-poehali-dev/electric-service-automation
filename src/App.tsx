@@ -11,9 +11,12 @@ import Schedule from "./pages/Schedule";
 import Confirmation from "./pages/Confirmation";
 import OrderHistory from "./pages/OrderHistory";
 import ExecutorProfile from "./pages/ExecutorProfile";
+import ExecutorPublicProfile from "./pages/ExecutorPublicProfile";
 import Login from "./pages/Login";
 import ExecutorDashboard from "./pages/ExecutorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminProducts from "./pages/AdminProducts";
+import AdminUsers from "./pages/AdminUsers";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -40,6 +43,7 @@ const AppRoutes = () => {
       <Route path="/confirmation" element={<Confirmation />} />
       <Route path="/order-history" element={<OrderHistory />} />
       <Route path="/executor-profile" element={<ExecutorProfile />} />
+      <Route path="/executor-public-profile" element={<ExecutorPublicProfile />} />
       <Route 
         path="/executor" 
         element={
@@ -53,6 +57,22 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={['admin', 'owner']}>
             <AdminDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin-products" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'owner']}>
+            <AdminProducts />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin-users" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'owner']}>
+            <AdminUsers />
           </ProtectedRoute>
         } 
       />

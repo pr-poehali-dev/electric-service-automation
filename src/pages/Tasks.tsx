@@ -2,20 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
 import Icon from '@/components/ui/icon';
-import { Service, CustomTask } from '@/types/services';
+import { Service } from '@/types/services';
 import OrderProgressBar from '@/components/OrderProgressBar';
 import { toast } from '@/hooks/use-toast';
 
 const Tasks = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useState<{ service: Service; quantity: number }[]>([]);
-  const [customTasks, setCustomTasks] = useState<CustomTask[]>([]);
-  const [customTaskText, setCustomTaskText] = useState('');
-  const [isCustomTaskDialogOpen, setIsCustomTaskDialogOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
@@ -39,51 +35,20 @@ const Tasks = () => {
     localStorage.setItem('cart', JSON.stringify(updated));
     toast({
       title: "Удалено",
-      description: "Услуга удалена из списка задач"
+      description: "Услуга удалена из списка"
     });
-  };
-
-  const addCustomTask = () => {
-    if (!customTaskText.trim()) {
-      toast({
-        title: "Ошибка",
-        description: "Введите описание задачи",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const newTask: CustomTask = {
-      id: `custom-${Date.now()}`,
-      description: customTaskText,
-      priceStatus: 'pending'
-    };
-
-    setCustomTasks([...customTasks, newTask]);
-    setCustomTaskText('');
-    setIsCustomTaskDialogOpen(false);
-    toast({
-      title: "Задача добавлена",
-      description: "Менеджер рассчитает стоимость"
-    });
-  };
-
-  const removeCustomTask = (taskId: string) => {
-    setCustomTasks(customTasks.filter(t => t.id !== taskId));
   };
 
   const getTotalPrice = () => {
-    const servicesTotal = cart.reduce((sum, item) => sum + (item.service.price * item.quantity), 0);
-    const customTotal = customTasks.reduce((sum, task) => sum + (task.price || 0), 0);
-    return servicesTotal + customTotal;
+    return cart.reduce((sum, item) => sum + (item.service.price * item.quantity), 0);
   };
 
   const getTotalItems = () => {
-    return cart.reduce((sum, item) => sum + item.quantity, 0) + customTasks.length;
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
   };
 
   const handleContinue = () => {
-    if (cart.length === 0 && customTasks.length === 0) {
+    if (cart.length === 0) {
       toast({
         title: "Список пуст",
         description: "Добавьте услуги для продолжения",
@@ -91,11 +56,20 @@ const Tasks = () => {
       });
       return;
     }
+    if (!selectedDate) {
+      toast({
+        title: "Выберите дату",
+        description: "Укажите дату встречи",
+        variant: "destructive"
+      });
+      return;
+    }
+    localStorage.setItem('selectedDate', selectedDate.toISOString());
     navigate('/schedule');
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24">
       <header className="border-b border-border bg-card sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -104,175 +78,162 @@ const Tasks = () => {
               Назад
             </Button>
             <h1 className="font-heading font-bold text-lg">Список задач</h1>
-            <div className="w-20"></div>
+            <Button variant="ghost" onClick={() => navigate('/order-history')} className="text-sm">
+              История
+            </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 pb-32">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <OrderProgressBar currentStatus="planning" />
-
-          <div className="text-center mb-6">
-            <Button 
-              variant="link" 
-              className="text-primary underline"
-              onClick={() => navigate('/order-history')}
-            >
-              История заявок
-            </Button>
+      <main className="container mx-auto px-4 py-6">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
+            <div className="flex items-start gap-3">
+              <Icon name="Video" size={24} className="text-primary flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="font-semibold mb-1">Видео-инструкция за 2 минуты</h3>
+                <Button variant="link" className="h-auto p-0 text-sm">
+                  Посмотреть как это работает
+                </Button>
+              </div>
+            </div>
           </div>
 
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-xl">Выбранные услуги</h2>
-              <Button variant="outline" size="sm" onClick={() => navigate('/')}>
-                <Icon name="Plus" size={16} className="mr-2" />
-                Добавить
-              </Button>
+          <OrderProgressBar currentStatus="planning" />
+
+          <Card className="p-1">
+            <div className="bg-muted/50 p-4 rounded-t-lg border-b-2 border-dashed">
+              <div className="flex items-center justify-between">
+                <h2 className="font-bold text-lg">Выбранные услуги</h2>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="gap-2">
+                  <Icon name="Plus" size={16} />
+                  Добавить
+                </Button>
+              </div>
             </div>
 
-            {cart.length === 0 && customTasks.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Icon name="ShoppingCart" size={48} className="mx-auto mb-4 opacity-50" />
-                <p>Список задач пуст</p>
-                <Button variant="link" onClick={() => navigate('/')}>
+            {cart.length === 0 ? (
+              <div className="text-center py-16 text-muted-foreground px-4">
+                <Icon name="ShoppingCart" size={64} className="mx-auto mb-4 opacity-30" />
+                <p className="text-lg mb-4">Список задач пуст</p>
+                <Button onClick={() => navigate('/')} size="lg">
+                  <Icon name="Plus" size={20} className="mr-2" />
                   Добавить услуги
                 </Button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {cart.map(item => (
-                  <Card key={item.service.id} className="p-4">
-                    <div className="flex gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{item.service.title}</h3>
-                        <p className="text-sm text-muted-foreground">{item.service.description}</p>
-                        <div className="flex items-center gap-4 mt-3">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => updateQuantity(item.service.id, item.quantity - 1)}
-                            >
-                              <Icon name="Minus" size={14} />
-                            </Button>
-                            <span className="w-8 text-center font-medium">{item.quantity}</span>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => updateQuantity(item.service.id, item.quantity + 1)}
-                            >
-                              <Icon name="Plus" size={14} />
-                            </Button>
-                          </div>
-                          <span className="font-bold text-primary">
+              <div className="p-4 space-y-3">
+                {cart.map((item, index) => (
+                  <div key={item.service.id} className="flex items-start gap-3 pb-3 border-b last:border-0">
+                    <div className="flex-shrink-0 w-8 h-8 bg-muted rounded-full flex items-center justify-center text-sm font-bold">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-base">{item.service.name}</h3>
+                      <p className="text-sm text-muted-foreground line-clamp-1">{item.service.description}</p>
+                      
+                      <div className="flex items-center gap-4 mt-3">
+                        <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8"
+                            onClick={() => updateQuantity(item.service.id, item.quantity - 1)}
+                          >
+                            <Icon name="Minus" size={16} />
+                          </Button>
+                          <span className="w-8 text-center font-bold">{item.quantity}</span>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8"
+                            onClick={() => updateQuantity(item.service.id, item.quantity + 1)}
+                          >
+                            <Icon name="Plus" size={16} />
+                          </Button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground">{item.service.price.toLocaleString()} ₽</span>
+                          <span className="text-sm">×</span>
+                          <span className="text-sm">{item.quantity}</span>
+                          <span className="text-sm">=</span>
+                          <span className="font-bold text-lg">
                             {(item.service.price * item.quantity).toLocaleString()} ₽
                           </span>
                         </div>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => removeFromCart(item.service.id)}
-                      >
-                        <Icon name="X" size={18} />
-                      </Button>
                     </div>
-                  </Card>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 text-destructive hover:text-destructive"
+                      onClick={() => removeFromCart(item.service.id)}
+                    >
+                      <Icon name="X" size={18} />
+                    </Button>
+                  </div>
                 ))}
 
-                {customTasks.map(task => (
-                  <Card key={task.id} className="p-4 border-dashed">
-                    <div className="flex gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-semibold">Своя задача</h3>
-                        <p className="text-sm text-muted-foreground mt-1">{task.description}</p>
-                        <div className="mt-3">
-                          <span className="text-sm italic text-muted-foreground">
-                            {task.priceStatus === 'pending' ? 'Запрос цены' : `${task.price?.toLocaleString()} ₽`}
-                          </span>
-                        </div>
+                <div className="pt-4 mt-4 border-t-2 border-dashed">
+                  <div className="flex items-center justify-between text-lg">
+                    <span className="font-semibold">Итого:</span>
+                    <div className="text-right">
+                      <div className="text-xs text-muted-foreground mb-1">
+                        {getTotalItems()} {getTotalItems() === 1 ? 'услуга' : 'услуг'}
                       </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => removeCustomTask(task.id)}
-                      >
-                        <Icon name="X" size={18} />
-                      </Button>
+                      <div className="font-bold text-2xl text-primary">
+                        {getTotalPrice().toLocaleString()} ₽
+                      </div>
                     </div>
-                  </Card>
-                ))}
+                  </div>
+                </div>
               </div>
             )}
           </Card>
 
-          <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
-            <div className="flex items-start gap-3">
-              <Icon name="Video" size={24} className="text-primary flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold mb-1">Видео - узнайте возможности сервиса за 2 минуты</h3>
-                <Button variant="link" className="p-0 h-auto text-primary">
-                  Посмотреть видео
-                </Button>
+          <Card className="p-6">
+            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <Icon name="Calendar" size={22} className="text-primary" />
+              Выберите дату и время
+            </h3>
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              className="rounded-md border w-full"
+              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+            />
+            {selectedDate && (
+              <div className="mt-4 p-3 bg-primary/5 rounded-lg">
+                <p className="text-sm text-muted-foreground">Выбранная дата:</p>
+                <p className="font-semibold">
+                  {selectedDate.toLocaleDateString('ru-RU', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </p>
               </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <Dialog open={isCustomTaskDialogOpen} onOpenChange={setIsCustomTaskDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="link" className="text-primary underline p-0">
-                  <Icon name="Plus" size={16} className="mr-2" />
-                  Добавить свою задачу
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Добавить свою задачу</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 pt-4">
-                  <div>
-                    <Label htmlFor="custom-task">Опишите, что нужно сделать</Label>
-                    <Textarea
-                      id="custom-task"
-                      placeholder="Например: проверить проводку в ванной комнате"
-                      value={customTaskText}
-                      onChange={(e) => setCustomTaskText(e.target.value)}
-                      rows={4}
-                      className="mt-2"
-                    />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Менеджер рассчитает стоимость и свяжется с вами
-                  </p>
-                  <Button onClick={addCustomTask} className="w-full">
-                    Добавить задачу
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-
-            <div className="flex items-center justify-between text-lg font-semibold">
-              <span>Итого</span>
-              <span className="text-2xl text-primary">
-                {getTotalPrice().toLocaleString()} ₽
-                {customTasks.some(t => t.priceStatus === 'pending') && ' + расчёт'}
-              </span>
-            </div>
-          </div>
+            )}
+          </Card>
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg z-50">
-        <div className="container mx-auto px-4 py-4">
-          <Button size="lg" className="w-full gap-2" onClick={handleContinue}>
-            Выбрать удобное время
-            <Icon name="ArrowRight" size={20} />
-          </Button>
+      {cart.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg z-50">
+          <div className="container mx-auto px-4 py-4">
+            <Button 
+              size="lg" 
+              className="w-full h-14 text-lg font-semibold shadow-lg gap-2"
+              onClick={handleContinue}
+            >
+              Уточнить детали
+              <Icon name="ArrowRight" size={22} />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

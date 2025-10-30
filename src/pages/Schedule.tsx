@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
@@ -55,23 +55,32 @@ const Schedule = () => {
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedExecutor, setSelectedExecutor] = useState<number>(1);
   const [showExecutorList, setShowExecutorList] = useState(false);
+  const [additionalNotes, setAdditionalNotes] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+
+  useEffect(() => {
+    const savedDate = localStorage.getItem('selectedDate');
+    if (savedDate) {
+      setSelectedDate(new Date(savedDate));
+    }
+  }, []);
 
   const executor = mockExecutors.find(e => e.id === selectedExecutor) || mockExecutors[0];
 
   const handleSubmit = () => {
-    if (!selectedDate) {
+    if (!selectedTime) {
       toast({
-        title: "Выберите дату",
-        description: "Укажите удобную дату визита",
+        title: "Выберите время",
+        description: "Укажите удобное время визита",
         variant: "destructive"
       });
       return;
     }
 
-    if (!selectedTime) {
+    if (!contactPhone.trim()) {
       toast({
-        title: "Выберите время",
-        description: "Укажите удобное время визита",
+        title: "Укажите телефон",
+        description: "Телефон нужен для связи с мастером",
         variant: "destructive"
       });
       return;
@@ -87,8 +96,12 @@ const Schedule = () => {
     }, 1500);
   };
 
+  const handleViewExecutorProfile = (executorId: number) => {
+    navigate(`/executor-public-profile?id=${executorId}`);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24">
       <header className="border-b border-border bg-card sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -96,60 +109,67 @@ const Schedule = () => {
               <Icon name="ArrowLeft" size={20} />
               Назад
             </Button>
-            <h1 className="font-heading font-bold text-lg">Выбрать удобное время</h1>
-            <div className="w-20"></div>
+            <h1 className="font-heading font-bold text-lg">Уточнение деталей</h1>
+            <Button variant="ghost" onClick={() => navigate('/order-history')} className="text-sm">
+              История
+            </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 pb-32">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <OrderProgressBar currentStatus="planning" />
+      <main className="container mx-auto px-4 py-6">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <OrderProgressBar currentStatus="scheduled" />
 
-          <Card className="p-6">
-            <h2 className="font-bold text-xl mb-6">Выберите дату и время</h2>
-            
-            <div className="space-y-6">
-              <div>
-                <Label className="text-base mb-3 block">Дата визита</Label>
-                <div className="flex justify-center">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    disabled={(date) => date < new Date()}
-                    className="rounded-md border"
-                  />
+          {selectedDate && (
+            <Card className="p-4 bg-primary/5 border-primary/20">
+              <div className="flex items-center gap-3">
+                <Icon name="Calendar" size={24} className="text-primary" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Выбранная дата:</p>
+                  <p className="font-semibold">
+                    {selectedDate.toLocaleDateString('ru-RU', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </p>
                 </div>
               </div>
+            </Card>
+          )}
 
-              {selectedDate && (
-                <div>
-                  <Label className="text-base mb-3 block">Время визита</Label>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {timeSlots.map((time) => (
-                      <Button
-                        key={time}
-                        variant={selectedTime === time ? 'default' : 'outline'}
-                        onClick={() => setSelectedTime(time)}
-                        className="w-full"
-                      >
-                        {time}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
+          <Card className="p-6">
+            <h2 className="font-bold text-xl mb-4 flex items-center gap-2">
+              <Icon name="Clock" size={24} className="text-primary" />
+              Выберите удобное время
+            </h2>
+            
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              {timeSlots.map((time) => (
+                <Button
+                  key={time}
+                  variant={selectedTime === time ? 'default' : 'outline'}
+                  onClick={() => setSelectedTime(time)}
+                  className="h-12 font-semibold"
+                  size="lg"
+                >
+                  {time}
+                </Button>
+              ))}
             </div>
           </Card>
 
           <Card className="p-6">
-            <h2 className="font-bold text-xl mb-4">Выберите мастера</h2>
+            <h2 className="font-bold text-xl mb-4 flex items-center gap-2">
+              <Icon name="User" size={24} className="text-primary" />
+              Исполнитель
+            </h2>
             
             {!showExecutorList ? (
               <div 
-                className="border-2 rounded-lg p-4 cursor-pointer hover:border-primary transition-colors"
-                onClick={() => setShowExecutorList(true)}
+                className="border-2 rounded-lg p-4 hover:border-primary transition-all hover:shadow-md"
               >
                 <div className="flex items-center gap-4">
                   <Avatar className="h-16 w-16">
@@ -177,8 +197,24 @@ const Schedule = () => {
                       ))}
                     </div>
                   </div>
+                </div>
 
-                  <Icon name="ChevronDown" size={24} className="text-muted-foreground" />
+                <div className="flex gap-2 mt-4">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => handleViewExecutorProfile(executor.id)}
+                  >
+                    <Icon name="User" size={16} className="mr-2" />
+                    Профиль мастера
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setShowExecutorList(true)}
+                  >
+                    <Icon name="Users" size={16} className="mr-2" />
+                    Выбрать другого
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -186,8 +222,8 @@ const Schedule = () => {
                 {mockExecutors.map((exec) => (
                   <div
                     key={exec.id}
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                      selectedExecutor === exec.id ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                      selectedExecutor === exec.id ? 'border-primary bg-primary/5 shadow-md' : 'border-border hover:border-primary/50'
                     }`}
                     onClick={() => {
                       setSelectedExecutor(exec.id);
@@ -218,25 +254,56 @@ const Schedule = () => {
                     </div>
                   </div>
                 ))}
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => setShowExecutorList(false)}
-                >
-                  Свернуть
-                </Button>
               </div>
             )}
+          </Card>
+
+          <Card className="p-6">
+            <h2 className="font-bold text-xl mb-4 flex items-center gap-2">
+              <Icon name="Phone" size={24} className="text-primary" />
+              Контактные данные
+            </h2>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="phone" className="text-base mb-2 block">Телефон для связи</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+7 (___) ___-__-__"
+                  value={contactPhone}
+                  onChange={(e) => setContactPhone(e.target.value)}
+                  className="h-12 text-base"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="notes" className="text-base mb-2 block">
+                  Дополнительная информация о задаче (опционально)
+                </Label>
+                <Textarea
+                  id="notes"
+                  placeholder="Укажите адрес, этаж, особые пожелания..."
+                  value={additionalNotes}
+                  onChange={(e) => setAdditionalNotes(e.target.value)}
+                  rows={4}
+                  className="text-base"
+                />
+              </div>
+            </div>
           </Card>
         </div>
       </main>
 
       <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg z-50">
         <div className="container mx-auto px-4 py-4">
-          <Button size="lg" className="w-full gap-2" onClick={handleSubmit}>
+          <Button 
+            size="lg" 
+            className="w-full h-14 text-lg font-semibold shadow-lg gap-2"
+            onClick={handleSubmit}
+          >
+            <Icon name="Send" size={22} />
             Отправить заявку
-            <Icon name="Send" size={20} />
           </Button>
         </div>
       </div>

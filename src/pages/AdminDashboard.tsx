@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [activeSection, setActiveSection] = useState('home');
   const [stats, setStats] = useState({
@@ -16,14 +18,13 @@ const AdminDashboard = () => {
 
   const menuItems = [
     { id: 'home', label: 'Главная', icon: 'Home' },
-    { id: 'categories', label: 'Категории', icon: 'FolderTree' },
+    { id: 'products', label: 'Товары и услуги', icon: 'Package', link: '/admin-products' },
+    { id: 'users', label: 'Пользователи', icon: 'Users', link: '/admin-users' },
     { id: 'orders', label: 'Заказы', icon: 'ShoppingCart' },
     { id: 'reviews', label: 'Отзывы', icon: 'Star' },
     { id: 'banners', label: 'Баннеры', icon: 'Image' },
     { id: 'mailings', label: 'Рассылки', icon: 'Send' },
-    { id: 'clients', label: 'Клиенты', icon: 'Users' },
     { id: 'settings', label: 'Настройки', icon: 'Settings' },
-    { id: 'advertising', label: 'Реклама магазина', icon: 'Megaphone' },
     { id: 'analytics', label: 'Аналитика', icon: 'BarChart3' },
     { id: 'integrations', label: 'Интеграции', icon: 'Plug' },
     { id: 'support', label: 'Техподдержка', icon: 'HelpCircle' }
@@ -199,7 +200,7 @@ const AdminDashboard = () => {
             {menuItems.map(item => (
               <button
                 key={item.id}
-                onClick={() => setActiveSection(item.id)}
+                onClick={() => item.link ? navigate(item.link) : setActiveSection(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-left ${
                   activeSection === item.id
                     ? 'bg-primary text-primary-foreground'

@@ -1,6 +1,7 @@
 export interface Service {
   id: string;
-  title: string;
+  name: string;
+  title?: string;
   description: string;
   price: number;
   oldPrice?: number;
@@ -30,6 +31,7 @@ export interface OrderStatus {
 export const quickServices: Service[] = [
   { 
     id: 'q1', 
+    name: 'Установить розетку',
     title: 'Установить розетку', 
     description: 'Быстрая установка розетки', 
     price: 250, 
@@ -38,6 +40,7 @@ export const quickServices: Service[] = [
   },
   { 
     id: 'q2', 
+    name: 'Установить светильник',
     title: 'Установить светильник', 
     description: 'Монтаж светильника', 
     price: 1500, 
@@ -46,6 +49,7 @@ export const quickServices: Service[] = [
   },
   { 
     id: 'q3', 
+    name: 'Вызов мастера',
     title: 'Вызов мастера', 
     description: 'Диагностика и консультация', 
     price: 500, 
@@ -57,6 +61,7 @@ export const quickServices: Service[] = [
 export const electricalServices: Service[] = [
   {
     id: 'e1',
+    name: 'Тёплый пол от электрощитка',
     title: 'Тёплый пол от электрощитка',
     description: 'Комплекс подготовительных электромонтажных работ под установку электрического тёплого пола',
     price: 5500,
@@ -65,6 +70,7 @@ export const electricalServices: Service[] = [
   },
   {
     id: 'e2',
+    name: 'Добавить 1 выключатель',
     title: 'Добавить 1 выключатель',
     description: 'Добавить / перенести',
     price: 1500,
@@ -75,6 +81,7 @@ export const electricalServices: Service[] = [
   },
   {
     id: 'e3',
+    name: 'Добавить розетку 230V',
     title: 'Добавить розетку 230V',
     description: 'Добавить / перенести',
     price: 850,
@@ -85,6 +92,7 @@ export const electricalServices: Service[] = [
   },
   {
     id: 'e4',
+    name: 'Блок из 2-х розеток',
     title: 'Блок из 2-х розеток',
     description: 'Добавить 2 розетки',
     price: 1200,
@@ -95,6 +103,7 @@ export const electricalServices: Service[] = [
   },
   {
     id: 'e5',
+    name: 'Блок из 3-х розеток',
     title: 'Блок из 3-х розеток',
     description: 'Добавить 3 розетки',
     price: 2500,
@@ -103,6 +112,7 @@ export const electricalServices: Service[] = [
   },
   {
     id: 'e6',
+    name: 'Блок из 4-х розеток',
     title: 'Блок из 4-х розеток',
     description: 'Добавить 4 розетки',
     price: 3000,
@@ -111,6 +121,7 @@ export const electricalServices: Service[] = [
   },
   {
     id: 'e7',
+    name: 'Блок из 5 розеток',
     title: 'Блок из 5 розеток',
     description: 'Добавить 5 розеток',
     price: 3500,
@@ -119,6 +130,7 @@ export const electricalServices: Service[] = [
   },
   {
     id: 'e8',
+    name: 'Монтаж кабеля 10 метров',
     title: 'Монтаж кабеля 10 метров',
     description: 'Монтаж кабеля по потолку, с учетом материала',
     price: 2000,
@@ -129,6 +141,7 @@ export const electricalServices: Service[] = [
   },
   {
     id: 'e9',
+    name: 'Расходка до 75м²',
     title: 'Расходка до 75м²',
     description: 'Крепеж и расходные материалы электрика',
     price: 10000,
