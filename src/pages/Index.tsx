@@ -14,8 +14,10 @@ interface Service {
   id: string;
   title: string;
   description: string;
-  price: string;
+  price: number;
+  priceLabel: string;
   icon: string;
+  quantity?: number;
 }
 
 interface Order {
@@ -37,12 +39,12 @@ interface Master {
 }
 
 const services: Service[] = [
-  { id: '1', title: 'Установка розеток', description: 'Установка и замена розеток любого типа', price: 'от 500 ₽', icon: 'Plug' },
-  { id: '2', title: 'Установка выключателей', description: 'Монтаж одно- и многоклавишных выключателей', price: 'от 400 ₽', icon: 'ToggleLeft' },
-  { id: '3', title: 'Монтаж освещения', description: 'Установка люстр, светильников, LED-подсветки', price: 'от 800 ₽', icon: 'Lightbulb' },
-  { id: '4', title: 'Сборка щитков', description: 'Монтаж и настройка электрических щитов', price: 'от 3000 ₽', icon: 'Box' },
-  { id: '5', title: 'Проводка квартиры', description: 'Полная замена электропроводки в квартире', price: 'от 1200 ₽/м²', icon: 'Cable' },
-  { id: '6', title: 'Диагностика', description: 'Поиск неисправностей и консультация', price: 'от 1000 ₽', icon: 'Search' }
+  { id: '1', title: 'Установка розеток', description: 'Установка и замена розеток любого типа', price: 500, priceLabel: 'от 500 ₽', icon: 'Plug', quantity: 0 },
+  { id: '2', title: 'Установка выключателей', description: 'Монтаж одно- и многоклавишных выключателей', price: 400, priceLabel: 'от 400 ₽', icon: 'ToggleLeft', quantity: 0 },
+  { id: '3', title: 'Монтаж освещения', description: 'Установка люстр, светильников, LED-подсветки', price: 800, priceLabel: 'от 800 ₽', icon: 'Lightbulb', quantity: 0 },
+  { id: '4', title: 'Сборка щитков', description: 'Монтаж и настройка электрических щитов', price: 3000, priceLabel: 'от 3000 ₽', icon: 'Box', quantity: 0 },
+  { id: '5', title: 'Проводка квартиры', description: 'Полная замена электропроводки в квартире', price: 1200, priceLabel: 'от 1200 ₽/м²', icon: 'Cable', quantity: 0 },
+  { id: '6', title: 'Диагностика', description: 'Поиск неисправностей и консультация', price: 1000, priceLabel: 'от 1000 ₽', icon: 'Search', quantity: 0 }
 ];
 
 const masters: Master[] = [
@@ -63,6 +65,38 @@ const Index = () => {
   const [orderForm, setOrderForm] = useState({ name: '', phone: '', address: '', description: '', service: '' });
   const [trackingId, setTrackingId] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [cart, setCart] = useState<Service[]>([]);
+  const [servicesList, setServicesList] = useState(services);
+
+  const addToCart = (serviceId: string) => {
+    const service = servicesList.find(s => s.id === serviceId);
+    if (service) {
+      setCart([...cart, service]);
+      toast({
+        title: "Добавлено!",
+        description: `${service.title} добавлен в заказ`,
+        duration: 2000
+      });
+    }
+  };
+
+  const updateQuantity = (serviceId: string, change: number) => {
+    setServicesList(prev => prev.map(s => {
+      if (s.id === serviceId) {
+        const newQty = Math.max(0, (s.quantity || 0) + change);
+        return { ...s, quantity: newQty };
+      }
+      return s;
+    }));
+  };
+
+  const getTotalPrice = () => {
+    return servicesList.reduce((sum, s) => sum + (s.price * (s.quantity || 0)), 0);
+  };
+
+  const getTotalItems = () => {
+    return servicesList.reduce((sum, s) => sum + (s.quantity || 0), 0);
+  };
 
   const getStatusLabel = (status: string) => {
     const labels = {
@@ -206,28 +240,73 @@ const Index = () => {
                 <h2 className="font-heading text-3xl font-bold text-foreground mb-3">Популярные услуги</h2>
                 <p className="text-muted-foreground">Выберите нужную услугу или оформите комплексный заказ</p>
               </div>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {services.slice(0, 6).map((service) => (
-                  <Card key={service.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
-                    <CardHeader>
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary group-hover:scale-110 transition-all">
-                        <Icon name={service.icon as any} className="text-primary group-hover:text-white" size={24} />
+              <div className="grid gap-4">
+                {servicesList.slice(0, 6).map((service) => (
+                  <Card key={service.id} className="overflow-hidden border-2 hover:border-primary/20 transition-all active:scale-[0.99]">
+                    <div className="flex items-stretch">
+                      <div className="w-24 sm:w-32 flex-shrink-0 bg-primary/5 flex items-center justify-center">
+                        <Icon name={service.icon as any} className="text-primary" size={40} />
                       </div>
-                      <CardTitle className="text-xl">{service.title}</CardTitle>
-                      <CardDescription>{service.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex justify-between items-center">
-                        <span className="text-2xl font-bold text-primary">{service.price}</span>
-                        <Button size="sm" variant="ghost" onClick={() => { setOrderForm({ ...orderForm, service: service.title }); setActiveTab('order'); }}>
-                          Заказать
-                          <Icon name="ArrowRight" size={16} className="ml-2" />
-                        </Button>
+                      <div className="flex-1 p-4 sm:p-5">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex-1 pr-3">
+                            <h3 className="font-heading font-bold text-lg sm:text-xl leading-tight mb-1">{service.title}</h3>
+                            <p className="text-sm text-muted-foreground leading-snug">{service.description}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                          <div className="flex flex-col">
+                            <span className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{service.priceLabel.split(' ')[1]}</span>
+                            <span className="text-xs text-muted-foreground mt-1">{service.priceLabel.split(' ')[0]}</span>
+                          </div>
+                          {(service.quantity || 0) === 0 ? (
+                            <Button 
+                              size="lg" 
+                              className="h-12 px-6 text-base font-semibold shadow-md hover:shadow-lg"
+                              onClick={() => updateQuantity(service.id, 1)}
+                            >
+                              Добавить
+                            </Button>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <Button 
+                                size="lg" 
+                                variant="outline" 
+                                className="h-12 w-12 p-0 text-xl font-bold"
+                                onClick={() => updateQuantity(service.id, -1)}
+                              >
+                                −
+                              </Button>
+                              <span className="text-2xl font-bold w-12 text-center">{service.quantity}</span>
+                              <Button 
+                                size="lg" 
+                                className="h-12 w-12 p-0 text-xl font-bold"
+                                onClick={() => updateQuantity(service.id, 1)}
+                              >
+                                +
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
+              {getTotalItems() > 0 && (
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-primary/20 shadow-2xl p-4 z-50 animate-slide-up">
+                  <div className="container mx-auto flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-sm text-muted-foreground">Итого ({getTotalItems()} услуг)</span>
+                      <span className="text-2xl font-bold">{getTotalPrice().toLocaleString()} ₽</span>
+                    </div>
+                    <Button size="lg" className="h-14 px-8 text-lg font-semibold shadow-lg" onClick={() => setActiveTab('order')}>
+                      Оформить заказ
+                      <Icon name="ArrowRight" size={20} className="ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </section>
 
             <section className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-12">
@@ -260,32 +339,78 @@ const Index = () => {
         )}
 
         {activeTab === 'services' && (
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-8 animate-fade-in pb-32">
             <div className="text-center">
               <h2 className="font-heading text-4xl font-bold mb-4">Наши услуги</h2>
               <p className="text-muted-foreground text-lg">Полный спектр электромонтажных работ</p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service) => (
-                <Card key={service.id} className="hover:shadow-lg transition-all hover:-translate-y-1">
-                  <CardHeader>
-                    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-                      <Icon name={service.icon as any} className="text-primary" size={28} />
+            <div className="grid gap-4">
+              {servicesList.map((service) => (
+                <Card key={service.id} className="overflow-hidden border-2 hover:border-primary/20 transition-all active:scale-[0.99]">
+                  <div className="flex items-stretch">
+                    <div className="w-24 sm:w-32 flex-shrink-0 bg-primary/5 flex items-center justify-center">
+                      <Icon name={service.icon as any} className="text-primary" size={40} />
                     </div>
-                    <CardTitle className="text-xl">{service.title}</CardTitle>
-                    <CardDescription className="text-base">{service.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between items-center">
-                      <span className="text-2xl font-bold text-primary">{service.price}</span>
-                      <Button onClick={() => { setOrderForm({ ...orderForm, service: service.title }); setActiveTab('order'); }}>
-                        Заказать
-                      </Button>
+                    <div className="flex-1 p-4 sm:p-5">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1 pr-3">
+                          <h3 className="font-heading font-bold text-lg sm:text-xl leading-tight mb-1">{service.title}</h3>
+                          <p className="text-sm text-muted-foreground leading-snug">{service.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                        <div className="flex flex-col">
+                          <span className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{service.priceLabel.split(' ')[1]}</span>
+                          <span className="text-xs text-muted-foreground mt-1">{service.priceLabel.split(' ')[0]}</span>
+                        </div>
+                        {(service.quantity || 0) === 0 ? (
+                          <Button 
+                            size="lg" 
+                            className="h-12 px-6 text-base font-semibold shadow-md hover:shadow-lg"
+                            onClick={() => updateQuantity(service.id, 1)}
+                          >
+                            Добавить
+                          </Button>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              size="lg" 
+                              variant="outline" 
+                              className="h-12 w-12 p-0 text-xl font-bold"
+                              onClick={() => updateQuantity(service.id, -1)}
+                            >
+                              −
+                            </Button>
+                            <span className="text-2xl font-bold w-12 text-center">{service.quantity}</span>
+                            <Button 
+                              size="lg" 
+                              className="h-12 w-12 p-0 text-xl font-bold"
+                              onClick={() => updateQuantity(service.id, 1)}
+                            >
+                              +
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </CardContent>
+                  </div>
                 </Card>
               ))}
             </div>
+            {getTotalItems() > 0 && (
+              <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-primary/20 shadow-2xl p-4 z-50 animate-slide-up">
+                <div className="container mx-auto flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">Итого ({getTotalItems()} услуг)</span>
+                    <span className="text-2xl font-bold">{getTotalPrice().toLocaleString()} ₽</span>
+                  </div>
+                  <Button size="lg" className="h-14 px-8 text-lg font-semibold shadow-lg" onClick={() => setActiveTab('order')}>
+                    Оформить заказ
+                    <Icon name="ArrowRight" size={20} className="ml-2" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
