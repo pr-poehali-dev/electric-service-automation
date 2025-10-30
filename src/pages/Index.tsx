@@ -288,7 +288,7 @@ const Index = () => {
                             <Label htmlFor={type} className="cursor-pointer">{type}</Label>
                           </div>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </RadioGroup>
                   </Card>
 
@@ -328,7 +328,7 @@ const Index = () => {
                                 <Label htmlFor={type} className="cursor-pointer">{type}</Label>
                               </div>
                             ))}
-                          </RadioGroup>
+                          </div>
                         </RadioGroup>
                       </Card>
 
@@ -370,7 +370,7 @@ const Index = () => {
                             <Label htmlFor={type} className="cursor-pointer">{type}</Label>
                           </div>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </RadioGroup>
                   </Card>
 
@@ -384,7 +384,7 @@ const Index = () => {
                             <Label htmlFor={option} className="cursor-pointer">{option}</Label>
                           </div>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </RadioGroup>
                   </Card>
                 </>
