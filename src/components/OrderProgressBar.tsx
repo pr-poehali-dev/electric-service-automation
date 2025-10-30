@@ -1,15 +1,15 @@
 import Icon from './ui/icon';
 
 interface OrderProgressBarProps {
-  currentStatus: 'new' | 'assigned' | 'in_progress' | 'completed';
+  currentStatus: 'planning' | 'scheduled' | 'in_progress' | 'completed';
 }
 
 const OrderProgressBar = ({ currentStatus }: OrderProgressBarProps) => {
   const steps = [
-    { key: 'new', icon: 'Check', label: 'Заказ создан' },
-    { key: 'assigned', icon: 'Package', label: 'Мастер назначен' },
-    { key: 'in_progress', icon: 'ShoppingBag', label: 'В работе' },
-    { key: 'completed', icon: 'MessageCircle', label: 'Завершено' }
+    { key: 'planning', icon: 'Check', label: 'Планирование' },
+    { key: 'scheduled', icon: 'Calendar', label: 'Встреча назначена' },
+    { key: 'in_progress', icon: 'Wrench', label: 'В работе' },
+    { key: 'completed', icon: 'CheckCircle2', label: 'Завершено' }
   ];
 
   const statusIndex = steps.findIndex(s => s.key === currentStatus);
