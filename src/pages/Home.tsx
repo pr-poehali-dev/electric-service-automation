@@ -5,6 +5,7 @@ import Icon from '@/components/ui/icon';
 import { quickServices, electricalServices, Service } from '@/types/services';
 import ServiceCard from '@/components/ServiceCard';
 import { useNavigate } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -36,6 +37,20 @@ const Home = () => {
   const handleGoToTasks = () => {
     localStorage.setItem('cart', JSON.stringify(cart));
     navigate('/tasks');
+  };
+
+  const handleBookInspection = () => {
+    const inspectionService = quickServices.find(s => s.id === 'q3');
+    if (inspectionService) {
+      addToCart(inspectionService, 1);
+      toast({
+        title: "Добавлено в список",
+        description: "Вызов мастера на осмотр добавлен"
+      });
+      setTimeout(() => {
+        handleGoToTasks();
+      }, 800);
+    }
   };
 
   return (
@@ -114,6 +129,80 @@ const Home = () => {
                 </div>
               </Card>
             </div>
+
+            <div className="mt-8">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="w-full h-16 text-lg font-semibold border-2 border-primary/30 hover:bg-primary/5 gap-3"
+                onClick={handleBookInspection}
+              >
+                <Icon name="Calendar" size={24} className="text-primary" />
+                Записаться на бесплатный осмотр
+                <Icon name="ArrowRight" size={20} />
+              </Button>
+            </div>
+
+            <div className="mt-12 space-y-8">
+              <div className="max-w-2xl mx-auto">
+                <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Icon name="MessageCircle" size={28} className="text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-xl mb-2">Есть вопросы?</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Напишите нам в Telegram, и мы поможем выбрать нужные услуги
+                      </p>
+                      <Button 
+                        onClick={() => window.open('https://t.me/konigelectric', '_blank')}
+                        className="w-full gap-2 h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                      >
+                        <Icon name="Send" size={20} />
+                        Написать в Telegram
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-bold text-2xl text-center">Отзывы наших клиентов</h3>
+                <div style={{height:'800px', overflow:'hidden', position:'relative'}}>
+                  <iframe 
+                    title="Яндекс Отзывы" 
+                    style={{width:'100%', height:'100%', border:'1px solid #e6e6e6', borderRadius:'8px', boxSizing:'border-box'}} 
+                    src="https://yandex.ru/maps-reviews-widget/159261695633?comments"
+                  />
+                  <a 
+                    href="https://yandex.ru/maps/org/uslugi_elektrika/159261695633/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                      boxSizing:'border-box',
+                      textDecoration:'none',
+                      color:'#b3b3b3',
+                      fontSize:'10px',
+                      fontFamily:'YS Text,sans-serif',
+                      padding:'0 20px',
+                      position:'absolute',
+                      bottom:'8px',
+                      width:'100%',
+                      textAlign:'center',
+                      left:0,
+                      overflow:'hidden',
+                      textOverflow:'ellipsis',
+                      display:'block',
+                      maxHeight:'14px',
+                      whiteSpace:'nowrap'
+                    }}
+                  >
+                    Услуги электрика на карте Калининграда — Яндекс&nbsp;Карты
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
@@ -146,29 +235,93 @@ const Home = () => {
               ))}
             </div>
 
-            <div className="mt-8 max-w-2xl mx-auto">
-              <Card className="p-6 bg-primary/5 border-primary/20">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Icon name="MessageCircle" size={24} className="text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg mb-2">Связаться с нами</h3>
-                    <p className="text-muted-foreground mb-4 text-sm">
-                      Есть вопросы? Напишите нам в Telegram
-                    </p>
-                    <Button 
-                      onClick={() => window.open('https://t.me/konigelectric', '_blank')}
-                      className="w-full gap-2"
-                      size="lg"
+            {selectedCategory === 'quick' && (
+              <div className="mt-12 space-y-8 max-w-4xl mx-auto">
+                <div className="max-w-2xl mx-auto">
+                  <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                    <div className="flex items-start gap-4">
+                      <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Icon name="MessageCircle" size={28} className="text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-xl mb-2">Связаться с нами</h3>
+                        <p className="text-muted-foreground mb-4">
+                          Есть вопросы? Напишите нам в Telegram
+                        </p>
+                        <Button 
+                          onClick={() => window.open('https://t.me/konigelectric', '_blank')}
+                          className="w-full gap-2 h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                        >
+                          <Icon name="Send" size={20} />
+                          Написать в Telegram
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-bold text-2xl text-center">Отзывы наших клиентов</h3>
+                  <div style={{height:'800px', overflow:'hidden', position:'relative'}}>
+                    <iframe 
+                      title="Яндекс Отзывы" 
+                      style={{width:'100%', height:'100%', border:'1px solid #e6e6e6', borderRadius:'8px', boxSizing:'border-box'}} 
+                      src="https://yandex.ru/maps-reviews-widget/159261695633?comments"
+                    />
+                    <a 
+                      href="https://yandex.ru/maps/org/uslugi_elektrika/159261695633/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{
+                        boxSizing:'border-box',
+                        textDecoration:'none',
+                        color:'#b3b3b3',
+                        fontSize:'10px',
+                        fontFamily:'YS Text,sans-serif',
+                        padding:'0 20px',
+                        position:'absolute',
+                        bottom:'8px',
+                        width:'100%',
+                        textAlign:'center',
+                        left:0,
+                        overflow:'hidden',
+                        textOverflow:'ellipsis',
+                        display:'block',
+                        maxHeight:'14px',
+                        whiteSpace:'nowrap'
+                      }}
                     >
-                      <Icon name="Send" size={20} />
-                      Написать сообщение
-                    </Button>
+                      Услуги электрика на карте Калининграда — Яндекс&nbsp;Карты
+                    </a>
                   </div>
                 </div>
-              </Card>
-            </div>
+              </div>
+            )}
+
+            {selectedCategory === 'electrical' && (
+              <div className="mt-8 max-w-2xl mx-auto">
+                <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Icon name="MessageCircle" size={28} className="text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-xl mb-2">Связаться с нами</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Есть вопросы? Напишите нам в Telegram
+                      </p>
+                      <Button 
+                        onClick={() => window.open('https://t.me/konigelectric', '_blank')}
+                        className="w-full gap-2 h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                      >
+                        <Icon name="Send" size={20} />
+                        Написать в Telegram
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )}
           </div>
         )}
       </main>

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
 import Icon from '@/components/ui/icon';
 import { Service } from '@/types/services';
 import OrderProgressBar from '@/components/OrderProgressBar';
@@ -11,7 +10,6 @@ import { toast } from '@/hooks/use-toast';
 const Tasks = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useState<{ service: Service; quantity: number }[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
@@ -56,15 +54,6 @@ const Tasks = () => {
       });
       return;
     }
-    if (!selectedDate) {
-      toast({
-        title: "Выберите дату",
-        description: "Укажите дату встречи",
-        variant: "destructive"
-      });
-      return;
-    }
-    localStorage.setItem('selectedDate', selectedDate.toISOString());
     navigate('/schedule');
   };
 
@@ -191,31 +180,20 @@ const Tasks = () => {
             )}
           </Card>
 
-          <Card className="p-6">
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <Icon name="Calendar" size={22} className="text-primary" />
-              Выберите дату и время
-            </h3>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className="rounded-md border w-full"
-              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-            />
-            {selectedDate && (
-              <div className="mt-4 p-3 bg-primary/5 rounded-lg">
-                <p className="text-sm text-muted-foreground">Выбранная дата:</p>
-                <p className="font-semibold">
-                  {selectedDate.toLocaleDateString('ru-RU', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </p>
+          <Card className="p-6 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border-amber-200">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Icon name="Info" size={24} className="text-amber-700 dark:text-amber-300" />
               </div>
-            )}
+              <div className="flex-1">
+                <h3 className="font-bold text-lg mb-2 text-amber-900 dark:text-amber-100">Важно знать</h3>
+                <ul className="text-sm text-amber-800 dark:text-amber-200 space-y-1">
+                  <li>• Итоговая цена может измениться после осмотра объекта</li>
+                  <li>• Мастер свяжется с вами в течение 15-30 минут</li>
+                  <li>• Выезд мастера на осмотр — бесплатно</li>
+                </ul>
+              </div>
+            </div>
           </Card>
         </div>
       </main>
@@ -228,7 +206,7 @@ const Tasks = () => {
               className="w-full h-14 text-lg font-semibold shadow-lg gap-2"
               onClick={handleContinue}
             >
-              Уточнить детали
+              Продолжить оформление
               <Icon name="ArrowRight" size={22} />
             </Button>
           </div>

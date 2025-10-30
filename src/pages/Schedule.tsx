@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
@@ -51,23 +52,25 @@ const timeSlots = [
 
 const Schedule = () => {
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedExecutor, setSelectedExecutor] = useState<number>(1);
   const [showExecutorList, setShowExecutorList] = useState(false);
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [contactPhone, setContactPhone] = useState('');
 
-  useEffect(() => {
-    const savedDate = localStorage.getItem('selectedDate');
-    if (savedDate) {
-      setSelectedDate(new Date(savedDate));
-    }
-  }, []);
-
   const executor = mockExecutors.find(e => e.id === selectedExecutor) || mockExecutors[0];
 
   const handleSubmit = () => {
+    if (!selectedDate) {
+      toast({
+        title: "Выберите дату",
+        description: "Укажите дату визита",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!selectedTime) {
       toast({
         title: "Выберите время",
@@ -118,138 +121,138 @@ const Schedule = () => {
       </header>
 
       <main className="container mx-auto px-4 py-6">
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div className="max-w-2xl mx-auto space-y-4">
           <OrderProgressBar currentStatus="scheduled" />
 
-          {selectedDate && (
-            <Card className="p-4 bg-primary/5 border-primary/20">
-              <div className="flex items-center gap-3">
-                <Icon name="Calendar" size={24} className="text-primary" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Выбранная дата:</p>
-                  <p className="font-semibold">
-                    {selectedDate.toLocaleDateString('ru-RU', { 
-                      weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          )}
-
-          <Card className="p-6">
-            <h2 className="font-bold text-xl mb-4 flex items-center gap-2">
-              <Icon name="Clock" size={24} className="text-primary" />
-              Выберите удобное время
+          <Card className="p-5">
+            <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <Icon name="Calendar" size={20} className="text-primary" />
+              Дата и время встречи
             </h2>
             
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-              {timeSlots.map((time) => (
-                <Button
-                  key={time}
-                  variant={selectedTime === time ? 'default' : 'outline'}
-                  onClick={() => setSelectedTime(time)}
-                  className="h-12 font-semibold"
-                  size="lg"
-                >
-                  {time}
-                </Button>
-              ))}
+            <div className="space-y-4">
+              <div className="flex justify-center">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                  className="rounded-md border"
+                />
+              </div>
+
+              {selectedDate && (
+                <div className="space-y-3">
+                  <div className="p-3 bg-primary/5 rounded-lg">
+                    <p className="text-sm font-semibold">
+                      {selectedDate.toLocaleDateString('ru-RU', { 
+                        weekday: 'long', 
+                        day: 'numeric',
+                        month: 'long'
+                      })}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-2">
+                    {timeSlots.map((time) => (
+                      <Button
+                        key={time}
+                        variant={selectedTime === time ? 'default' : 'outline'}
+                        onClick={() => setSelectedTime(time)}
+                        className="h-11 font-semibold"
+                      >
+                        {time}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
 
-          <Card className="p-6">
-            <h2 className="font-bold text-xl mb-4 flex items-center gap-2">
-              <Icon name="User" size={24} className="text-primary" />
+          <Card className="p-5">
+            <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <Icon name="User" size={20} className="text-primary" />
               Исполнитель
             </h2>
             
             {!showExecutorList ? (
-              <div 
-                className="border-2 rounded-lg p-4 hover:border-primary transition-all hover:shadow-md"
-              >
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+              <div className="border-2 rounded-lg p-4 hover:border-primary/50 transition-all">
+                <div className="flex items-center gap-3 mb-3">
+                  <Avatar className="h-14 w-14">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-lg">
                       {executor.name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                   
                   <div className="flex-1">
-                    <h3 className="font-bold text-lg">{executor.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
+                    <h3 className="font-bold text-base">{executor.name}</h3>
+                    <div className="flex items-center gap-2 text-sm">
                       <div className="flex items-center gap-1">
-                        <Icon name="Star" size={16} className="text-yellow-500 fill-yellow-500" />
+                        <Icon name="Star" size={14} className="text-yellow-500 fill-yellow-500" />
                         <span className="font-semibold">{executor.rating}</span>
                       </div>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-muted-foreground">
                         • {executor.completedOrders} заказов
                       </span>
-                    </div>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {executor.specialization.map((spec, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {spec}
-                        </Badge>
-                      ))}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-2 mt-4">
+                <div className="flex gap-2">
                   <Button 
                     variant="outline" 
+                    size="sm"
                     className="flex-1"
                     onClick={() => handleViewExecutorProfile(executor.id)}
                   >
-                    <Icon name="User" size={16} className="mr-2" />
-                    Профиль мастера
+                    <Icon name="Eye" size={16} className="mr-2" />
+                    Профиль
                   </Button>
                   <Button 
                     variant="outline"
+                    size="sm"
+                    className="flex-1"
                     onClick={() => setShowExecutorList(true)}
                   >
                     <Icon name="Users" size={16} className="mr-2" />
-                    Выбрать другого
+                    Другой мастер
                   </Button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {mockExecutors.map((exec) => (
                   <div
                     key={exec.id}
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                      selectedExecutor === exec.id ? 'border-primary bg-primary/5 shadow-md' : 'border-border hover:border-primary/50'
+                    className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                      selectedExecutor === exec.id ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
                     }`}
                     onClick={() => {
                       setSelectedExecutor(exec.id);
                       setShowExecutorList(false);
                     }}
                   >
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-14 w-14">
-                        <AvatarFallback className="bg-primary/10 text-primary text-lg">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-12 w-12">
+                        <AvatarFallback className="bg-primary/10 text-primary">
                           {exec.name.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
                       
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{exec.name}</h3>
-                        <div className="flex items-center gap-2 mt-1 text-sm">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm">{exec.name}</h3>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
-                            <Icon name="Star" size={14} className="text-yellow-500 fill-yellow-500" />
+                            <Icon name="Star" size={12} className="text-yellow-500 fill-yellow-500" />
                             <span>{exec.rating}</span>
                           </div>
-                          <span className="text-muted-foreground">• {exec.completedOrders} заказов</span>
+                          <span>• {exec.completedOrders} заказов</span>
                         </div>
                       </div>
 
                       {selectedExecutor === exec.id && (
-                        <Icon name="Check" size={24} className="text-primary" />
+                        <Icon name="Check" size={20} className="text-primary" />
                       )}
                     </div>
                   </div>
@@ -258,36 +261,35 @@ const Schedule = () => {
             )}
           </Card>
 
-          <Card className="p-6">
-            <h2 className="font-bold text-xl mb-4 flex items-center gap-2">
-              <Icon name="Phone" size={24} className="text-primary" />
-              Контактные данные
+          <Card className="p-5">
+            <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <Icon name="Phone" size={20} className="text-primary" />
+              Контакты и детали
             </h2>
             
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
-                <Label htmlFor="phone" className="text-base mb-2 block">Телефон для связи</Label>
+                <Label htmlFor="phone" className="text-sm mb-1.5 block">Телефон для связи *</Label>
                 <Input
                   id="phone"
                   type="tel"
                   placeholder="+7 (___) ___-__-__"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  className="h-12 text-base"
+                  className="h-11"
                 />
               </div>
 
               <div>
-                <Label htmlFor="notes" className="text-base mb-2 block">
-                  Дополнительная информация о задаче (опционально)
+                <Label htmlFor="notes" className="text-sm mb-1.5 block">
+                  Комментарий (адрес, этаж, пожелания)
                 </Label>
                 <Textarea
                   id="notes"
-                  placeholder="Укажите адрес, этаж, особые пожелания..."
+                  placeholder="Например: ул. Ленина 10, кв. 5, 2 этаж..."
                   value={additionalNotes}
                   onChange={(e) => setAdditionalNotes(e.target.value)}
-                  rows={4}
-                  className="text-base"
+                  rows={3}
                 />
               </div>
             </div>
