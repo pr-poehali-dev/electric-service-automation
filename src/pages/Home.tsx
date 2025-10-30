@@ -42,19 +42,27 @@ const Home = () => {
   const handleBookInspection = () => {
     const inspectionService = quickServices.find(s => s.id === 'q3');
     if (inspectionService) {
-      addToCart(inspectionService, 1);
+      const updatedCart = [...cart];
+      const existing = updatedCart.find(item => item.service.id === inspectionService.id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        updatedCart.push({ service: inspectionService, quantity: 1 });
+      }
+      setCart(updatedCart);
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
       toast({
         title: "Добавлено в список",
         description: "Вызов мастера на осмотр добавлен"
       });
       setTimeout(() => {
-        handleGoToTasks();
+        navigate('/tasks');
       }, 800);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 dark:from-slate-950 dark:via-blue-950 dark:to-amber-950 pb-24">
       <header className="border-b border-border bg-card sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -100,6 +108,7 @@ const Home = () => {
               <Card 
                 className="p-8 hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 hover:border-primary hover:scale-105 group active:scale-95"
                 onClick={() => setSelectedCategory('quick')}
+                data-category="quick"
               >
                 <div className="flex items-center gap-6">
                   <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0">
@@ -116,6 +125,7 @@ const Home = () => {
               <Card 
                 className="p-8 hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 hover:border-primary hover:scale-105 group active:scale-95"
                 onClick={() => setSelectedCategory('electrical')}
+                data-category="electrical"
               >
                 <div className="flex items-center gap-6">
                   <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0">
@@ -144,29 +154,6 @@ const Home = () => {
             </div>
 
             <div className="mt-12 space-y-8">
-              <div className="max-w-2xl mx-auto">
-                <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Icon name="MessageCircle" size={28} className="text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-xl mb-2">Есть вопросы?</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Напишите нам в Telegram, и мы поможем выбрать нужные услуги
-                      </p>
-                      <Button 
-                        onClick={() => window.open('https://t.me/konigelectric', '_blank')}
-                        className="w-full gap-2 h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-                      >
-                        <Icon name="Send" size={20} />
-                        Написать в Telegram
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
               <div className="space-y-4">
                 <h3 className="font-bold text-2xl text-center">Отзывы наших клиентов</h3>
                 <div style={{height:'800px', overflow:'hidden', position:'relative'}}>

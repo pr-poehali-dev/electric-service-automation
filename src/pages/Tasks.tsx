@@ -92,11 +92,43 @@ const Tasks = () => {
 
           <Card className="p-1">
             <div className="bg-muted/50 p-4 rounded-t-lg border-b-2 border-dashed">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <h2 className="font-bold text-lg">Выбранные услуги</h2>
                 <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="gap-2">
                   <Icon name="Plus" size={16} />
                   Добавить
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 rounded-full"
+                  onClick={() => {
+                    navigate('/');
+                    setTimeout(() => {
+                      const quickBtn = document.querySelector('[data-category="quick"]') as HTMLElement;
+                      quickBtn?.click();
+                    }, 100);
+                  }}
+                >
+                  <Icon name="Zap" size={14} className="mr-1" />
+                  Вызов электрика
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 rounded-full"
+                  onClick={() => {
+                    navigate('/');
+                    setTimeout(() => {
+                      const electricalBtn = document.querySelector('[data-category="electrical"]') as HTMLElement;
+                      electricalBtn?.click();
+                    }, 100);
+                  }}
+                >
+                  <Icon name="Wrench" size={14} className="mr-1" />
+                  Электромонтаж
                 </Button>
               </div>
             </div>
@@ -206,7 +238,7 @@ const Tasks = () => {
               className="w-full h-14 text-lg font-semibold shadow-lg gap-2"
               onClick={handleContinue}
             >
-              Продолжить оформление
+              Оформить заявку
               <Icon name="ArrowRight" size={22} />
             </Button>
           </div>

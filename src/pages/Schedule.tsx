@@ -7,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import OrderProgressBar from '@/components/OrderProgressBar';
 import { toast } from '@/hooks/use-toast';
@@ -62,6 +61,15 @@ const Schedule = () => {
   const executor = mockExecutors.find(e => e.id === selectedExecutor) || mockExecutors[0];
 
   const handleSubmit = () => {
+    if (!contactPhone.trim()) {
+      toast({
+        title: "Укажите телефон",
+        description: "Телефон нужен для связи с мастером",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!selectedDate) {
       toast({
         title: "Выберите дату",
@@ -75,15 +83,6 @@ const Schedule = () => {
       toast({
         title: "Выберите время",
         description: "Укажите удобное время визита",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!contactPhone.trim()) {
-      toast({
-        title: "Укажите телефон",
-        description: "Телефон нужен для связи с мастером",
         variant: "destructive"
       });
       return;
@@ -123,6 +122,40 @@ const Schedule = () => {
       <main className="container mx-auto px-4 py-6">
         <div className="max-w-2xl mx-auto space-y-4">
           <OrderProgressBar currentStatus="scheduled" />
+
+          <Card className="p-5">
+            <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <Icon name="Phone" size={20} className="text-primary" />
+              Контакты и детали
+            </h2>
+            
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="phone" className="text-sm mb-1.5 block">Телефон для связи *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="+7 (___) ___-__-__"
+                  value={contactPhone}
+                  onChange={(e) => setContactPhone(e.target.value)}
+                  className="h-11"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="notes" className="text-sm mb-1.5 block">
+                  Комментарий (адрес, этаж, пожелания)
+                </Label>
+                <Textarea
+                  id="notes"
+                  placeholder="Например: ул. Ленина 10, кв. 5, 2 этаж..."
+                  value={additionalNotes}
+                  onChange={(e) => setAdditionalNotes(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            </div>
+          </Card>
 
           <Card className="p-5">
             <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
@@ -173,7 +206,7 @@ const Schedule = () => {
           <Card className="p-5">
             <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
               <Icon name="User" size={20} className="text-primary" />
-              Исполнитель
+              Выберите специалиста
             </h2>
             
             {!showExecutorList ? (
@@ -259,40 +292,6 @@ const Schedule = () => {
                 ))}
               </div>
             )}
-          </Card>
-
-          <Card className="p-5">
-            <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <Icon name="Phone" size={20} className="text-primary" />
-              Контакты и детали
-            </h2>
-            
-            <div className="space-y-3">
-              <div>
-                <Label htmlFor="phone" className="text-sm mb-1.5 block">Телефон для связи *</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+7 (___) ___-__-__"
-                  value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                  className="h-11"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="notes" className="text-sm mb-1.5 block">
-                  Комментарий (адрес, этаж, пожелания)
-                </Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Например: ул. Ленина 10, кв. 5, 2 этаж..."
-                  value={additionalNotes}
-                  onChange={(e) => setAdditionalNotes(e.target.value)}
-                  rows={3}
-                />
-              </div>
-            </div>
           </Card>
         </div>
       </main>
