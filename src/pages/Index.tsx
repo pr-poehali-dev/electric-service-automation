@@ -15,12 +15,6 @@ import ServiceCard from '@/components/ServiceCard';
 import TasksButton from '@/components/TasksButton';
 import ExecutorSelect from '@/components/ExecutorSelect';
 import OrderProgressBar from '@/components/OrderProgressBar';
-import { useAuth } from '@/contexts/AuthContext';
-import { useCart } from '@/hooks/useCart';
-import ServiceCard from '@/components/ServiceCard';
-import TasksButton from '@/components/TasksButton';
-import ExecutorSelect from '@/components/ExecutorSelect';
-import OrderProgressBar from '@/components/OrderProgressBar';
 
 interface Service {
   id: string;
@@ -50,7 +44,6 @@ interface Executor {
 
 const Index = () => {
   const { user, isAuthenticated } = useAuth();
-  const { cart, getTotalCount } = useCart();
   const [activeTab, setActiveTab] = useState('home');
   const [servicesList, setServicesList] = useState(services);
   const [executorsList, setExecutorsList] = useState<Executor[]>([]);
