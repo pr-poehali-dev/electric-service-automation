@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import Icon from '@/components/ui/icon';
 import { toast } from '@/hooks/use-toast';
 
@@ -15,70 +15,38 @@ interface Service {
   title: string;
   description: string;
   price: number;
-  priceLabel: string;
   icon: string;
   quantity?: number;
 }
 
-interface Order {
-  id: string;
-  service: string;
-  status: 'pending' | 'assigned' | 'in-progress' | 'completed';
-  address: string;
-  date: string;
-  master?: string;
-}
-
-interface Master {
-  id: string;
-  name: string;
-  rating: number;
-  completedOrders: number;
-  specialization: string;
-  avatar: string;
-}
-
 const services: Service[] = [
-  { id: '1', title: 'Установка розеток', description: 'Установка и замена розеток любого типа', price: 500, priceLabel: 'от 500 ₽', icon: 'Plug', quantity: 0 },
-  { id: '2', title: 'Установка выключателей', description: 'Монтаж одно- и многоклавишных выключателей', price: 400, priceLabel: 'от 400 ₽', icon: 'ToggleLeft', quantity: 0 },
-  { id: '3', title: 'Монтаж освещения', description: 'Установка люстр, светильников, LED-подсветки', price: 800, priceLabel: 'от 800 ₽', icon: 'Lightbulb', quantity: 0 },
-  { id: '4', title: 'Сборка щитков', description: 'Монтаж и настройка электрических щитов', price: 3000, priceLabel: 'от 3000 ₽', icon: 'Box', quantity: 0 },
-  { id: '5', title: 'Проводка квартиры', description: 'Полная замена электропроводки в квартире', price: 1200, priceLabel: 'от 1200 ₽/м²', icon: 'Cable', quantity: 0 },
-  { id: '6', title: 'Диагностика', description: 'Поиск неисправностей и консультация', price: 1000, priceLabel: 'от 1000 ₽', icon: 'Search', quantity: 0 }
-];
-
-const masters: Master[] = [
-  { id: '1', name: 'Алексей Иванов', rating: 4.9, completedOrders: 247, specialization: 'Все виды работ', avatar: '👨‍🔧' },
-  { id: '2', name: 'Дмитрий Петров', rating: 4.8, completedOrders: 189, specialization: 'Щитки и проводка', avatar: '👷' },
-  { id: '3', name: 'Сергей Смирнов', rating: 4.7, completedOrders: 156, specialization: 'Освещение', avatar: '⚡' },
-  { id: '4', name: 'Михаил Козлов', rating: 4.9, completedOrders: 203, specialization: 'Розетки и выключатели', avatar: '🔌' }
-];
-
-const mockOrders: Order[] = [
-  { id: 'ORD-001', service: 'Установка розеток', status: 'completed', address: 'ул. Ленина, 45', date: '28.10.2025', master: 'Алексей Иванов' },
-  { id: 'ORD-002', service: 'Монтаж освещения', status: 'in-progress', address: 'пр. Победы, 12', date: '30.10.2025', master: 'Сергей Смирнов' },
-  { id: 'ORD-003', service: 'Сборка щитков', status: 'assigned', address: 'ул. Мира, 78', date: '31.10.2025', master: 'Дмитрий Петров' }
+  { id: '1', title: 'Установка розеток', description: 'Установка и замена розеток любого типа', price: 500, icon: 'Plug', quantity: 0 },
+  { id: '2', title: 'Установка выключателей', description: 'Монтаж одно- и многоклавишных выключателей', price: 400, icon: 'ToggleLeft', quantity: 0 },
+  { id: '3', title: 'Монтаж освещения', description: 'Установка люстр, светильников, LED-подсветки', price: 800, icon: 'Lightbulb', quantity: 0 },
+  { id: '4', title: 'Сборка щитков', description: 'Монтаж и настройка электрических щитов', price: 3000, icon: 'Box', quantity: 0 },
+  { id: '5', title: 'Проводка квартиры', description: 'Полная замена электропроводки в квартире', price: 1200, icon: 'Cable', quantity: 0 },
+  { id: '6', title: 'Диагностика', description: 'Поиск неисправностей и консультация', price: 1000, icon: 'Search', quantity: 0 }
 ];
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('home');
-  const [orderForm, setOrderForm] = useState({ name: '', phone: '', address: '', description: '', service: '' });
-  const [trackingId, setTrackingId] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [cart, setCart] = useState<Service[]>([]);
   const [servicesList, setServicesList] = useState(services);
-
-  const addToCart = (serviceId: string) => {
-    const service = servicesList.find(s => s.id === serviceId);
-    if (service) {
-      setCart([...cart, service]);
-      toast({
-        title: "Добавлено!",
-        description: `${service.title} добавлен в заказ`,
-        duration: 2000
-      });
-    }
-  };
+  
+  const [scenario, setScenario] = useState<'A' | 'B' | null>(null);
+  const [repairType, setRepairType] = useState('');
+  const [calcType, setCalcType] = useState('simple');
+  const [switchCount, setSwitchCount] = useState(5);
+  const [socketCount, setSocketCount] = useState(10);
+  const [lightingType, setLightingType] = useState('');
+  const [powerEquipment, setPowerEquipment] = useState<string[]>([]);
+  const [installType, setInstallType] = useState('');
+  const [hasWires, setHasWires] = useState('');
+  
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [notes, setNotes] = useState('');
 
   const updateQuantity = (serviceId: string, change: number) => {
     setServicesList(prev => prev.map(s => {
@@ -98,162 +66,74 @@ const Index = () => {
     return servicesList.reduce((sum, s) => sum + (s.quantity || 0), 0);
   };
 
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      pending: 'Ожидает',
-      assigned: 'Назначен мастер',
-      'in-progress': 'Выполняется',
-      completed: 'Завершён'
-    };
-    return labels[status as keyof typeof labels];
+  const getCartItems = () => {
+    return servicesList.filter(s => (s.quantity || 0) > 0);
   };
 
-  const getStatusColor = (status: string) => {
-    const colors = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      assigned: 'bg-blue-100 text-blue-800',
-      'in-progress': 'bg-purple-100 text-purple-800',
-      completed: 'bg-green-100 text-green-800'
-    };
-    return colors[status as keyof typeof colors];
-  };
-
-  const handleOrderSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "Заявка отправлена!",
-      description: "Мы свяжемся с вами в ближайшее время"
+      title: "Спасибо!",
+      description: "Мы перезвоним в течение 15 минут"
     });
-    setOrderForm({ name: '', phone: '', address: '', description: '', service: '' });
+    window.open('https://t.me/konigelectric', '_blank');
   };
-
-  const statsData = [
-    { label: 'Всего заказов', value: '1,247', icon: 'ClipboardList', color: 'text-blue-600' },
-    { label: 'Активных', value: '23', icon: 'Clock', color: 'text-orange-600' },
-    { label: 'Завершённых', value: '1,198', icon: 'CheckCircle', color: 'text-green-600' },
-    { label: 'Средний рейтинг', value: '4.8', icon: 'Star', color: 'text-yellow-600' }
-  ];
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3">
+      <header className="border-b border-border bg-card sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Icon name="Zap" className="text-primary" size={28} />
-                <div>
-                  <h1 className="font-heading font-bold text-xl text-foreground">БАЛТСЕТЬ <sup className="text-xs text-primary">³⁹</sup></h1>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Калининград</p>
-                </div>
+            <div className="flex items-center gap-2">
+              <Icon name="Zap" className="text-primary" size={24} />
+              <div>
+                <h1 className="font-heading font-bold text-lg text-foreground">БАЛТСЕТЬ <sup className="text-xs text-primary">³⁹</sup></h1>
+                <p className="text-[10px] text-muted-foreground uppercase">Калининград</p>
               </div>
             </div>
-            <nav className="hidden md:flex gap-8">
-              <button onClick={() => setActiveTab('home')} className={`text-sm font-medium uppercase tracking-wide transition-colors ${activeTab === 'home' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-                Главная
-              </button>
-              <button onClick={() => setActiveTab('services')} className={`text-sm font-medium uppercase tracking-wide transition-colors ${activeTab === 'services' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-                Услуги
-              </button>
-              <button onClick={() => setActiveTab('masters')} className={`text-sm font-medium uppercase tracking-wide transition-colors ${activeTab === 'masters' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-                Наши работы
-              </button>
-              <button onClick={() => setActiveTab('tracking')} className={`text-sm font-medium uppercase tracking-wide transition-colors ${activeTab === 'tracking' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-                Отзывы
-              </button>
-            </nav>
-            <div className="flex gap-3">
-              <div className="hidden lg:flex flex-col items-end">
-                <span className="text-xs text-muted-foreground">Калининград</span>
-                <a href="tel:+74012520725" className="text-lg font-bold text-primary hover:text-primary/80 transition-colors">
-                  +7 (4012) 52-07-25
-                </a>
-              </div>
-              <Button size="sm" className="font-semibold" onClick={() => setActiveTab('order')}>
-                Заказать звонок
-              </Button>
-            </div>
+            <a href="tel:+74012520725" className="text-base md:text-lg font-bold text-primary hover:text-primary/80 transition-colors">
+              +7 (4012) 52-07-25
+            </a>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 py-6">
         {activeTab === 'home' && (
-          <div className="space-y-16 animate-fade-in">
-            <section className="relative py-20 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5"></div>
-              <div className="relative text-center space-y-6">
-                <div className="inline-block">
-                  <Badge variant="secondary" className="mb-4 bg-primary/20 text-primary border-primary/30 uppercase tracking-wider">
-                    ⚡ С 2015 года в Калининграде
-                  </Badge>
-                </div>
-                <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-black text-foreground leading-[1.1] tracking-tight">
-                  ЭЛЕКТРОМОНТАЖНЫЕ<br />
-                  <span className="text-primary">РАБОТЫ</span>
-                </h1>
-                <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-light">
-                  Профессиональный электрик с опытом более 10 лет.<br/>
-                  Гарантия качества. Выезд в день обращения.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-                  <Button size="lg" onClick={() => setActiveTab('order')} className="text-base font-bold px-10 py-6 h-auto shadow-lg hover:shadow-xl">
-                    ВЫЗВАТЬ ЭЛЕКТРИКА
-                  </Button>
-                  <Button size="lg" variant="outline" onClick={() => setActiveTab('services')} className="text-base font-bold px-10 py-6 h-auto border-2">
-                    УСЛУГИ И ЦЕНЫ
-                  </Button>
-                </div>
-                <div className="grid grid-cols-3 gap-6 mt-16 pt-12 border-t border-border max-w-3xl mx-auto">
-                  <div className="text-center">
-                    <div className="text-4xl md:text-5xl font-black text-primary mb-2">1200+</div>
-                    <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide">Заказов</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-4xl md:text-5xl font-black text-primary mb-2">4.8</div>
-                    <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide">Рейтинг</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-4xl md:text-5xl font-black text-primary mb-2">2ч</div>
-                    <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide">Приезд</div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="space-y-10">
-              <div className="text-center space-y-3">
-                <h2 className="font-heading text-4xl md:text-5xl font-black text-foreground uppercase tracking-tight">
-                  Услуги <span className="text-primary">электрика</span>
+          <div className="space-y-6 animate-fade-in pb-24">
+            <section className="space-y-4">
+              <div className="text-center space-y-2">
+                <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
+                  Услуги электрика
                 </h2>
-                <p className="text-muted-foreground text-base">Выберите услугу и добавьте в заказ</p>
+                <p className="text-muted-foreground text-sm">Выберите услугу и добавьте в заявку</p>
               </div>
               <div className="grid gap-3">
-                {servicesList.slice(0, 6).map((service) => (
-                  <Card key={service.id} className="overflow-hidden bg-card border border-border hover:border-primary/40 transition-all group">
+                {servicesList.map((service) => (
+                  <Card key={service.id} className="overflow-hidden bg-card border hover:shadow-md transition-all">
                     <div className="flex items-stretch">
-                      <div className="w-20 sm:w-28 flex-shrink-0 bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                        <Icon name={service.icon as any} className="text-primary" size={36} />
+                      <div className="w-20 flex-shrink-0 bg-primary/5 flex items-center justify-center">
+                        <Icon name={service.icon as any} className="text-primary" size={32} />
                       </div>
-                      <div className="flex-1 p-4 sm:p-5">
-                        <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1 p-4">
+                        <div className="flex justify-between items-start mb-2">
                           <div className="flex-1 pr-3">
-                            <h3 className="font-heading font-bold text-base sm:text-lg text-foreground uppercase tracking-wide leading-tight mb-1">
+                            <h3 className="font-semibold text-sm text-foreground leading-tight mb-1">
                               {service.title}
                             </h3>
-                            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{service.description}</p>
+                            <p className="text-xs text-muted-foreground">{service.description}</p>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between pt-3 border-t border-border">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-xs text-muted-foreground uppercase">от</span>
-                            <span className="text-2xl sm:text-3xl font-black text-primary leading-none">{service.price}</span>
-                            <span className="text-sm text-muted-foreground">₽</span>
+                        <div className="flex items-center justify-between pt-2 border-t border-border">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-xs text-muted-foreground">от</span>
+                            <span className="text-xl font-bold text-primary">{service.price}</span>
+                            <span className="text-xs text-muted-foreground">₽</span>
                           </div>
                           {(service.quantity || 0) === 0 ? (
                             <Button 
-                              size="lg" 
-                              className="h-11 px-5 text-sm font-bold uppercase tracking-wide"
+                              size="sm" 
+                              className="h-9 px-4 text-xs font-semibold"
                               onClick={() => updateQuantity(service.id, 1)}
                             >
                               Добавить
@@ -261,17 +141,17 @@ const Index = () => {
                           ) : (
                             <div className="flex items-center gap-2">
                               <Button 
-                                size="lg" 
+                                size="sm" 
                                 variant="outline" 
-                                className="h-11 w-11 p-0 text-xl font-bold border-2"
+                                className="h-9 w-9 p-0 text-lg"
                                 onClick={() => updateQuantity(service.id, -1)}
                               >
                                 −
                               </Button>
-                              <span className="text-2xl font-black w-10 text-center text-foreground">{service.quantity}</span>
+                              <span className="text-lg font-bold w-8 text-center">{service.quantity}</span>
                               <Button 
-                                size="lg" 
-                                className="h-11 w-11 p-0 text-xl font-bold"
+                                size="sm" 
+                                className="h-9 w-9 p-0 text-lg"
                                 onClick={() => updateQuantity(service.id, 1)}
                               >
                                 +
@@ -285,477 +165,301 @@ const Index = () => {
                 ))}
               </div>
               {getTotalItems() > 0 && (
-                <div className="fixed bottom-0 left-0 right-0 bg-card border-t-2 border-primary shadow-2xl p-4 z-50 animate-slide-up">
+                <div className="fixed bottom-0 left-0 right-0 bg-card border-t-2 border-primary shadow-2xl p-4 z-50">
                   <div className="container mx-auto flex items-center justify-between">
                     <div className="flex flex-col">
-                      <span className="text-xs text-muted-foreground uppercase tracking-wide">Итого • {getTotalItems()} услуг</span>
-                      <span className="text-3xl font-black text-foreground">{getTotalPrice().toLocaleString()} ₽</span>
+                      <span className="text-xs text-muted-foreground">Итого • {getTotalItems()} услуг</span>
+                      <span className="text-2xl font-bold text-foreground">{getTotalPrice().toLocaleString()} ₽</span>
                     </div>
-                    <Button size="lg" className="h-14 px-8 text-base font-bold uppercase tracking-wide shadow-lg" onClick={() => setActiveTab('order')}>
-                      Оформить
-                      <Icon name="ArrowRight" size={20} className="ml-2" />
+                    <Button size="lg" className="h-12 px-6 text-sm font-semibold" onClick={() => setActiveTab('cart')}>
+                      Проверить
+                      <Icon name="ShoppingCart" size={18} className="ml-2" />
                     </Button>
                   </div>
                 </div>
               )}
             </section>
-
-            <section className="relative overflow-hidden rounded-sm">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent"></div>
-              <div className="relative p-10 md:p-16">
-                <h2 className="font-heading text-3xl md:text-4xl font-black text-center uppercase tracking-tight mb-12">
-                  Почему <span className="text-primary">выбирают нас</span>
-                </h2>
-                <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 bg-card/80 backdrop-blur-sm rounded-sm flex items-center justify-center mx-auto border-2 border-primary/30">
-                      <Icon name="Shield" className="text-primary" size={36} />
-                    </div>
-                    <h3 className="font-heading font-bold text-lg uppercase tracking-wide text-foreground">Гарантия</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">Официальная гарантия на все работы до 3 лет</p>
-                  </div>
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 bg-card/80 backdrop-blur-sm rounded-sm flex items-center justify-center mx-auto border-2 border-primary/30">
-                      <Icon name="Clock" className="text-primary" size={36} />
-                    </div>
-                    <h3 className="font-heading font-bold text-lg uppercase tracking-wide text-foreground">Оперативность</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">Приезжаем в течение 2 часов после заявки</p>
-                  </div>
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 bg-card/80 backdrop-blur-sm rounded-sm flex items-center justify-center mx-auto border-2 border-primary/30">
-                      <Icon name="Award" className="text-primary" size={36} />
-                    </div>
-                    <h3 className="font-heading font-bold text-lg uppercase tracking-wide text-foreground">Профессионализм</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">Стаж каждого мастера от 10 лет</p>
-                  </div>
-                </div>
-              </div>
-            </section>
           </div>
         )}
 
-        {activeTab === 'services' && (
-          <div className="space-y-8 animate-fade-in pb-32">
-            <div className="text-center">
-              <h2 className="font-heading text-4xl font-bold mb-4">Наши услуги</h2>
-              <p className="text-muted-foreground text-lg">Полный спектр электромонтажных работ</p>
+        {activeTab === 'cart' && (
+          <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+            <div className="flex items-center gap-2 mb-4">
+              <Button variant="ghost" size="sm" onClick={() => setActiveTab('home')}>
+                <Icon name="ArrowLeft" size={18} />
+              </Button>
+              <h2 className="font-heading text-2xl font-bold">Ваша заявка</h2>
             </div>
-            <div className="grid gap-4">
-              {servicesList.map((service) => (
-                <Card key={service.id} className="overflow-hidden border-2 hover:border-primary/20 transition-all active:scale-[0.99]">
-                  <div className="flex items-stretch">
-                    <div className="w-24 sm:w-32 flex-shrink-0 bg-primary/5 flex items-center justify-center">
-                      <Icon name={service.icon as any} className="text-primary" size={40} />
+            
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4">Выбранные услуги</h3>
+              <div className="space-y-3 mb-6">
+                {getCartItems().map((item) => (
+                  <div key={item.id} className="flex justify-between items-center pb-3 border-b">
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{item.title}</div>
+                      <div className="text-xs text-muted-foreground">{item.description}</div>
                     </div>
-                    <div className="flex-1 p-4 sm:p-5">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1 pr-3">
-                          <h3 className="font-heading font-bold text-lg sm:text-xl leading-tight mb-1">{service.title}</h3>
-                          <p className="text-sm text-muted-foreground leading-snug">{service.description}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                        <div className="flex flex-col">
-                          <span className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{service.priceLabel.split(' ')[1]}</span>
-                          <span className="text-xs text-muted-foreground mt-1">{service.priceLabel.split(' ')[0]}</span>
-                        </div>
-                        {(service.quantity || 0) === 0 ? (
-                          <Button 
-                            size="lg" 
-                            className="h-12 px-6 text-base font-semibold shadow-md hover:shadow-lg"
-                            onClick={() => updateQuantity(service.id, 1)}
-                          >
-                            Добавить
-                          </Button>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <Button 
-                              size="lg" 
-                              variant="outline" 
-                              className="h-12 w-12 p-0 text-xl font-bold"
-                              onClick={() => updateQuantity(service.id, -1)}
-                            >
-                              −
-                            </Button>
-                            <span className="text-2xl font-bold w-12 text-center">{service.quantity}</span>
-                            <Button 
-                              size="lg" 
-                              className="h-12 w-12 p-0 text-xl font-bold"
-                              onClick={() => updateQuantity(service.id, 1)}
-                            >
-                              +
-                            </Button>
-                          </div>
-                        )}
-                      </div>
+                    <div className="text-right">
+                      <div className="font-bold text-primary">{item.quantity} × {item.price} ₽</div>
+                      <div className="text-sm text-muted-foreground">{(item.quantity || 0) * item.price} ₽</div>
                     </div>
                   </div>
-                </Card>
-              ))}
-            </div>
-            {getTotalItems() > 0 && (
-              <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-primary/20 shadow-2xl p-4 z-50 animate-slide-up">
-                <div className="container mx-auto flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">Итого ({getTotalItems()} услуг)</span>
-                    <span className="text-2xl font-bold">{getTotalPrice().toLocaleString()} ₽</span>
-                  </div>
-                  <Button size="lg" className="h-14 px-8 text-lg font-semibold shadow-lg" onClick={() => setActiveTab('order')}>
-                    Оформить заказ
-                    <Icon name="ArrowRight" size={20} className="ml-2" />
-                  </Button>
+                ))}
+              </div>
+              <div className="flex justify-between items-center pt-4 border-t-2 border-primary">
+                <span className="font-bold text-lg">Итого:</span>
+                <span className="font-bold text-2xl text-primary">{getTotalPrice().toLocaleString()} ₽</span>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-semibold mb-4">Мастер</h3>
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-2xl">
+                  👨‍🔧
+                </div>
+                <div>
+                  <div className="font-semibold">Алексей Иванов</div>
+                  <div className="text-sm text-muted-foreground">Стаж: 12 лет • Рейтинг: 4.9 ⭐</div>
+                  <div className="text-xs text-muted-foreground mt-1">Специализация: все виды работ</div>
                 </div>
               </div>
-            )}
-          </div>
-        )}
+            </Card>
 
-        {activeTab === 'masters' && (
-          <div className="space-y-8 animate-fade-in">
-            <div className="text-center">
-              <h2 className="font-heading text-4xl font-bold mb-4">Наши мастера</h2>
-              <p className="text-muted-foreground text-lg">Профессионалы с многолетним опытом</p>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {masters.map((master) => (
-                <Card key={master.id} className="text-center hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="text-6xl mb-4">{master.avatar}</div>
-                    <CardTitle className="text-xl">{master.name}</CardTitle>
-                    <CardDescription>{master.specialization}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center justify-center gap-2">
-                      <Icon name="Star" className="text-yellow-500 fill-yellow-500" size={18} />
-                      <span className="font-semibold text-lg">{master.rating}</span>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      <Icon name="CheckCircle" size={14} className="inline mr-1" />
-                      {master.completedOrders} выполненных заказов
-                    </div>
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Icon name="MessageCircle" size={16} className="mr-2" />
-                      Связаться
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <Button size="lg" className="w-full" onClick={() => setActiveTab('order')}>
+              Продолжить оформление
+              <Icon name="ArrowRight" size={18} className="ml-2" />
+            </Button>
           </div>
         )}
 
         {activeTab === 'order' && (
           <div className="max-w-2xl mx-auto animate-fade-in">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-3xl font-heading">Оформить заказ</CardTitle>
-                <CardDescription>Заполните форму и мы свяжемся с вами в ближайшее время</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleOrderSubmit} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="service">Выберите услугу</Label>
-                    <select
-                      id="service"
-                      className="w-full p-2 border rounded-md"
-                      value={orderForm.service}
-                      onChange={(e) => setOrderForm({ ...orderForm, service: e.target.value })}
-                      required
-                    >
-                      <option value="">Выберите услугу...</option>
-                      {services.map(s => <option key={s.id} value={s.title}>{s.title}</option>)}
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Ваше имя</Label>
-                    <Input
-                      id="name"
-                      placeholder="Иван Иванов"
-                      value={orderForm.name}
-                      onChange={(e) => setOrderForm({ ...orderForm, name: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Телефон</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+7 (900) 123-45-67"
-                      value={orderForm.phone}
-                      onChange={(e) => setOrderForm({ ...orderForm, phone: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Адрес</Label>
-                    <Input
-                      id="address"
-                      placeholder="ул. Ленина, д. 10, кв. 5"
-                      value={orderForm.address}
-                      onChange={(e) => setOrderForm({ ...orderForm, address: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Описание работ</Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Опишите подробно, что необходимо сделать..."
-                      rows={4}
-                      value={orderForm.description}
-                      onChange={(e) => setOrderForm({ ...orderForm, description: e.target.value })}
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" size="lg">
-                    <Icon name="Send" size={20} className="mr-2" />
-                    Отправить заявку
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === 'tracking' && (
-          <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-3xl font-heading">Отследить заказ</CardTitle>
-                <CardDescription>Введите номер заказа для отслеживания статуса</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="ORD-001"
-                    value={trackingId}
-                    onChange={(e) => setTrackingId(e.target.value)}
-                  />
-                  <Button>
-                    <Icon name="Search" size={20} />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {trackingId && (
-              <Card className="animate-slide-up">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle>Заказ {trackingId || 'ORD-002'}</CardTitle>
-                      <CardDescription>Монтаж освещения</CardDescription>
-                    </div>
-                    <Badge className={getStatusColor('in-progress')}>
-                      {getStatusLabel('in-progress')}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Прогресс</span>
-                      <span className="font-semibold">60%</span>
-                    </div>
-                    <Progress value={60} className="h-2" />
-                  </div>
-                  
-                  <div className="grid gap-4">
-                    <div className="flex items-start gap-3">
-                      <Icon name="MapPin" className="text-muted-foreground mt-1" size={18} />
-                      <div>
-                        <div className="font-medium">Адрес</div>
-                        <div className="text-sm text-muted-foreground">пр. Победы, 12</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Icon name="Calendar" className="text-muted-foreground mt-1" size={18} />
-                      <div>
-                        <div className="font-medium">Дата выполнения</div>
-                        <div className="text-sm text-muted-foreground">30 октября 2025</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Icon name="User" className="text-muted-foreground mt-1" size={18} />
-                      <div>
-                        <div className="font-medium">Мастер</div>
-                        <div className="text-sm text-muted-foreground">Сергей Смирнов</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t">
-                    <h4 className="font-semibold mb-3">Этапы выполнения</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                          <Icon name="Check" className="text-white" size={14} />
-                        </div>
-                        <div className="text-sm">Заявка принята</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                          <Icon name="Check" className="text-white" size={14} />
-                        </div>
-                        <div className="text-sm">Мастер назначен</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0 animate-pulse">
-                          <Icon name="Loader2" className="text-white animate-spin" size={14} />
-                        </div>
-                        <div className="text-sm font-medium">Работы выполняются</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0"></div>
-                        <div className="text-sm text-muted-foreground">Завершение</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button className="w-full" variant="outline">
-                    <Icon name="MessageCircle" size={18} className="mr-2" />
-                    Связаться с мастером
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'admin' && isAdmin && (
-          <div className="space-y-8 animate-fade-in">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="font-heading text-4xl font-bold">Админ-панель</h2>
-                <p className="text-muted-foreground mt-2">Управление заказами и аналитика</p>
-              </div>
-              <Button variant="outline" onClick={() => { setIsAdmin(false); setActiveTab('home'); }}>
-                <Icon name="LogOut" size={18} className="mr-2" />
-                Выйти
+            <div className="flex items-center gap-2 mb-6">
+              <Button variant="ghost" size="sm" onClick={() => setActiveTab('cart')}>
+                <Icon name="ArrowLeft" size={18} />
               </Button>
+              <h2 className="font-heading text-2xl font-bold">Оформить заявку</h2>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-6">
-              {statsData.map((stat, idx) => (
-                <Card key={idx}>
-                  <CardContent className="pt-6">
-                    <div className="flex justify-between items-start">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {!scenario && (
+                <Card className="p-6">
+                  <Label className="text-base font-semibold mb-4 block">Что вас интересует?</Label>
+                  <div className="space-y-3">
+                    <Button 
+                      type="button"
+                      variant="outline" 
+                      className="w-full h-auto py-4 text-left justify-start"
+                      onClick={() => setScenario('A')}
+                    >
+                      <Icon name="Home" className="mr-3" size={24} />
                       <div>
-                        <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                        <p className="text-3xl font-bold">{stat.value}</p>
+                        <div className="font-semibold">Электромонтажные работы в квартире</div>
+                        <div className="text-xs text-muted-foreground">Полный расчёт проекта</div>
                       </div>
-                      <div className={`w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center ${stat.color}`}>
-                        <Icon name={stat.icon as any} size={20} />
+                    </Button>
+                    <Button 
+                      type="button"
+                      variant="outline" 
+                      className="w-full h-auto py-4 text-left justify-start"
+                      onClick={() => setScenario('B')}
+                    >
+                      <Icon name="Lightbulb" className="mr-3" size={24} />
+                      <div>
+                        <div className="font-semibold">Установка люстры, выключателя или розеток</div>
+                        <div className="text-xs text-muted-foreground">Быстрая заявка</div>
                       </div>
-                    </div>
-                  </CardContent>
+                    </Button>
+                  </div>
                 </Card>
-              ))}
-            </div>
+              )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Последние заказы</CardTitle>
-                <CardDescription>Управление текущими и завершёнными заказами</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {mockOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-mono text-sm font-semibold text-primary">
-                          {order.id.split('-')[1]}
+              {scenario === 'A' && (
+                <>
+                  <Card className="p-6">
+                    <Label className="text-base font-semibold mb-3 block">Тип ремонта</Label>
+                    <RadioGroup value={repairType} onValueChange={setRepairType}>
+                      <div className="space-y-2">
+                        {['Новостройка', 'Капитальный ремонт', 'Частичный ремонт', 'Не знаю → консультация'].map((type) => (
+                          <div key={type} className="flex items-center space-x-2">
+                            <RadioGroupItem value={type} id={type} />
+                            <Label htmlFor={type} className="cursor-pointer">{type}</Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </RadioGroup>
+                  </Card>
+
+                  <Card className="p-6">
+                    <Label className="text-base font-semibold mb-3 block">Тип расчёта</Label>
+                    <Select value={calcType} onValueChange={setCalcType}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="simple">Упрощённый</SelectItem>
+                        <SelectItem value="detailed">Точный</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </Card>
+
+                  {calcType === 'detailed' && (
+                    <>
+                      <Card className="p-6 space-y-4">
+                        <div>
+                          <Label>Количество выключателей</Label>
+                          <Input type="number" value={switchCount} onChange={(e) => setSwitchCount(Number(e.target.value))} />
                         </div>
                         <div>
-                          <div className="font-semibold">{order.service}</div>
-                          <div className="text-sm text-muted-foreground flex items-center gap-3 mt-1">
-                            <span className="flex items-center gap-1">
-                              <Icon name="MapPin" size={14} />
-                              {order.address}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Icon name="Calendar" size={14} />
-                              {order.date}
-                            </span>
-                            {order.master && (
-                              <span className="flex items-center gap-1">
-                                <Icon name="User" size={14} />
-                                {order.master}
-                              </span>
-                            )}
-                          </div>
+                          <Label>Количество розеток</Label>
+                          <Input type="number" value={socketCount} onChange={(e) => setSocketCount(Number(e.target.value))} />
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge className={getStatusColor(order.status)}>
-                          {getStatusLabel(order.status)}
-                        </Badge>
-                        <Button size="sm" variant="ghost">
-                          <Icon name="MoreVertical" size={18} />
-                        </Button>
-                      </div>
+                      </Card>
+
+                      <Card className="p-6">
+                        <Label className="text-base font-semibold mb-3 block">Тип освещения</Label>
+                        <RadioGroup value={lightingType} onValueChange={setLightingType}>
+                          <div className="space-y-2">
+                            {['Стандартное', 'Сложное (ленты, умный свет)', 'Не знаю'].map((type) => (
+                              <div key={type} className="flex items-center space-x-2">
+                                <RadioGroupItem value={type} id={type} />
+                                <Label htmlFor={type} className="cursor-pointer">{type}</Label>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        </RadioGroup>
+                      </Card>
+
+                      <Card className="p-6">
+                        <Label className="text-base font-semibold mb-3 block">Мощное оборудование</Label>
+                        <div className="space-y-2">
+                          {['Плита', 'Кондиционер', 'Стиральная машина', 'Бойлер', 'Тёплый пол'].map((equipment) => (
+                            <div key={equipment} className="flex items-center space-x-2">
+                              <Checkbox 
+                                id={equipment}
+                                checked={powerEquipment.includes(equipment)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setPowerEquipment([...powerEquipment, equipment]);
+                                  } else {
+                                    setPowerEquipment(powerEquipment.filter(e => e !== equipment));
+                                  }
+                                }}
+                              />
+                              <Label htmlFor={equipment} className="cursor-pointer">{equipment}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    </>
+                  )}
+                </>
+              )}
+
+              {scenario === 'B' && (
+                <>
+                  <Card className="p-6">
+                    <Label className="text-base font-semibold mb-3 block">Что устанавливаем?</Label>
+                    <RadioGroup value={installType} onValueChange={setInstallType}>
+                      <div className="space-y-2">
+                        {['Люстра / светильник', 'Розетка / выключатель', 'Автомат защиты', 'Несколько устройств'].map((type) => (
+                          <div key={type} className="flex items-center space-x-2">
+                            <RadioGroupItem value={type} id={type} />
+                            <Label htmlFor={type} className="cursor-pointer">{type}</Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </RadioGroup>
+                  </Card>
+
+                  <Card className="p-6">
+                    <Label className="text-base font-semibold mb-3 block">Есть ли провода?</Label>
+                    <RadioGroup value={hasWires} onValueChange={setHasWires}>
+                      <div className="space-y-2">
+                        {['Да', 'Нужно подвести', 'Не знаю'].map((option) => (
+                          <div key={option} className="flex items-center space-x-2">
+                            <RadioGroupItem value={option} id={option} />
+                            <Label htmlFor={option} className="cursor-pointer">{option}</Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </RadioGroup>
+                  </Card>
+                </>
+              )}
+
+              {scenario && (
+                <>
+                  <Card className="p-6 space-y-4">
+                    <div>
+                      <Label htmlFor="phone">Телефон *</Label>
+                      <Input 
+                        id="phone"
+                        type="tel" 
+                        placeholder="+7" 
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                      />
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div>
+                      <Label htmlFor="address">Адрес *</Label>
+                      <Input 
+                        id="address"
+                        placeholder="Улица, дом, квартира" 
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="date">Желаемая дата *</Label>
+                      <Input 
+                        id="date"
+                        type="date" 
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="time">Удобное время</Label>
+                      <Select value={time} onValueChange={setTime}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите время" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="morning">Утро</SelectItem>
+                          <SelectItem value="day">День</SelectItem>
+                          <SelectItem value="evening">Вечер</SelectItem>
+                          <SelectItem value="any">Без разницы</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="notes">Дополнительные пожелания</Label>
+                      <Textarea 
+                        id="notes"
+                        placeholder="Например: 70 розеток" 
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        rows={3}
+                      />
+                    </div>
+                  </Card>
+
+                  <Button type="submit" size="lg" className="w-full">
+                    Отправить заявку
+                    <Icon name="Send" size={18} className="ml-2" />
+                  </Button>
+                </>
+              )}
+            </form>
           </div>
         )}
       </main>
-
-      <footer className="border-t bg-white mt-24">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <Icon name="Zap" className="text-white" size={20} />
-                </div>
-                <span className="font-heading font-bold text-lg">Электрик PRO</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Профессиональные электромонтажные работы в Калининграде с 2015 года
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Услуги</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>Розетки и выключатели</li>
-                <li>Освещение</li>
-                <li>Электрощиты</li>
-                <li>Проводка</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Контакты</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <Icon name="Phone" size={16} />
-                  +7 (4012) 52-07-25
-                </li>
-                <li className="flex items-center gap-2">
-                  <Icon name="Mail" size={16} />
-                  info@elektrik.org
-                </li>
-                <li className="flex items-center gap-2">
-                  <Icon name="MapPin" size={16} />
-                  Калининград
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Режим работы</h4>
-              <p className="text-sm text-muted-foreground">
-                Пн-Вс: 8:00 - 22:00<br />
-                Аварийные вызовы: 24/7
-              </p>
-            </div>
-          </div>
-          <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>© 2025 Электрик PRO. Все права защищены.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
