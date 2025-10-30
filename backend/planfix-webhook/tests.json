@@ -1,0 +1,14 @@
+{
+  "tests": [{
+    "name": "Planfix webhook test",
+    "method": "POST",
+    "path": "/",
+    "body": {
+      "event_type": "task.assigned",
+      "task_id": "12345",
+      "status": "assigned",
+      "assignee": "Алексей Иванов"
+    },
+    "expectedStatus": 200
+  }]
+}

@@ -1,0 +1,7 @@
+{
+  "planfix-webhook": "https://functions.poehali.dev/49c48648-754a-47d9-a571-dc98222b25bc",
+  "get-order-status": "https://functions.poehali.dev/b875ba9a-3e1c-4e76-807f-0525f61dd331",
+  "update-order-status": "https://functions.poehali.dev/9fde3ede-6010-4014-95a9-ec4e7388f476",
+  "create-order": "https://functions.poehali.dev/5c3c68df-2e41-4012-81fd-e134547810fb",
+  "get-services": "https://functions.poehali.dev/46dcbdcd-c306-4a31-b776-f6e34eba609f"
+}

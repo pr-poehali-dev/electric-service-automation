@@ -1,0 +1,8 @@
+{
+  "tests": [{
+    "name": "Get services list",
+    "method": "GET",
+    "path": "/",
+    "expectedStatus": 200
+  }]
+}
