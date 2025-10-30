@@ -135,63 +135,42 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Icon name="Zap" className="text-white" size={24} />
-              </div>
-              <div>
-                <h1 className="font-heading font-bold text-xl text-foreground">Электрик PRO</h1>
-                <p className="text-xs text-muted-foreground">Калининград</p>
+              <div className="flex items-center gap-2">
+                <Icon name="Zap" className="text-primary" size={28} />
+                <div>
+                  <h1 className="font-heading font-bold text-xl text-foreground">БАЛТСЕТЬ <sup className="text-xs text-primary">³⁹</sup></h1>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Калининград</p>
+                </div>
               </div>
             </div>
-            <nav className="hidden md:flex gap-6">
-              <button onClick={() => setActiveTab('home')} className={`text-sm font-medium transition-colors ${activeTab === 'home' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+            <nav className="hidden md:flex gap-8">
+              <button onClick={() => setActiveTab('home')} className={`text-sm font-medium uppercase tracking-wide transition-colors ${activeTab === 'home' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
                 Главная
               </button>
-              <button onClick={() => setActiveTab('services')} className={`text-sm font-medium transition-colors ${activeTab === 'services' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+              <button onClick={() => setActiveTab('services')} className={`text-sm font-medium uppercase tracking-wide transition-colors ${activeTab === 'services' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
                 Услуги
               </button>
-              <button onClick={() => setActiveTab('masters')} className={`text-sm font-medium transition-colors ${activeTab === 'masters' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-                Мастера
+              <button onClick={() => setActiveTab('masters')} className={`text-sm font-medium uppercase tracking-wide transition-colors ${activeTab === 'masters' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                Наши работы
               </button>
-              <button onClick={() => setActiveTab('tracking')} className={`text-sm font-medium transition-colors ${activeTab === 'tracking' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-                Отследить заказ
+              <button onClick={() => setActiveTab('tracking')} className={`text-sm font-medium uppercase tracking-wide transition-colors ${activeTab === 'tracking' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                Отзывы
               </button>
             </nav>
-            <div className="flex gap-2">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Icon name="User" size={16} className="mr-2" />
-                    Вход
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Вход в систему</DialogTitle>
-                    <DialogDescription>Введите логин и пароль администратора</DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 mt-4">
-                    <div>
-                      <Label>Логин</Label>
-                      <Input placeholder="admin" />
-                    </div>
-                    <div>
-                      <Label>Пароль</Label>
-                      <Input type="password" placeholder="••••••" />
-                    </div>
-                    <Button className="w-full" onClick={() => { setIsAdmin(true); setActiveTab('admin'); }}>
-                      Войти
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-              <Button size="sm" onClick={() => setActiveTab('order')}>
-                Заказать
+            <div className="flex gap-3">
+              <div className="hidden lg:flex flex-col items-end">
+                <span className="text-xs text-muted-foreground">Калининград</span>
+                <a href="tel:+74012520725" className="text-lg font-bold text-primary hover:text-primary/80 transition-colors">
+                  +7 (4012) 52-07-25
+                </a>
+              </div>
+              <Button size="sm" className="font-semibold" onClick={() => setActiveTab('order')}>
+                Заказать звонок
               </Button>
             </div>
           </div>
@@ -201,68 +180,80 @@ const Index = () => {
       <main className="container mx-auto px-4 py-12">
         {activeTab === 'home' && (
           <div className="space-y-16 animate-fade-in">
-            <section className="text-center space-y-6 py-12">
-              <Badge variant="secondary" className="mb-4">⚡ Работаем с 2015 года</Badge>
-              <h1 className="font-heading text-5xl md:text-6xl font-bold text-foreground leading-tight">
-                Электромонтажные работы<br />в Калининграде
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Профессиональные электрики с опытом более 10 лет. Гарантия на все работы. Выезд в день обращения.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                <Button size="lg" onClick={() => setActiveTab('order')} className="text-lg px-8">
-                  <Icon name="Phone" size={20} className="mr-2" />
-                  Вызвать электрика
-                </Button>
-                <Button size="lg" variant="outline" onClick={() => setActiveTab('services')} className="text-lg px-8">
-                  <Icon name="List" size={20} className="mr-2" />
-                  Все услуги
-                </Button>
-              </div>
-              <div className="flex flex-wrap justify-center gap-8 mt-12 pt-8 border-t">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">1200+</div>
-                  <div className="text-sm text-muted-foreground">выполненных заказов</div>
+            <section className="relative py-20 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5"></div>
+              <div className="relative text-center space-y-6">
+                <div className="inline-block">
+                  <Badge variant="secondary" className="mb-4 bg-primary/20 text-primary border-primary/30 uppercase tracking-wider">
+                    ⚡ С 2015 года в Калининграде
+                  </Badge>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">4.8</div>
-                  <div className="text-sm text-muted-foreground">средний рейтинг</div>
+                <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-black text-foreground leading-[1.1] tracking-tight">
+                  ЭЛЕКТРОМОНТАЖНЫЕ<br />
+                  <span className="text-primary">РАБОТЫ</span>
+                </h1>
+                <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-light">
+                  Профессиональный электрик с опытом более 10 лет.<br/>
+                  Гарантия качества. Выезд в день обращения.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+                  <Button size="lg" onClick={() => setActiveTab('order')} className="text-base font-bold px-10 py-6 h-auto shadow-lg hover:shadow-xl">
+                    ВЫЗВАТЬ ЭЛЕКТРИКА
+                  </Button>
+                  <Button size="lg" variant="outline" onClick={() => setActiveTab('services')} className="text-base font-bold px-10 py-6 h-auto border-2">
+                    УСЛУГИ И ЦЕНЫ
+                  </Button>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary">2 часа</div>
-                  <div className="text-sm text-muted-foreground">среднее время приезда</div>
+                <div className="grid grid-cols-3 gap-6 mt-16 pt-12 border-t border-border max-w-3xl mx-auto">
+                  <div className="text-center">
+                    <div className="text-4xl md:text-5xl font-black text-primary mb-2">1200+</div>
+                    <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide">Заказов</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-4xl md:text-5xl font-black text-primary mb-2">4.8</div>
+                    <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide">Рейтинг</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-4xl md:text-5xl font-black text-primary mb-2">2ч</div>
+                    <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wide">Приезд</div>
+                  </div>
                 </div>
               </div>
             </section>
 
-            <section className="space-y-8">
-              <div className="text-center">
-                <h2 className="font-heading text-3xl font-bold text-foreground mb-3">Популярные услуги</h2>
-                <p className="text-muted-foreground">Выберите нужную услугу или оформите комплексный заказ</p>
+            <section className="space-y-10">
+              <div className="text-center space-y-3">
+                <h2 className="font-heading text-4xl md:text-5xl font-black text-foreground uppercase tracking-tight">
+                  Услуги <span className="text-primary">электрика</span>
+                </h2>
+                <p className="text-muted-foreground text-base">Выберите услугу и добавьте в заказ</p>
               </div>
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 {servicesList.slice(0, 6).map((service) => (
-                  <Card key={service.id} className="overflow-hidden border-2 hover:border-primary/20 transition-all active:scale-[0.99]">
+                  <Card key={service.id} className="overflow-hidden bg-card border border-border hover:border-primary/40 transition-all group">
                     <div className="flex items-stretch">
-                      <div className="w-24 sm:w-32 flex-shrink-0 bg-primary/5 flex items-center justify-center">
-                        <Icon name={service.icon as any} className="text-primary" size={40} />
+                      <div className="w-20 sm:w-28 flex-shrink-0 bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                        <Icon name={service.icon as any} className="text-primary" size={36} />
                       </div>
                       <div className="flex-1 p-4 sm:p-5">
-                        <div className="flex justify-between items-start mb-2">
+                        <div className="flex justify-between items-start mb-3">
                           <div className="flex-1 pr-3">
-                            <h3 className="font-heading font-bold text-lg sm:text-xl leading-tight mb-1">{service.title}</h3>
-                            <p className="text-sm text-muted-foreground leading-snug">{service.description}</p>
+                            <h3 className="font-heading font-bold text-base sm:text-lg text-foreground uppercase tracking-wide leading-tight mb-1">
+                              {service.title}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{service.description}</p>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                          <div className="flex flex-col">
-                            <span className="text-2xl sm:text-3xl font-bold text-foreground leading-none">{service.priceLabel.split(' ')[1]}</span>
-                            <span className="text-xs text-muted-foreground mt-1">{service.priceLabel.split(' ')[0]}</span>
+                        <div className="flex items-center justify-between pt-3 border-t border-border">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-xs text-muted-foreground uppercase">от</span>
+                            <span className="text-2xl sm:text-3xl font-black text-primary leading-none">{service.price}</span>
+                            <span className="text-sm text-muted-foreground">₽</span>
                           </div>
                           {(service.quantity || 0) === 0 ? (
                             <Button 
                               size="lg" 
-                              className="h-12 px-6 text-base font-semibold shadow-md hover:shadow-lg"
+                              className="h-11 px-5 text-sm font-bold uppercase tracking-wide"
                               onClick={() => updateQuantity(service.id, 1)}
                             >
                               Добавить
@@ -272,15 +263,15 @@ const Index = () => {
                               <Button 
                                 size="lg" 
                                 variant="outline" 
-                                className="h-12 w-12 p-0 text-xl font-bold"
+                                className="h-11 w-11 p-0 text-xl font-bold border-2"
                                 onClick={() => updateQuantity(service.id, -1)}
                               >
                                 −
                               </Button>
-                              <span className="text-2xl font-bold w-12 text-center">{service.quantity}</span>
+                              <span className="text-2xl font-black w-10 text-center text-foreground">{service.quantity}</span>
                               <Button 
                                 size="lg" 
-                                className="h-12 w-12 p-0 text-xl font-bold"
+                                className="h-11 w-11 p-0 text-xl font-bold"
                                 onClick={() => updateQuantity(service.id, 1)}
                               >
                                 +
@@ -294,14 +285,14 @@ const Index = () => {
                 ))}
               </div>
               {getTotalItems() > 0 && (
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-primary/20 shadow-2xl p-4 z-50 animate-slide-up">
+                <div className="fixed bottom-0 left-0 right-0 bg-card border-t-2 border-primary shadow-2xl p-4 z-50 animate-slide-up">
                   <div className="container mx-auto flex items-center justify-between">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">Итого ({getTotalItems()} услуг)</span>
-                      <span className="text-2xl font-bold">{getTotalPrice().toLocaleString()} ₽</span>
+                      <span className="text-xs text-muted-foreground uppercase tracking-wide">Итого • {getTotalItems()} услуг</span>
+                      <span className="text-3xl font-black text-foreground">{getTotalPrice().toLocaleString()} ₽</span>
                     </div>
-                    <Button size="lg" className="h-14 px-8 text-lg font-semibold shadow-lg" onClick={() => setActiveTab('order')}>
-                      Оформить заказ
+                    <Button size="lg" className="h-14 px-8 text-base font-bold uppercase tracking-wide shadow-lg" onClick={() => setActiveTab('order')}>
+                      Оформить
                       <Icon name="ArrowRight" size={20} className="ml-2" />
                     </Button>
                   </div>
@@ -309,29 +300,34 @@ const Index = () => {
               )}
             </section>
 
-            <section className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-12">
-              <h2 className="font-heading text-3xl font-bold text-center mb-12">Почему выбирают нас</h2>
-              <div className="grid md:grid-cols-3 gap-8">
-                <div className="text-center space-y-3">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
-                    <Icon name="Shield" className="text-primary" size={32} />
+            <section className="relative overflow-hidden rounded-sm">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent"></div>
+              <div className="relative p-10 md:p-16">
+                <h2 className="font-heading text-3xl md:text-4xl font-black text-center uppercase tracking-tight mb-12">
+                  Почему <span className="text-primary">выбирают нас</span>
+                </h2>
+                <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+                  <div className="text-center space-y-4">
+                    <div className="w-20 h-20 bg-card/80 backdrop-blur-sm rounded-sm flex items-center justify-center mx-auto border-2 border-primary/30">
+                      <Icon name="Shield" className="text-primary" size={36} />
+                    </div>
+                    <h3 className="font-heading font-bold text-lg uppercase tracking-wide text-foreground">Гарантия</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Официальная гарантия на все работы до 3 лет</p>
                   </div>
-                  <h3 className="font-heading font-semibold text-lg">Гарантия качества</h3>
-                  <p className="text-sm text-muted-foreground">Официальная гарантия на все работы до 3 лет</p>
-                </div>
-                <div className="text-center space-y-3">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
-                    <Icon name="Clock" className="text-primary" size={32} />
+                  <div className="text-center space-y-4">
+                    <div className="w-20 h-20 bg-card/80 backdrop-blur-sm rounded-sm flex items-center justify-center mx-auto border-2 border-primary/30">
+                      <Icon name="Clock" className="text-primary" size={36} />
+                    </div>
+                    <h3 className="font-heading font-bold text-lg uppercase tracking-wide text-foreground">Оперативность</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Приезжаем в течение 2 часов после заявки</p>
                   </div>
-                  <h3 className="font-heading font-semibold text-lg">Быстрый выезд</h3>
-                  <p className="text-sm text-muted-foreground">Приезжаем в течение 2 часов после заявки</p>
-                </div>
-                <div className="text-center space-y-3">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
-                    <Icon name="Award" className="text-primary" size={32} />
+                  <div className="text-center space-y-4">
+                    <div className="w-20 h-20 bg-card/80 backdrop-blur-sm rounded-sm flex items-center justify-center mx-auto border-2 border-primary/30">
+                      <Icon name="Award" className="text-primary" size={36} />
+                    </div>
+                    <h3 className="font-heading font-bold text-lg uppercase tracking-wide text-foreground">Профессионализм</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Стаж каждого мастера от 10 лет</p>
                   </div>
-                  <h3 className="font-heading font-semibold text-lg">Опытные мастера</h3>
-                  <p className="text-sm text-muted-foreground">Стаж каждого мастера от 10 лет</p>
                 </div>
               </div>
             </section>
