@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -28,9 +28,19 @@ const services: Service[] = [
   { id: '6', title: 'Диагностика', description: 'Поиск неисправностей и консультация', price: 1000, icon: 'Search', quantity: 0 }
 ];
 
+interface Executor {
+  id: number;
+  name: string;
+  phone: string;
+  rating: number;
+  experience_years: number;
+}
+
 const Index = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [servicesList, setServicesList] = useState(services);
+  const [executorsList, setExecutorsList] = useState<Executor[]>([]);
+  const [selectedExecutor, setSelectedExecutor] = useState<number | null>(null);
   
   const [scenario, setScenario] = useState<'A' | 'B' | null>(null);
   const [repairType, setRepairType] = useState('');
@@ -70,13 +80,74 @@ const Index = () => {
     return servicesList.filter(s => (s.quantity || 0) > 0);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchExecutors = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/46dcbdcd-c306-4a31-b776-f6e34eba609f');
+        const data = await response.json();
+        if (data.executors) {
+          setExecutorsList(data.executors);
+        }
+      } catch (error) {
+        console.error('Error fetching executors:', error);
+      }
+    };
+    fetchExecutors();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Спасибо!",
-      description: "Мы перезвоним в течение 15 минут"
-    });
-    window.open('https://t.me/konigelectric', '_blank');
+    
+    const cartItems = getCartItems();
+    if (cartItems.length === 0) {
+      toast({
+        title: "Ошибка",
+        description: "Добавьте услуги в заявку",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/5c3c68df-2e41-4012-81fd-e134547810fb', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telegram_id: Date.now(),
+          client_name: 'Клиент из веб-формы',
+          phone,
+          address,
+          services: cartItems.map(item => ({
+            service_id: parseInt(item.id),
+            quantity: item.quantity || 1,
+            price: item.price
+          })),
+          scheduled_date: date,
+          scheduled_time: time,
+          notes,
+          executor_id: selectedExecutor
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast({
+          title: "Заявка создана!",
+          description: `Номер заявки: #${data.order_id}. Мы свяжемся с вами в ближайшее время.`
+        });
+        
+        setTimeout(() => {
+          window.open('https://t.me/konigelectric', '_blank');
+        }, 1500);
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось отправить заявку. Попробуйте позже.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -172,8 +243,8 @@ const Index = () => {
                       <span className="text-2xl font-bold text-foreground">{getTotalPrice().toLocaleString()} ₽</span>
                     </div>
                     <Button size="lg" className="h-12 px-6 text-sm font-semibold" onClick={() => setActiveTab('cart')}>
-                      Проверить
-                      <Icon name="ShoppingCart" size={18} className="ml-2" />
+                      Добавить в список задач
+                      <Icon name="ListPlus" size={18} className="ml-2" />
                     </Button>
                   </div>
                 </div>
@@ -214,16 +285,37 @@ const Index = () => {
             </Card>
 
             <Card className="p-6">
-              <h3 className="font-semibold mb-4">Мастер</h3>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-2xl">
-                  👨‍🔧
-                </div>
-                <div>
-                  <div className="font-semibold">Алексей Иванов</div>
-                  <div className="text-sm text-muted-foreground">Стаж: 12 лет • Рейтинг: 4.9 ⭐</div>
-                  <div className="text-xs text-muted-foreground mt-1">Специализация: все виды работ</div>
-                </div>
+              <h3 className="font-semibold mb-4">Выбрать мастера</h3>
+              <div className="space-y-3">
+                {executorsList.length === 0 ? (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <Icon name="Loader2" className="animate-spin mx-auto mb-2" size={24} />
+                    <p className="text-sm">Загрузка мастеров...</p>
+                  </div>
+                ) : (
+                  executorsList.map((executor) => (
+                    <div
+                      key={executor.id}
+                      onClick={() => setSelectedExecutor(executor.id)}
+                      className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all hover:border-primary ${
+                        selectedExecutor === executor.id ? 'border-primary bg-primary/5' : 'border-border'
+                      }`}
+                    >
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl flex-shrink-0">
+                        👨‍🔧
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold">{executor.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          Стаж: {executor.experience_years} лет • Рейтинг: {executor.rating} ⭐
+                        </div>
+                      </div>
+                      {selectedExecutor === executor.id && (
+                        <Icon name="CheckCircle2" className="text-primary" size={24} />
+                      )}
+                    </div>
+                  ))
+                )}
               </div>
             </Card>
 
@@ -447,6 +539,41 @@ const Index = () => {
                         onChange={(e) => setNotes(e.target.value)}
                         rows={3}
                       />
+                    </div>
+                  </Card>
+
+                  <Card className="p-6">
+                    <Label className="text-base font-semibold mb-4 block">Выбрать мастера</Label>
+                    <div className="space-y-3">
+                      {executorsList.length === 0 ? (
+                        <div className="text-center py-4 text-muted-foreground">
+                          <Icon name="Loader2" className="animate-spin mx-auto mb-2" size={24} />
+                          <p className="text-sm">Загрузка мастеров...</p>
+                        </div>
+                      ) : (
+                        executorsList.map((executor) => (
+                          <div
+                            key={executor.id}
+                            onClick={() => setSelectedExecutor(executor.id)}
+                            className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all hover:border-primary ${
+                              selectedExecutor === executor.id ? 'border-primary bg-primary/5' : 'border-border'
+                            }`}
+                          >
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl flex-shrink-0">
+                              👨‍🔧
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-semibold">{executor.name}</div>
+                              <div className="text-sm text-muted-foreground">
+                                Стаж: {executor.experience_years} лет • Рейтинг: {executor.rating} ⭐
+                              </div>
+                            </div>
+                            {selectedExecutor === executor.id && (
+                              <Icon name="CheckCircle2" className="text-primary" size={24} />
+                            )}
+                          </div>
+                        ))
+                      )}
                     </div>
                   </Card>
 

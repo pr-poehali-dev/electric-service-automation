@@ -42,6 +42,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     scheduled_date = body_data.get('scheduled_date')
     scheduled_time = body_data.get('scheduled_time')
     client_notes = body_data.get('notes', '')
+    executor_id = body_data.get('executor_id')
     
     if not all([telegram_id, phone, address, services]):
         return {
@@ -66,10 +67,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     for svc in services:
         total_price += svc.get('price', 0) * svc.get('quantity', 1)
     
+    initial_status = 'assigned' if executor_id else 'new'
+    
     cur.execute(
-        "INSERT INTO orders (client_id, status, address, scheduled_date, scheduled_time, total_price, client_notes) "
-        "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id",
-        (client_id, 'new', address, scheduled_date, scheduled_time, total_price, client_notes)
+        "INSERT INTO orders (client_id, executor_id, status, address, scheduled_date, scheduled_time, total_price, client_notes) "
+        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+        (client_id, executor_id, initial_status, address, scheduled_date, scheduled_time, total_price, client_notes)
     )
     order_id = cur.fetchone()['id']
     
@@ -81,7 +84,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     cur.execute(
         "INSERT INTO order_status_history (order_id, status, changed_by) VALUES (%s, %s, %s)",
-        (order_id, 'new', f'client_{telegram_id}')
+        (order_id, initial_status, f'client_{telegram_id}')
     )
     
     conn.commit()

@@ -6,9 +6,9 @@ from psycopg2.extras import RealDictCursor
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Get list of available services for Telegram Web App
+    Business: Get list of available services and executors for Telegram Web App
     Args: event with httpMethod
-    Returns: HTTP response with services list
+    Returns: HTTP response with services and executors lists
     '''
     method = event.get('httpMethod', 'GET')
     
@@ -38,6 +38,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cur.execute("SELECT id, name, description, base_price, category FROM services WHERE is_active = true ORDER BY category, name")
     services = cur.fetchall()
     
+    cur.execute("SELECT id, name, phone, rating, experience_years FROM executors WHERE is_active = true ORDER BY rating DESC, name")
+    executors = cur.fetchall()
+    
     cur.close()
     conn.close()
     
@@ -51,9 +54,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'category': svc['category']
         })
     
+    executors_list = []
+    for executor in executors:
+        executors_list.append({
+            'id': executor['id'],
+            'name': executor['name'],
+            'phone': executor['phone'],
+            'rating': float(executor['rating']) if executor['rating'] else 5.0,
+            'experience_years': executor['experience_years']
+        })
+    
     return {
         'statusCode': 200,
         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
         'isBase64Encoded': False,
-        'body': json.dumps({'services': services_list})
+        'body': json.dumps({
+            'services': services_list,
+            'executors': executors_list
+        })
     }
