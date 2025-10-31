@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { PRODUCTS, getDiscount } from '@/types/electrical';
+import { PRODUCTS, getDiscount, calculateItemPrice } from '@/types/electrical';
 import { useCart } from '@/contexts/CartContext';
 
 export default function Products() {
@@ -10,10 +10,11 @@ export default function Products() {
   const { cart, addToCart } = useCart();
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + calculatePrice(item.product, item.quantity), 0);
+  const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
   const totalDiscount = cart.reduce((sum, item) => {
     const discount = getDiscount(item.quantity);
-    const fullPrice = item.product.priceMin * item.quantity;
+    const basePrice = item.selectedOption === 'install-only' ? item.product.priceInstallOnly : item.product.priceWithWiring;
+    const fullPrice = basePrice * item.quantity;
     return sum + (fullPrice * discount / 100);
   }, 0);
 
