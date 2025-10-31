@@ -49,7 +49,7 @@ export default function Products() {
           {PRODUCTS.map(product => {
             const inCart = cart.find(item => item.product.id === product.id);
             const quantity = inCart?.quantity || 0;
-            const price = quantity > 0 ? calculatePrice(product, quantity) : product.priceMin;
+            const price = quantity > 0 && inCart ? calculateItemPrice(inCart) : product.priceInstallOnly;
             const discount = quantity > 0 ? getDiscount(quantity) : 0;
             
             return (
