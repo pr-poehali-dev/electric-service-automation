@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { PRODUCTS, calculatePrice, getDiscount } from '@/types/electrical';
+import { PRODUCTS, getDiscount } from '@/types/electrical';
 import { useCart } from '@/contexts/CartContext';
 
 export default function Products() {
