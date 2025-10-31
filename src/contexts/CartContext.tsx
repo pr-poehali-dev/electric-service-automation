@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CartItem, Product, Order, calculateTotals, ServiceOption } from '@/types/electrical';
+import { CartItem, Product, Order, calculateTotals, ServiceOption, MASTER_VISIT_ID, PRODUCTS } from '@/types/electrical';
 
 interface CartContextType {
   cart: CartItem[];
@@ -38,14 +38,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addToCart = (product: Product, quantity = 1, option: ServiceOption = 'install-only') => {
     setCart(prev => {
       const existing = prev.find(item => item.product.id === product.id);
+      
+      let updatedCart = prev;
+      
       if (existing) {
-        return prev.map(item =>
+        updatedCart = prev.map(item =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
+      } else {
+        updatedCart = [...prev, { product, quantity, selectedOption: option, additionalOptions: [] }];
       }
-      return [...prev, { product, quantity, selectedOption: option, additionalOptions: [] }];
+      
+      // Автоматически добавляем выезд мастера, если его нет и это не сам выезд мастера
+      if (product.id !== MASTER_VISIT_ID && !updatedCart.find(item => item.product.id === MASTER_VISIT_ID)) {
+        const masterVisitProduct = PRODUCTS.find(p => p.id === MASTER_VISIT_ID);
+        if (masterVisitProduct) {
+          updatedCart = [...updatedCart, { product: masterVisitProduct, quantity: 1, selectedOption: 'install-only', additionalOptions: [] }];
+        }
+      }
+      
+      return updatedCart;
     });
   };
 

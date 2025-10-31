@@ -121,3 +121,68 @@ body {
     font-family: "Montserrat", sans-serif;
   }
 }
+
+@layer utilities {
+  @keyframes bounce-subtle {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 20px 10px rgba(255, 140, 0, 0);
+    }
+  }
+
+  @keyframes rotate-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce-subtle 2s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-rotate-slow {
+    animation: rotate-slow 8s linear infinite;
+  }
+
+  .animate-wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+
+  .icon-active {
+    @apply text-primary transform scale-110 transition-all duration-300;
+  }
+
+  .icon-hover {
+    @apply hover:scale-125 hover:text-primary transition-all duration-200;
+  }
+}

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
-import { calculateTotals, calculateItemPrice, getDiscount } from '@/types/electrical';
+import { calculateTotals, calculateItemPrice, getDiscount, MASTER_VISIT_ID } from '@/types/electrical';
 import ProgressBar from '@/components/ProgressBar';
 
 export default function Cart() {
@@ -18,6 +18,9 @@ export default function Cart() {
     const fullPrice = basePrice * item.quantity;
     return sum + (fullPrice * discount / 100);
   }, 0);
+  
+  const masterVisit = cart.find(item => item.product.id === MASTER_VISIT_ID);
+  const hasMasterVisit = !!masterVisit;
 
   if (cart.length === 0) {
     return (
@@ -67,21 +70,39 @@ export default function Cart() {
       
       <div className="w-full">
         <div className="bg-white shadow-md p-6 space-y-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/products')}
+              >
+                <Icon name="ArrowLeft" size={24} />
+              </Button>
+              <h1 className="text-2xl font-bold">План работ</h1>
+            </div>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate('/products')}
+              onClick={() => navigate('/profile')}
+              className="flex-shrink-0"
             >
-              <Icon name="ArrowLeft" size={24} />
+              <Icon name="User" size={24} />
             </Button>
-            <h1 className="text-2xl font-bold flex-1">План работ</h1>
           </div>
-          <ProgressBar currentStep={2} steps={['Задачи', 'План работ', 'Оформление']} />
+          <ProgressBar 
+            currentStep={2} 
+            steps={['Задачи', 'План работ', 'Оформление']}
+            onStepClick={(step) => {
+              if (step === 1) navigate('/products');
+              if (step === 2) navigate('/cart');
+              if (step === 3) navigate('/checkout');
+            }}
+          />
         </div>
 
         <div className="p-4 space-y-4">
-          {cart.map(item => {
+          {cart.filter(item => item.product.id !== MASTER_VISIT_ID).map(item => {
             const price = calculateItemPrice(item);
             const discount = getDiscount(item.quantity);
             
@@ -218,14 +239,25 @@ export default function Cart() {
 
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4 z-50">
         <div className="w-full space-y-2">
-          <div className="flex items-center justify-between px-4">
-            <div className="text-left">
+          <div className="space-y-1 px-4">
+            <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600">Стоимость работ:</div>
-              {totalDiscount > 0 && (
-                <div className="text-xs text-green-600 font-medium">Экономия: {totalDiscount.toLocaleString()} ₽</div>
-              )}
+              <div className="text-xl font-bold text-gray-800">{(totalPrice - (hasMasterVisit ? 500 : 0)).toLocaleString()} ₽</div>
             </div>
-            <div className="text-2xl font-bold text-[#FF8C00]">{totalPrice.toLocaleString()} ₽</div>
+            {hasMasterVisit && (
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-600">Выезд мастера:</div>
+                <div className="text-lg font-semibold text-gray-700">500 ₽</div>
+              </div>
+            )}
+            {totalDiscount > 0 && (
+              <div className="text-xs text-green-600 font-medium">Экономия: {totalDiscount.toLocaleString()} ₽</div>
+            )}
+            <div className="h-px bg-gray-200 my-2"></div>
+            <div className="flex items-center justify-between">
+              <div className="text-base font-semibold text-gray-800">Итого:</div>
+              <div className="text-2xl font-bold text-[#FF8C00]">{totalPrice.toLocaleString()} ₽</div>
+            </div>
           </div>
           <Button
             size="lg"

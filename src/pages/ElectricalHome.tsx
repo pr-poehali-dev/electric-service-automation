@@ -52,7 +52,7 @@ export default function ElectricalHome() {
               УСЛУГИ <span className="text-[#FF8C00]">ЭЛЕКТРИКА</span>
             </h1>
             <p className="text-sm text-muted-foreground">
-              Рассчитайте стоимость работ за 2 минуты
+              Электрик в Калининграде • Рассчитайте стоимость за 2 минуты
             </p>
           </div>
 
@@ -74,10 +74,15 @@ export default function ElectricalHome() {
 
           <Button
             size="lg"
-            className="w-full bg-[#25D366] hover:bg-[#25D366]/90 text-white font-semibold h-14 text-base shadow-lg"
+            className="w-full relative overflow-hidden bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white font-semibold h-16 text-base shadow-2xl rounded-2xl group"
             onClick={() => window.open('https://t.me/konigelectric', '_blank')}
           >
-            НАПИСАТЬ В TELEGRAM
+            <div className="flex items-center justify-center gap-3 relative z-10">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+                <Icon name="Send" size={20} className="text-white" />
+              </div>
+              <span className="text-lg">Написать в Telegram</span>
+            </div>
           </Button>
         </div>
       </div>

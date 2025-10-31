@@ -2,14 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { PRODUCTS, getDiscount, calculateItemPrice, ServiceOption } from '@/types/electrical';
+import { PRODUCTS, getDiscount, calculateItemPrice, ServiceOption, MASTER_VISIT_ID } from '@/types/electrical';
 import { useCart } from '@/contexts/CartContext';
 import ProgressBar from '@/components/ProgressBar';
 import { Badge } from '@/components/ui/badge';
 
 export default function Products() {
   const navigate = useNavigate();
-  const { cart, addToCart, updateOption } = useCart();
+  const { cart, addToCart, updateOption, toggleAdditionalOption } = useCart();
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
@@ -30,38 +30,55 @@ export default function Products() {
 
       <div className="w-full">
         <div className="bg-white shadow-md p-6 space-y-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/electrical')}
+              >
+                <Icon name="ArrowLeft" size={24} />
+              </Button>
+              <h1 className="text-2xl font-bold">Задачи</h1>
+            </div>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate('/electrical')}
+              onClick={() => navigate('/profile')}
+              className="flex-shrink-0"
             >
-              <Icon name="ArrowLeft" size={24} />
+              <Icon name="User" size={24} />
             </Button>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold">Задачи</h1>
-              {totalItems > 0 && (
-                <p className="text-sm text-muted-foreground">Выбрано услуг: {totalItems}</p>
-              )}
-            </div>
-            {totalItems > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/cart')}
-                className="gap-2"
-              >
-                <Icon name="ClipboardList" size={18} />
-                План работ
-                <Badge variant="secondary" className="ml-1">{totalItems}</Badge>
-              </Button>
-            )}
           </div>
-          <ProgressBar currentStep={1} steps={['Задачи', 'План работ', 'Оформление']} />
+          
+          {totalItems > 0 && (
+            <p className="text-sm text-muted-foreground">Выбрано услуг: {totalItems}</p>
+          )}
+          
+          {totalItems > 0 && (
+            <Button
+              onClick={() => navigate('/cart')}
+              className="w-full h-14 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold text-base shadow-lg gap-3"
+            >
+              <Icon name="ClipboardList" size={20} />
+              План работ
+              <Badge variant="secondary" className="ml-auto bg-white text-orange-600 font-bold px-3 py-1">{totalItems}</Badge>
+            </Button>
+          )}
+          
+          <ProgressBar 
+            currentStep={1} 
+            steps={['Задачи', 'План работ', 'Оформление']}
+            onStepClick={(step) => {
+              if (step === 1) navigate('/products');
+              if (step === 2) navigate('/cart');
+              if (step === 3) navigate('/checkout');
+            }}
+          />
         </div>
 
         <div className="p-4 space-y-3">
-          {PRODUCTS.map(product => {
+          {PRODUCTS.filter(p => p.id !== MASTER_VISIT_ID).map(product => {
             const inCart = cart.find(item => item.product.id === product.id);
             const quantity = inCart?.quantity || 0;
             const price = quantity > 0 && inCart ? calculateItemPrice(inCart) : product.priceInstallOnly;
@@ -74,13 +91,15 @@ export default function Products() {
               >
                 <div className="p-4">
                   <div className="flex items-start gap-4 mb-3">
-                    <div className="w-16 h-16 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl flex-shrink-0 flex items-center justify-center border border-orange-200">
+                    <div className={`w-16 h-16 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl flex-shrink-0 flex items-center justify-center border border-orange-200 transition-all duration-300 ${inCart ? 'animate-pulse-glow' : ''}`}>
                       {product.category === 'switch' ? (
-                        <Icon name="Power" size={32} className="text-[#FF8C00]" />
+                        <Icon name="Power" size={32} className={`text-[#FF8C00] transition-transform duration-300 ${inCart ? 'animate-wiggle' : ''}`} />
                       ) : product.category === 'cable' ? (
-                        <Icon name="Cable" size={32} className="text-[#FF8C00]" />
+                        <Icon name="Cable" size={32} className={`text-[#FF8C00] transition-transform duration-300 ${inCart ? 'animate-rotate-slow' : ''}`} />
+                      ) : product.category === 'chandelier' ? (
+                        <Icon name="Lightbulb" size={32} className={`text-[#FF8C00] transition-transform duration-300 ${inCart ? 'animate-bounce-subtle' : ''}`} />
                       ) : (
-                        <Icon name="Plug" size={32} className="text-[#FF8C00]" />
+                        <Icon name="Plug" size={32} className={`text-[#FF8C00] transition-transform duration-300 ${inCart ? 'animate-wiggle' : ''}`} />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -100,31 +119,58 @@ export default function Products() {
                   {inCart && (
                     <div className="mb-3 space-y-2">
                       <div className="text-xs font-semibold text-gray-700 mb-1">Конфигурация:</div>
-                      <div className="flex gap-2">
+                      <div className="space-y-2">
                         <Button
                           size="sm"
                           variant={inCart.selectedOption === 'install-only' ? 'default' : 'outline'}
                           onClick={() => updateOption(product.id, 'install-only')}
-                          className={inCart.selectedOption === 'install-only' ? 'bg-[#FF8C00] hover:bg-[#FF8C00]/90' : ''}
+                          className={`w-full justify-start text-left ${inCart.selectedOption === 'install-only' ? 'bg-[#FF8C00] hover:bg-[#FF8C00]/90' : ''}`}
                         >
-                          <Icon name="Zap" size={14} className="mr-1" />
-                          Чистовая
+                          <Icon name="Zap" size={14} className="mr-2" />
+                          <div className="flex-1">
+                            <div className="font-semibold">Чистовая установка</div>
+                            <div className="text-xs opacity-80">Установка изделия без прокладки кабеля</div>
+                          </div>
+                          <Icon name="Info" size={14} className="ml-2 opacity-60" />
                         </Button>
                         <Button
                           size="sm"
                           variant={inCart.selectedOption === 'full-wiring' ? 'default' : 'outline'}
                           onClick={() => updateOption(product.id, 'full-wiring')}
-                          className={inCart.selectedOption === 'full-wiring' ? 'bg-[#FF8C00] hover:bg-[#FF8C00]/90' : ''}
+                          className={`w-full justify-start text-left ${inCart.selectedOption === 'full-wiring' ? 'bg-[#FF8C00] hover:bg-[#FF8C00]/90' : ''}`}
                         >
-                          <Icon name="Wrench" size={14} className="mr-1" />
-                          С черновой
+                          <Icon name="Wrench" size={14} className="mr-2" />
+                          <div className="flex-1">
+                            <div className="font-semibold">Черновой монтаж</div>
+                            <div className="text-xs opacity-80">Штробление, установка подрозетника. Без кабеля и чистовой</div>
+                          </div>
+                          <Icon name="Info" size={14} className="ml-2 opacity-60" />
                         </Button>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {inCart.selectedOption === 'install-only' 
-                          ? '✓ Установка изделия'
-                          : '✓ Штробление + прокладка кабеля + установка'}
-                      </p>
+                    </div>
+                  )}
+                  
+                  {inCart && product.options && product.options.length > 0 && (
+                    <div className="mb-3 space-y-2">
+                      <div className="text-xs font-semibold text-gray-700 mb-1">Дополнительно:</div>
+                      {product.options.map(option => {
+                        const isSelected = inCart.additionalOptions?.includes(option.id);
+                        return (
+                          <Button
+                            key={option.id}
+                            size="sm"
+                            variant={isSelected ? 'default' : 'outline'}
+                            onClick={() => toggleAdditionalOption(product.id, option.id)}
+                            className={`w-full justify-between text-left ${isSelected ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Icon name={isSelected ? 'CheckSquare' : 'Square'} size={16} />
+                              <span>{option.name}</span>
+                            </div>
+                            <span className="font-semibold">+{option.price} ₽</span>
+                          </Button>
+                        );
+                      })}
                     </div>
                   )}
                   

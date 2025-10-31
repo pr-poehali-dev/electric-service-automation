@@ -80,20 +80,35 @@ export default function Checkout() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-32">
       <div className="max-w-md mx-auto">
         <div className="bg-white shadow-md p-6 space-y-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/cart')}
+              >
+                <Icon name="ArrowLeft" size={24} />
+              </Button>
+              <h1 className="text-2xl font-bold">Запись к мастеру</h1>
+            </div>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate('/cart')}
+              onClick={() => navigate('/profile')}
+              className="flex-shrink-0"
             >
-              <Icon name="ArrowLeft" size={24} />
+              <Icon name="User" size={24} />
             </Button>
-            <h1 className="text-2xl font-bold flex-1">Оформление заявки</h1>
           </div>
 
           <ProgressBar 
             currentStep={3}
-            steps={['Задачи', 'План работ', 'Оформление']}
+            steps={['Задачи', 'План работ', 'Запись']}
+            onStepClick={(step) => {
+              if (step === 1) navigate('/products');
+              if (step === 2) navigate('/cart');
+              if (step === 3) navigate('/checkout');
+            }}
           />
         </div>
 

@@ -74,7 +74,21 @@ export interface PortfolioItem {
   description: string;
 }
 
+export const MASTER_VISIT_ID = 'master-visit';
+
 export const PRODUCTS: Product[] = [
+  {
+    id: MASTER_VISIT_ID,
+    type: 'switch-single',
+    name: 'Выезд мастера',
+    image: 'https://cdn.poehali.dev/files/switch-single.jpg',
+    description: 'Обязательная услуга при оформлении заявки',
+    category: 'switch',
+    installType: 'finish',
+    slots: 0,
+    priceInstallOnly: 500,
+    priceWithWiring: 500
+  },
   {
     id: 'sw-1',
     type: 'switch-single',
