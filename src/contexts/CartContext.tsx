@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CartItem, Product, Order, calculateTotals } from '@/types/electrical';
+import { CartItem, Product, Order, calculateTotals, ServiceOption } from '@/types/electrical';
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number, option?: ServiceOption) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
+  updateOption: (productId: string, option: ServiceOption) => void;
+  toggleAdditionalOption: (productId: string, optionId: string) => void;
   clearCart: () => void;
   orders: Order[];
   createOrder: (orderData: Omit<Order, 'id' | 'items' | 'createdAt' | 'totalSwitches' | 'totalOutlets' | 'totalPoints' | 'estimatedCable' | 'estimatedFrames'>) => Order;
@@ -33,7 +35,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('electrical-orders', JSON.stringify(orders));
   }, [orders]);
 
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (product: Product, quantity = 1, option: ServiceOption = 'install-only') => {
     setCart(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       if (existing) {
@@ -43,7 +45,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : item
         );
       }
-      return [...prev, { product, quantity }];
+      return [...prev, { product, quantity, selectedOption: option, additionalOptions: [] }];
     });
   };
 
@@ -60,6 +62,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
       prev.map(item =>
         item.product.id === productId ? { ...item, quantity } : item
       )
+    );
+  };
+
+  const updateOption = (productId: string, option: ServiceOption) => {
+    setCart(prev =>
+      prev.map(item =>
+        item.product.id === productId ? { ...item, selectedOption: option } : item
+      )
+    );
+  };
+
+  const toggleAdditionalOption = (productId: string, optionId: string) => {
+    setCart(prev =>
+      prev.map(item => {
+        if (item.product.id === productId) {
+          const options = item.additionalOptions || [];
+          if (options.includes(optionId)) {
+            return { ...item, additionalOptions: options.filter(id => id !== optionId) };
+          } else {
+            return { ...item, additionalOptions: [...options, optionId] };
+          }
+        }
+        return item;
+      })
     );
   };
 
@@ -99,6 +125,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         addToCart,
         removeFromCart,
         updateQuantity,
+        updateOption,
+        toggleAdditionalOption,
         clearCart,
         orders,
         createOrder,

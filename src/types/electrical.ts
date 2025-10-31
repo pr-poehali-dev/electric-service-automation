@@ -19,7 +19,9 @@ export const ROOM_LABELS: Record<RoomType, string> = {
   '3-room': '3-комнатная квартира'
 };
 
-export type ProductType = 'switch-single' | 'switch-double' | 'outlet-single' | 'outlet-double' | 'outlet-triple' | 'outlet-quad' | 'outlet-penta' | 'cable';
+export type ProductType = 'switch-single' | 'switch-double' | 'outlet-single' | 'outlet-double' | 'outlet-triple' | 'outlet-quad' | 'outlet-penta' | 'cable' | 'chandelier';
+
+export type ServiceOption = 'install-only' | 'full-wiring';
 
 export interface Product {
   id: string;
@@ -27,17 +29,23 @@ export interface Product {
   name: string;
   image: string;
   description: string;
-  category: 'switch' | 'outlet' | 'cable';
+  category: 'switch' | 'outlet' | 'cable' | 'chandelier';
+  installType: 'rough' | 'finish';
   slots: number;
-  priceMin: number;
-  priceMax: number;
-  includesInstallation: boolean;
-  includesWiring: boolean;
+  priceInstallOnly: number;
+  priceWithWiring: number;
+  options?: {
+    id: string;
+    name: string;
+    price: number;
+  }[];
 }
 
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedOption: ServiceOption;
+  additionalOptions?: string[];
 }
 
 export type OrderStatus = 'pending' | 'confirmed' | 'in-progress' | 'completed';
@@ -72,91 +80,103 @@ export const PRODUCTS: Product[] = [
     type: 'switch-single',
     name: 'Добавить 1 выключатель',
     image: 'https://cdn.poehali.dev/files/switch-single.jpg',
-    description: 'Разметка, штрабление, укладка кабеля, установка подрозетников включены. Без заделки и материалов.',
+    description: 'Установка выключателя',
     category: 'switch',
+    installType: 'finish',
     slots: 1,
-    priceMin: 150,
-    priceMax: 1500,
-    includesInstallation: true,
-    includesWiring: false
+    priceInstallOnly: 150,
+    priceWithWiring: 1500
   },
   {
     id: 'out-1',
     type: 'outlet-single',
     name: 'Добавить розетку',
     image: 'https://cdn.poehali.dev/files/outlet-single.jpg',
-    description: 'Разметка, штрабление, укладка кабеля, установка подрозетников включены. Без заделки и материалов.',
+    description: 'Установка розетки',
     category: 'outlet',
+    installType: 'finish',
     slots: 1,
-    priceMin: 250,
-    priceMax: 1000,
-    includesInstallation: true,
-    includesWiring: false
+    priceInstallOnly: 250,
+    priceWithWiring: 1000
   },
   {
     id: 'out-2',
     type: 'outlet-double',
     name: 'Блок из 2-х розеток',
     image: 'https://cdn.poehali.dev/files/outlet-double.jpg',
-    description: 'Разметка, штрабление, укладка кабеля, установка подрозетников включены. Без заделки и материалов.',
+    description: 'Установка блока розеток',
     category: 'outlet',
+    installType: 'rough',
     slots: 2,
-    priceMin: 500,
-    priceMax: 1200,
-    includesInstallation: true,
-    includesWiring: false
+    priceInstallOnly: 500,
+    priceWithWiring: 1200
   },
   {
     id: 'out-3',
     type: 'outlet-triple',
     name: 'Блок из 3-х розеток',
     image: 'https://cdn.poehali.dev/files/outlet-triple.jpg',
-    description: 'Разметка, штрабление, укладка кабеля, установка подрозетников включены. Без заделки и материалов.',
+    description: 'Установка блока розеток',
     category: 'outlet',
+    installType: 'rough',
     slots: 3,
-    priceMin: 750,
-    priceMax: 2500,
-    includesInstallation: true,
-    includesWiring: false
+    priceInstallOnly: 750,
+    priceWithWiring: 2500
   },
   {
     id: 'out-4',
     type: 'outlet-quad',
     name: 'Блок из 4-х розеток',
     image: 'https://cdn.poehali.dev/files/outlet-quad.jpg',
-    description: 'Разметка, штрабление, укладка кабеля, установка подрозетников включены. Без заделки и материалов.',
+    description: 'Установка блока розеток',
     category: 'outlet',
+    installType: 'rough',
     slots: 4,
-    priceMin: 1000,
-    priceMax: 3000,
-    includesInstallation: true,
-    includesWiring: false
+    priceInstallOnly: 1000,
+    priceWithWiring: 3000
   },
   {
     id: 'out-5',
     type: 'outlet-penta',
     name: 'Блок из 5 розеток',
     image: 'https://cdn.poehali.dev/files/outlet-penta.jpg',
-    description: 'Разметка, штрабление, укладка кабеля, установка подрозетников включены. Без заделки и материалов.',
+    description: 'Установка блока розеток',
     category: 'outlet',
+    installType: 'rough',
     slots: 5,
-    priceMin: 1250,
-    priceMax: 3500,
-    includesInstallation: true,
-    includesWiring: false
+    priceInstallOnly: 1250,
+    priceWithWiring: 3500
   },
   {
     id: 'cable-1',
     type: 'cable',
     name: 'Монтаж кабеля 10 пог.м',
     image: 'https://cdn.poehali.dev/files/cable.jpg',
-    description: 'Прокладка и монтаж кабеля. Материалы не входят.',
+    description: 'Прокладка и монтаж кабеля',
     category: 'cable',
+    installType: 'rough',
     slots: 0,
-    priceMin: 2000,
-    priceMax: 2000,
-    includesInstallation: true,
-    includesWiring: true
+    priceInstallOnly: 2000,
+    priceWithWiring: 2000
+  },
+  {
+    id: 'chandelier-1',
+    type: 'chandelier',
+    name: 'Установить/заменить люстру',
+    image: 'https://cdn.poehali.dev/files/chandelier.jpg',
+    description: 'Установка или замена люстры',
+    category: 'chandelier',
+    installType: 'finish',
+    slots: 0,
+    priceInstallOnly: 500,
+    priceWithWiring: 1500,
+    options: [
+      {
+        id: 'assemble',
+        name: 'Сборка люстры',
+        price: 500
+      }
+    ]
   }
 ];
 
@@ -212,18 +232,37 @@ export function calculateTotals(items: CartItem[]) {
   };
 }
 
-export function calculatePrice(product: Product, quantity: number): number {
-  const basePrice = product.priceMin;
+export function calculateItemPrice(item: CartItem): number {
+  let basePrice = 0;
   
-  if (quantity >= 20) {
-    return Math.round(basePrice * 0.7 * quantity);
-  } else if (quantity >= 10) {
-    return Math.round(basePrice * 0.8 * quantity);
-  } else if (quantity >= 5) {
-    return Math.round(basePrice * 0.9 * quantity);
+  if (item.selectedOption === 'install-only') {
+    basePrice = item.product.priceInstallOnly;
+  } else {
+    basePrice = item.product.priceWithWiring;
   }
   
-  return basePrice * quantity;
+  let optionsPrice = 0;
+  if (item.additionalOptions && item.product.options) {
+    item.additionalOptions.forEach(optionId => {
+      const option = item.product.options?.find(o => o.id === optionId);
+      if (option) {
+        optionsPrice += option.price;
+      }
+    });
+  }
+  
+  const quantity = item.quantity || 1;
+  const totalPerItem = basePrice + optionsPrice;
+  
+  if (quantity >= 20) {
+    return Math.round(totalPerItem * 0.7 * quantity);
+  } else if (quantity >= 10) {
+    return Math.round(totalPerItem * 0.8 * quantity);
+  } else if (quantity >= 5) {
+    return Math.round(totalPerItem * 0.9 * quantity);
+  }
+  
+  return totalPerItem * quantity;
 }
 
 export function getDiscount(quantity: number): number {

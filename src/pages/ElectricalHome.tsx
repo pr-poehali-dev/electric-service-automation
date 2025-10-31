@@ -74,7 +74,7 @@ export default function ElectricalHome() {
 
           <Button
             size="lg"
-            className="w-full bg-[#0088cc] hover:bg-[#0088cc]/90 text-white font-semibold h-14 text-base shadow-lg"
+            className="w-full bg-[#25D366] hover:bg-[#25D366]/90 text-white font-semibold h-14 text-base shadow-lg"
             onClick={() => window.open('https://t.me/konigelectric', '_blank')}
           >
             НАПИСАТЬ В TELEGRAM
@@ -82,50 +82,7 @@ export default function ElectricalHome() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
-        <div className="max-w-md mx-auto">
-          <div className="grid grid-cols-4 gap-1 p-2">
-            <button 
-              className="flex flex-col items-center justify-center py-2 gap-1 text-[#FF8C00]"
-              onClick={() => navigate('/electrical')}
-            >
-              <Icon name="Home" size={24} />
-              <span className="text-xs font-medium">Меню</span>
-            </button>
 
-            <button 
-              className="flex flex-col items-center justify-center py-2 gap-1"
-              onClick={() => navigate('/orders')}
-            >
-              <Icon name="Calendar" size={24} className="text-gray-400" />
-              <span className="text-xs text-gray-600">Встречи</span>
-            </button>
-
-            <button 
-              className="flex flex-col items-center justify-center py-2 gap-1"
-              onClick={() => navigate('/cart')}
-            >
-              <div className="relative">
-                <Icon name="Briefcase" size={24} className="text-gray-400" />
-                {totalItems > 0 && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#FF8C00] rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">{totalItems}</span>
-                  </div>
-                )}
-              </div>
-              <span className="text-xs text-gray-600">В работе</span>
-            </button>
-
-            <button 
-              className="flex flex-col items-center justify-center py-2 gap-1"
-              onClick={() => navigate('/orders')}
-            >
-              <Icon name="MessageCircle" size={24} className="text-gray-400" />
-              <span className="text-xs text-gray-600">Вопросы</span>
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
