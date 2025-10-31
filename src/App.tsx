@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 import Home from "./pages/Home";
 import Tasks from "./pages/Tasks";
 import Schedule from "./pages/Schedule";
@@ -19,6 +20,13 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminUsers from "./pages/AdminUsers";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import ElectricalHome from "./pages/ElectricalHome";
+import Calculator from "./pages/Calculator";
+import Products from "./pages/Products";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
+import Portfolio from "./pages/Portfolio";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +45,15 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Navigate to="/electrical" />} />
+      <Route path="/electrical" element={<ElectricalHome />} />
+      <Route path="/calculator" element={<Calculator />} />
+      <Route path="/products" element={<Products />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/orders" element={<Orders />} />
+      <Route path="/portfolio" element={<Portfolio />} />
+      <Route path="/old-home" element={<Home />} />
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/schedule" element={<Schedule />} />
       <Route path="/confirmation" element={<Confirmation />} />
@@ -85,13 +101,15 @@ const AppRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
+      <CartProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </CartProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

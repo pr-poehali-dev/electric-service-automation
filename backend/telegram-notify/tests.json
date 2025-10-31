@@ -1,0 +1,38 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS request for CORS",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedHeaders": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "name": "Send notification to Telegram",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "chatId": "123456789",
+        "order": {
+          "id": "ORD-123456",
+          "date": "2025-11-01",
+          "time": "14:00",
+          "phone": "+79991234567",
+          "address": "ул. Ленина, д.1, кв.10",
+          "totalSwitches": 5,
+          "totalOutlets": 12,
+          "totalPoints": 17,
+          "estimatedCable": 119,
+          "estimatedFrames": 8
+        }
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
