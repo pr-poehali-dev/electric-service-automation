@@ -82,12 +82,10 @@ export default function Cart() {
               <h1 className="text-2xl font-bold">План работ</h1>
             </div>
             <Button
-              variant="ghost"
-              size="icon"
               onClick={() => navigate('/profile')}
-              className="flex-shrink-0"
+              className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all p-0"
             >
-              <Icon name="User" size={24} />
+              <Icon name="User" size={20} />
             </Button>
           </div>
           <ProgressBar 

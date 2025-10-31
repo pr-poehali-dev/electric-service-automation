@@ -27,6 +27,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import Portfolio from "./pages/Portfolio";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const AppRoutes = () => {
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/portfolio" element={<Portfolio />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="/old-home" element={<Home />} />
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/schedule" element={<Schedule />} />
