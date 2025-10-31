@@ -93,7 +93,7 @@ export default function Checkout() {
 
           <ProgressBar 
             currentStep={3}
-            steps={['Помещение', 'Товары', 'Заявка', 'Готово']}
+            steps={['Задачи', 'План работ', 'Оформление']}
           />
         </div>
 

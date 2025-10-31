@@ -2,12 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { PRODUCTS, getDiscount, calculateItemPrice } from '@/types/electrical';
+import { PRODUCTS, getDiscount, calculateItemPrice, ServiceOption } from '@/types/electrical';
 import { useCart } from '@/contexts/CartContext';
+import ProgressBar from '@/components/ProgressBar';
+import { Badge } from '@/components/ui/badge';
 
 export default function Products() {
   const navigate = useNavigate();
-  const { cart, addToCart } = useCart();
+  const { cart, addToCart, updateOption } = useCart();
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
@@ -42,7 +44,20 @@ export default function Products() {
                 <p className="text-sm text-muted-foreground">Выбрано услуг: {totalItems}</p>
               )}
             </div>
+            {totalItems > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/cart')}
+                className="gap-2"
+              >
+                <Icon name="ClipboardList" size={18} />
+                План работ
+                <Badge variant="secondary" className="ml-1">{totalItems}</Badge>
+              </Button>
+            )}
           </div>
+          <ProgressBar currentStep={1} steps={['Задачи', 'План работ', 'Оформление']} />
         </div>
 
         <div className="p-4 space-y-3">
@@ -81,6 +96,37 @@ export default function Products() {
                       )}
                     </div>
                   </div>
+                  
+                  {inCart && (
+                    <div className="mb-3 space-y-2">
+                      <div className="text-xs font-semibold text-gray-700 mb-1">Конфигурация:</div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant={inCart.selectedOption === 'install-only' ? 'default' : 'outline'}
+                          onClick={() => updateOption(product.id, 'install-only')}
+                          className={inCart.selectedOption === 'install-only' ? 'bg-[#FF8C00] hover:bg-[#FF8C00]/90' : ''}
+                        >
+                          <Icon name="Zap" size={14} className="mr-1" />
+                          Чистовая
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={inCart.selectedOption === 'full-wiring' ? 'default' : 'outline'}
+                          onClick={() => updateOption(product.id, 'full-wiring')}
+                          className={inCart.selectedOption === 'full-wiring' ? 'bg-[#FF8C00] hover:bg-[#FF8C00]/90' : ''}
+                        >
+                          <Icon name="Wrench" size={14} className="mr-1" />
+                          С черновой
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {inCart.selectedOption === 'install-only' 
+                          ? '✓ Установка изделия'
+                          : '✓ Штробление + прокладка кабеля + установка'}
+                      </p>
+                    </div>
+                  )}
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">

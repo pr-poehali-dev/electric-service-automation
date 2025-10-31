@@ -4,10 +4,11 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
 import { calculateTotals, calculateItemPrice, getDiscount } from '@/types/electrical';
+import ProgressBar from '@/components/ProgressBar';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { cart, updateQuantity, removeFromCart } = useCart();
+  const { cart, updateQuantity, removeFromCart, updateOption } = useCart();
 
   const totals = calculateTotals(cart);
   const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
@@ -74,8 +75,9 @@ export default function Cart() {
             >
               <Icon name="ArrowLeft" size={24} />
             </Button>
-            <h1 className="text-2xl font-bold flex-1">Список задач</h1>
+            <h1 className="text-2xl font-bold flex-1">План работ</h1>
           </div>
+          <ProgressBar currentStep={2} steps={['Задачи', 'План работ', 'Оформление']} />
         </div>
 
         <div className="p-4 space-y-4">
@@ -97,6 +99,30 @@ export default function Cart() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold mb-1">{item.product.name}</h3>
+                    
+                    <div className="mb-2 space-y-2">
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant={item.selectedOption === 'install-only' ? 'default' : 'outline'}
+                          onClick={() => updateOption(item.product.id, 'install-only')}
+                          className={item.selectedOption === 'install-only' ? 'bg-[#FF8C00] hover:bg-[#FF8C00]/90 h-7 text-xs' : 'h-7 text-xs'}
+                        >
+                          <Icon name="Zap" size={12} className="mr-1" />
+                          Чистовая
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={item.selectedOption === 'full-wiring' ? 'default' : 'outline'}
+                          onClick={() => updateOption(item.product.id, 'full-wiring')}
+                          className={item.selectedOption === 'full-wiring' ? 'bg-[#FF8C00] hover:bg-[#FF8C00]/90 h-7 text-xs' : 'h-7 text-xs'}
+                        >
+                          <Icon name="Wrench" size={12} className="mr-1" />
+                          С черновой
+                        </Button>
+                      </div>
+                    </div>
+                    
                     {discount > 0 && (
                       <div className="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full mb-2">
                         <Icon name="TrendingDown" size={12} />
