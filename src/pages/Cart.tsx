@@ -3,17 +3,18 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
-import { calculateTotals, calculatePrice, getDiscount } from '@/types/electrical';
+import { calculateTotals, calculateItemPrice, getDiscount } from '@/types/electrical';
 
 export default function Cart() {
   const navigate = useNavigate();
   const { cart, updateQuantity, removeFromCart } = useCart();
 
   const totals = calculateTotals(cart);
-  const totalPrice = cart.reduce((sum, item) => sum + calculatePrice(item.product, item.quantity), 0);
+  const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
   const totalDiscount = cart.reduce((sum, item) => {
     const discount = getDiscount(item.quantity);
-    const fullPrice = item.product.priceMin * item.quantity;
+    const basePrice = item.selectedOption === 'install-only' ? item.product.priceInstallOnly : item.product.priceWithWiring;
+    const fullPrice = basePrice * item.quantity;
     return sum + (fullPrice * discount / 100);
   }, 0);
 
@@ -79,7 +80,7 @@ export default function Cart() {
 
         <div className="p-4 space-y-4">
           {cart.map(item => {
-            const price = calculatePrice(item.product, item.quantity);
+            const price = calculateItemPrice(item);
             const discount = getDiscount(item.quantity);
             
             return (
@@ -126,7 +127,7 @@ export default function Cart() {
                           <div className="font-bold text-lg text-[#FF8C00]">{price.toLocaleString()} ₽</div>
                           {discount > 0 && (
                             <div className="text-xs text-gray-400 line-through">
-                              {(item.product.priceMin * item.quantity).toLocaleString()} ₽
+                              {((item.selectedOption === 'install-only' ? item.product.priceInstallOnly : item.product.priceWithWiring) * item.quantity).toLocaleString()} ₽
                             </div>
                           )}
                         </div>
@@ -147,7 +148,7 @@ export default function Cart() {
           })}
 
           <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <h3 className="font-bold text-lg mb-4">📊 Автоматический расчёт</h3>
+            <h3 className="font-bold text-lg mb-4">Предварительная стоимость</h3>
             <div className="space-y-3">
               {totals.totalSwitches > 0 && (
                 <div className="flex justify-between items-center">
@@ -167,6 +168,10 @@ export default function Cart() {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Общее кол-во точек:</span>
                     <span className="font-bold text-lg text-primary">{totals.totalPoints}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Примерный метраж кабеля:</span>
+                    <span className="font-bold text-lg text-primary">~{totals.estimatedCable} м</span>
                   </div>
                 </>
               )}
