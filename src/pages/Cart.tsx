@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
 import { calculateTotals } from '@/types/electrical';
+import ProgressBar from '@/components/ProgressBar';
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-48">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-32">
       <div className="max-w-md mx-auto">
         <div className="bg-white shadow-md p-6 space-y-4">
           <div className="flex items-center gap-4">
@@ -55,6 +56,11 @@ export default function Cart() {
             </Button>
             <h1 className="text-2xl font-bold flex-1">Список задач</h1>
           </div>
+          
+          <ProgressBar 
+            currentStep={2}
+            steps={['Помещение', 'Товары', 'Заявка', 'Готово']}
+          />
         </div>
 
         <div className="p-6 space-y-4">

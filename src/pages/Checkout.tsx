@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
+import { calculateTotals } from '@/types/electrical';
+import ProgressBar from '@/components/ProgressBar';
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -66,6 +68,9 @@ export default function Checkout() {
     navigate('/orders', { state: { newOrderId: order.id } });
   };
 
+  const totals = calculateTotals(cart);
+  const estimatedCost = totals.totalPoints * 1150;
+
   if (cart.length === 0) {
     navigate('/products');
     return null;
@@ -85,6 +90,40 @@ export default function Checkout() {
             </Button>
             <h1 className="text-2xl font-bold flex-1">Оформление заявки</h1>
           </div>
+
+          <ProgressBar 
+            currentStep={3}
+            steps={['Помещение', 'Товары', 'Заявка', 'Готово']}
+          />
+        </div>
+
+        <div className="p-6 space-y-6">
+          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-sm text-green-800 font-medium mb-1">💰 Стоимость работ</p>
+                <div className="text-3xl font-bold text-green-900">{estimatedCost.toLocaleString('ru-RU')} ₽</div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-green-700">Всего точек</div>
+                <div className="text-2xl font-bold text-green-900">{totals.totalPoints}</div>
+              </div>
+            </div>
+            <div className="space-y-1 text-xs text-green-700">
+              <div className="flex justify-between">
+                <span>Выключателей:</span>
+                <span className="font-semibold">{totals.totalSwitches}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Розеток:</span>
+                <span className="font-semibold">{totals.totalOutlets}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Метраж кабеля:</span>
+                <span className="font-semibold">~{totals.estimatedCable} м</span>
+              </div>
+            </div>
+          </Card>
         </div>
 
         <div className="p-6 space-y-6">

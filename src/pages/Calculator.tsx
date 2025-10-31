@@ -4,12 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { RoomType, ROOM_DEFAULTS, ROOM_LABELS } from '@/types/electrical';
+import ProgressBar from '@/components/ProgressBar';
 
 export default function Calculator() {
   const navigate = useNavigate();
   const [selectedRoom, setSelectedRoom] = useState<RoomType>('room');
 
   const defaults = ROOM_DEFAULTS[selectedRoom];
+  const totalPoints = defaults.switches + defaults.outlets;
+  const estimatedCost = totalPoints * 1150;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-24">
@@ -25,6 +28,11 @@ export default function Calculator() {
             </Button>
             <h1 className="text-2xl font-bold flex-1">Калькулятор электромонтажа</h1>
           </div>
+
+          <ProgressBar 
+            currentStep={1}
+            steps={['Помещение', 'Товары', 'Заявка', 'Готово']}
+          />
 
           <div className="space-y-4">
             <div>
@@ -57,6 +65,19 @@ export default function Calculator() {
                 </div>
                 <p className="text-xs text-blue-700 mt-2">
                   * Это средние значения. Вы можете выбрать точное количество на следующем экране.
+                </p>
+              </div>
+            </Card>
+
+            <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+              <div className="text-center space-y-2">
+                <p className="text-sm text-green-800 font-medium">💰 Предварительная стоимость работ</p>
+                <div className="text-4xl font-bold text-green-900">{estimatedCost.toLocaleString('ru-RU')} ₽</div>
+                <p className="text-xs text-green-700">
+                  {totalPoints} точек × 1 150 ₽ за точку
+                </p>
+                <p className="text-xs text-green-600 mt-2">
+                  Точная стоимость будет рассчитана после выбора конкретных товаров
                 </p>
               </div>
             </Card>

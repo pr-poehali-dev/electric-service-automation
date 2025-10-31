@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { PRODUCTS } from '@/types/electrical';
 import { useCart } from '@/contexts/CartContext';
+import ProgressBar from '@/components/ProgressBar';
 
 export default function Products() {
   const navigate = useNavigate();
@@ -18,14 +19,9 @@ export default function Products() {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div 
-      className="min-h-screen pb-32"
-      style={{
-        background: 'linear-gradient(135deg, rgba(30,40,60,0.95) 0%, rgba(50,60,80,0.95) 100%), url(https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=1200&auto=format&fit=crop) center/cover',
-      }}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-32">
       <div className="max-w-md mx-auto">
-        <div className="bg-white/95 backdrop-blur shadow-md p-6 space-y-4">
+        <div className="bg-white shadow-md p-6 space-y-4">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
@@ -37,18 +33,25 @@ export default function Products() {
             <h1 className="text-2xl font-bold flex-1">Выбор товаров</h1>
           </div>
 
-          <div className="flex gap-2">
+          <ProgressBar 
+            currentStep={2}
+            steps={['Помещение', 'Товары', 'Заявка', 'Готово']}
+          />
+
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             <Button
               variant={filter === 'all' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setFilter('all')}
+              className="whitespace-nowrap"
             >
-              Все
+              Все товары
             </Button>
             <Button
               variant={filter === 'switch' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setFilter('switch')}
+              className="whitespace-nowrap"
             >
               Выключатели
             </Button>
@@ -56,35 +59,42 @@ export default function Products() {
               variant={filter === 'outlet' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setFilter('outlet')}
+              className="whitespace-nowrap"
             >
               Розетки
             </Button>
           </div>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-3">
           {filteredProducts.map(product => {
             const inCart = cart.find(item => item.product.id === product.id);
             
             return (
               <Card 
                 key={product.id}
-                className="overflow-hidden bg-white/95 backdrop-blur hover:shadow-xl transition-all"
+                className="overflow-hidden hover:shadow-lg transition-all bg-white"
               >
-                <div className="flex gap-4 p-4">
-                  <div className="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center">
-                    {product.category === 'switch' ? (
-                      <Icon name="Power" size={40} className="text-primary" />
-                    ) : (
-                      <Icon name="Plug" size={40} className="text-primary" />
-                    )}
+                <div className="p-4">
+                  <div className="flex items-start gap-4 mb-3">
+                    <div className="w-16 h-16 bg-gray-50 rounded-xl flex-shrink-0 flex items-center justify-center border border-gray-200">
+                      {product.category === 'switch' ? (
+                        <Icon name="Power" size={32} className="text-primary" />
+                      ) : (
+                        <Icon name="Plug" size={32} className="text-primary" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-base mb-1">{product.name}</h3>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {product.description}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-base mb-1">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-3">{product.description}</p>
-                    
+                  
+                  <div className="flex items-center justify-between">
                     {inCart ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <Button
                           size="sm"
                           variant="outline"
@@ -95,17 +105,17 @@ export default function Products() {
                             }
                             addToCart(product, -1);
                           }}
-                          className="h-8 w-8 p-0"
+                          className="h-10 w-10 p-0 rounded-full"
                         >
-                          <Icon name="Minus" size={16} />
+                          <Icon name="Minus" size={18} />
                         </Button>
-                        <span className="font-bold text-lg w-8 text-center">{inCart.quantity}</span>
+                        <span className="font-bold text-xl w-10 text-center">{inCart.quantity}</span>
                         <Button
                           size="sm"
                           onClick={() => addToCart(product, 1)}
-                          className="h-8 w-8 p-0"
+                          className="h-10 w-10 p-0 rounded-full"
                         >
-                          <Icon name="Plus" size={16} />
+                          <Icon name="Plus" size={18} />
                         </Button>
                       </div>
                     ) : (
@@ -118,6 +128,11 @@ export default function Products() {
                         Добавить
                       </Button>
                     )}
+                    
+                    <div className="text-right">
+                      <div className="text-sm text-muted-foreground">1 150 ₽</div>
+                      <div className="text-xs text-muted-foreground">за точку</div>
+                    </div>
                   </div>
                 </div>
               </Card>
@@ -127,7 +142,7 @@ export default function Products() {
       </div>
 
       {totalItems > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4 z-50">
           <div className="max-w-md mx-auto">
             <Button
               size="lg"

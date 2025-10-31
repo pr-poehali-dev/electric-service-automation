@@ -2,61 +2,62 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
+import { useCart } from '@/contexts/CartContext';
 
 const PORTFOLIO_ITEMS = [
   {
     id: '1',
     title: 'ЖК ВЫСОТА 56: Р-Н СЕЛЬМА',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '100 000 ₽',
     description: 'Полный электромонтаж трёхкомнатной квартиры. Установлено 45 точек (розеток и выключателей), проложено 320 метров кабеля.'
   },
   {
     id: '2',
     title: 'Установить автомат в щиток',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '1 000 ₽',
     description: 'Установка автоматического выключателя в электрощиток с подключением.'
   },
   {
     id: '3',
     title: 'Электромонтаж комнаты',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '35 000 ₽',
     description: 'Электромонтаж одной комнаты: 12 розеток, 3 выключателя, освещение.'
   },
   {
     id: '4',
     title: 'Замена электропроводки 2-комн',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '75 000 ₽',
     description: 'Полная замена электропроводки в двухкомнатной квартире.'
   },
   {
     id: '5',
     title: 'Монтаж розеточных блоков',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '15 000 ₽',
     description: 'Установка блоков розеток на кухне и в гостиной (8 блоков).'
   },
   {
     id: '6',
     title: 'Установка УЗО и автоматов',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '8 000 ₽',
     description: 'Монтаж УЗО и автоматических выключателей в щитке.'
   },
   {
     id: '7',
     title: 'Электромонтаж кухни',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '25 000 ₽',
     description: 'Электропроводка для кухни с подключением бытовой техники.'
   },
   {
     id: '8',
     title: 'Монтаж освещения',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '12 000 ₽',
     description: 'Установка точечных светильников и люстр (15 точек).'
   }

@@ -10,21 +10,21 @@ const PORTFOLIO_ITEMS: PortfolioItem[] = [
   {
     id: '1',
     title: 'ЖК ВЫСОТА 56: Р-Н СЕЛЬМА',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '100 000 ₽',
     description: 'Полный электромонтаж квартиры'
   },
   {
     id: '2',
     title: 'Установить автомат',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '1 000 ₽',
     description: 'Установка автоматического выключателя'
   },
   {
     id: '3',
     title: 'Электромонтаж',
-    image: 'https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg',
+    image: 'https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg',
     price: '35 000 ₽',
     description: 'Комплексные работы'
   }
@@ -87,18 +87,21 @@ export default function ElectricalHome() {
 
           <div className="relative rounded-2xl overflow-hidden shadow-md">
             <img 
-              src="https://cdn.poehali.dev/files/2348e099-50c3-4e12-ad08-81fd16a99869.jpeg"
+              src="https://cdn.poehali.dev/files/dc78d8d9-0436-415f-ade9-9b1e7b215d6e.jpeg"
               alt="Электромонтаж"
               className="w-full h-64 object-cover"
             />
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
+              <Icon name="ChevronDown" size={32} className="text-white drop-shadow-lg" />
+            </div>
           </div>
 
           <Button
             size="lg"
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold h-14 text-base shadow-lg"
-            onClick={() => window.open('https://wa.me/', '_blank')}
+            className="w-full bg-[#0088cc] hover:bg-[#0088cc]/90 text-white font-semibold h-14 text-base shadow-lg"
+            onClick={() => window.open('https://t.me/konigelectric', '_blank')}
           >
-            НАПИСАТЬ В WHATSAPP
+            НАПИСАТЬ В TELEGRAM
           </Button>
         </div>
 
@@ -156,7 +159,7 @@ export default function ElectricalHome() {
               onClick={() => navigate('/electrical')}
             >
               <Icon name="Home" size={24} />
-              <span className="text-xs font-medium">Планирование</span>
+              <span className="text-xs font-medium">Меню</span>
             </button>
 
             <button 
@@ -164,7 +167,7 @@ export default function ElectricalHome() {
               onClick={() => navigate('/orders')}
             >
               <Icon name="Calendar" size={24} className="text-gray-400" />
-              <span className="text-xs text-gray-600">Встречи<br/>заявления</span>
+              <span className="text-xs text-gray-600">Встречи</span>
             </button>
 
             <button 
