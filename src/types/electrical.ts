@@ -158,23 +158,24 @@ export function calculateTotals(items: CartItem[]) {
   let totalOutlets = 0;
   
   items.forEach(item => {
-    const quantity = item.quantity;
+    const quantity = item.quantity || 0;
     if (item.product.category === 'switch') {
       totalSwitches += quantity;
     } else {
-      totalOutlets += quantity * item.product.slots;
+      const slots = item.product.slots || 1;
+      totalOutlets += quantity * slots;
     }
   });
   
   const totalPoints = totalSwitches + totalOutlets;
-  const estimatedCable = calculateCable(totalPoints);
-  const estimatedFrames = calculateFrames(items);
+  const estimatedCable = calculateCable(totalPoints) || 0;
+  const estimatedFrames = calculateFrames(items) || 0;
   
   return {
-    totalSwitches,
-    totalOutlets,
-    totalPoints,
-    estimatedCable,
-    estimatedFrames
+    totalSwitches: totalSwitches || 0,
+    totalOutlets: totalOutlets || 0,
+    totalPoints: totalPoints || 0,
+    estimatedCable: estimatedCable || 0,
+    estimatedFrames: estimatedFrames || 0
   };
 }
