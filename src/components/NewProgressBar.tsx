@@ -29,7 +29,7 @@ export default function NewProgressBar({ steps, currentStep, hasItems, cartConfi
     }
     if (stepId === 3) {
       if (!cartConfirmed) return 'disabled';
-      return currentStep >= 3 ? 'full' : 'empty';
+      return currentStep >= 3 ? 'half' : 'empty';
     }
     return 'empty';
   };
@@ -70,8 +70,8 @@ export default function NewProgressBar({ steps, currentStep, hasItems, cartConfi
                   className={cn(
                     "w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 relative overflow-hidden border-2",
                     clickable ? "cursor-pointer hover:scale-110" : "cursor-not-allowed opacity-50",
-                    status === 'full' && "border-primary bg-primary shadow-lg",
-                    status === 'half' && "border-primary bg-gradient-to-t from-primary to-gray-100 shadow-md",
+                    status === 'full' && "border-blue-500 bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg",
+                    status === 'half' && "border-blue-400 bg-gradient-to-t from-blue-400 via-blue-200 to-blue-50 shadow-md",
                     status === 'empty' && "border-gray-300 bg-white",
                     status === 'disabled' && "border-gray-200 bg-gray-50"
                   )}
@@ -82,7 +82,7 @@ export default function NewProgressBar({ steps, currentStep, hasItems, cartConfi
                     className={cn(
                       "transition-colors",
                       status === 'full' && "text-white",
-                      status === 'half' && "text-primary",
+                      status === 'half' && "text-blue-600",
                       (status === 'empty' || status === 'disabled') && "text-gray-400"
                     )}
                   />
@@ -107,7 +107,7 @@ export default function NewProgressBar({ steps, currentStep, hasItems, cartConfi
             {index < steps.length - 1 && (
               <div className={cn(
                 "h-1 flex-1 mx-2 rounded-full transition-colors",
-                status === 'full' ? "bg-primary" : "bg-gray-200"
+                status === 'full' ? "bg-gradient-to-r from-blue-500 to-indigo-600" : "bg-gray-200"
               )} />
             )}
           </div>

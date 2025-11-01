@@ -5,17 +5,17 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCart } from '@/contexts/CartContext';
-import { calculateTotals, calculateItemPrice, getDiscount, MASTER_VISIT_ID } from '@/types/electrical';
-import NewProgressBar from '@/components/NewProgressBar';
+import { calculateItemPrice, getDiscount, MASTER_VISIT_ID } from '@/types/electrical';
 import ServiceModal from '@/components/ServiceModal';
+import ContactModal from '@/components/ContactModal';
 
 export default function Cart() {
   const navigate = useNavigate();
   const { cart, updateQuantity, removeFromCart, updateOption, toggleAdditionalOption } = useCart();
   const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
-  const totals = calculateTotals(cart);
   const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
   const totalDiscount = cart.reduce((sum, item) => {
     const discount = getDiscount(item.quantity);
@@ -29,17 +29,10 @@ export default function Cart() {
     .reduce((sum, item) => sum + (item.product.slots * item.quantity * 7), 0);
   
   const cableCost = cableMeters * 100;
-
   const finalTotal = totalPrice + cableCost;
   
   const masterVisit = cart.find(item => item.product.id === MASTER_VISIT_ID);
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  const steps = [
-    { id: 1, label: 'Выберите услугу', icon: 'List', onClick: () => setShowServiceModal(true) },
-    { id: 2, label: 'План работ', icon: 'ClipboardList', onClick: () => navigate('/cart') },
-    { id: 3, label: 'Оформление', icon: 'CheckCircle', onClick: () => navigate('/checkout') }
-  ];
 
   if (cart.length === 0) {
     return (
@@ -47,12 +40,12 @@ export default function Cart() {
         <img 
           src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
           alt="Калининград"
-          className="w-full h-32 object-cover"
+          className="w-full h-48 object-cover"
         />
         
         <div className="max-w-md mx-auto">
           <div className="bg-white shadow-lg p-6 space-y-4">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Button
                   variant="ghost"
@@ -61,50 +54,36 @@ export default function Cart() {
                 >
                   <Icon name="ArrowLeft" size={24} />
                 </Button>
-                <h1 className="text-2xl font-bold text-gray-800">План работ</h1>
+                <h1 className="text-2xl font-bold text-gray-800 flex-1">План работ</h1>
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => navigate('/products')}
-                  className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all p-0"
-                  title="Услуги"
-                >
-                  <Icon name="List" size={20} />
-                </Button>
-                <Button
-                  onClick={() => navigate('/profile')}
-                  className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all p-0"
-                  title="Личный кабинет"
-                >
-                  <Icon name="User" size={20} />
-                </Button>
-              </div>
+              <Button
+                onClick={() => setShowContactModal(true)}
+                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 p-0 hover:scale-110"
+                title="Меню связи"
+              >
+                <Icon name="Menu" size={24} />
+              </Button>
             </div>
-            
-            <NewProgressBar 
-              steps={steps}
-              currentStep={2}
-              hasItems={false}
-              cartConfirmed={false}
-            />
           </div>
 
           <div className="p-6">
             <Card className="p-12 text-center bg-white">
               <Icon name="ShoppingCart" size={64} className="text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Список пуст</h3>
+              <h3 className="text-lg font-semibold mb-2">План работ пуст</h3>
               <p className="text-sm text-muted-foreground mb-4">
                 Добавьте услуги для формирования плана работ
               </p>
               <Button
-                onClick={() => navigate('/products')}
+                onClick={() => navigate('/')}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
-                Выбрать услуги
+                На главную
               </Button>
             </Card>
           </div>
         </div>
+
+        <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
       </div>
     );
   }
@@ -114,63 +93,37 @@ export default function Cart() {
       <img 
         src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
         alt="Калининград"
-        className="w-full h-32 object-cover"
+        className="w-full h-48 object-cover"
       />
 
       <div className="max-w-md mx-auto">
-        <div className="bg-white shadow-lg p-6 space-y-4">
-          <div className="flex items-center justify-between gap-4">
+        <div className="bg-white shadow-lg p-6">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate('/products')}
+                onClick={() => navigate('/')}
               >
                 <Icon name="ArrowLeft" size={24} />
               </Button>
-              <h1 className="text-2xl font-bold text-gray-800">План работ</h1>
+              <h1 className="text-2xl font-bold text-gray-800 flex-1">План работ</h1>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setShowServiceModal(true)}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all p-0"
-                title="Каталог услуг"
-              >
-                <Icon name="List" size={20} />
-              </Button>
-              <Button
-                onClick={() => navigate('/cart')}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all p-0 relative"
-                title="План работ"
-              >
-                <Icon name="ShoppingBag" size={20} />
-                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white">
-                  {totalItems}
-                </span>
-              </Button>
-              <Button
-                onClick={() => navigate('/profile')}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all p-0"
-                title="Личный кабинет"
-              >
-                <Icon name="User" size={20} />
-              </Button>
-            </div>
+            <Button
+              onClick={() => setShowContactModal(true)}
+              className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 p-0 hover:scale-110"
+              title="Меню связи"
+            >
+              <Icon name="Menu" size={24} />
+            </Button>
           </div>
-          
-          <NewProgressBar 
-            steps={steps}
-            currentStep={2}
-            hasItems={totalItems > 0}
-            cartConfirmed={false}
-          />
         </div>
 
         <div className="p-6 space-y-4">
-          <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-200 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-200 overflow-hidden animate-fadeIn">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 text-center">
               <h2 className="text-2xl font-bold mb-1">ПЛАН РАБОТ</h2>
-              <p className="text-blue-100 text-sm">ООО "Кениг Электрик"</p>
+              <p className="text-blue-100 text-sm">Заявка на <a href="https://услуги-электрика.org" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-blue-200">услуги-электрика.org</a></p>
               <p className="text-blue-100 text-xs mt-1">{new Date().toLocaleDateString('ru-RU')}</p>
             </div>
 
@@ -235,7 +188,7 @@ export default function Cart() {
                                 onCheckedChange={() => updateOption(item.product.id, 'install-only')}
                               />
                               <label htmlFor={`${item.product.id}-install`} className="text-xs cursor-pointer">
-                                Установка изделия
+                                +{item.product.priceInstallOnly} ₽ Установить {item.product.name.toLowerCase()}
                               </label>
                             </div>
                             
@@ -246,7 +199,7 @@ export default function Cart() {
                                 onCheckedChange={() => updateOption(item.product.id, 'full-wiring')}
                               />
                               <label htmlFor={`${item.product.id}-wiring`} className="text-xs cursor-pointer">
-                                Черновой монтаж
+                                +{item.product.priceWithWiring - item.product.priceInstallOnly} ₽ Подготовить проводку
                               </label>
                             </div>
 
@@ -268,7 +221,9 @@ export default function Cart() {
                         <div className="mt-1 space-y-1">
                           <p className="text-xs text-gray-600">Количество: {item.quantity} шт</p>
                           <p className="text-xs text-gray-600">
-                            {item.selectedOption === 'install-only' ? 'Установка изделия' : 'Черновой монтаж'}
+                            {item.selectedOption === 'install-only' 
+                              ? `Установить ${item.product.name.toLowerCase()}` 
+                              : 'Подготовить проводку'}
                           </p>
                           {item.additionalOptions && item.additionalOptions.length > 0 && (
                             <p className="text-xs text-gray-600">
@@ -333,7 +288,10 @@ export default function Cart() {
               </div>
             </div>
 
-            <div className="bg-gray-50 p-4 text-center border-t">
+            <div className="bg-gray-50 p-4 text-center border-t space-y-2">
+              <p className="text-xs text-gray-500">
+                Welcome to <a href="https://t.me/konigelectric" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Telegram</a>
+              </p>
               <p className="text-xs text-gray-500">Спасибо за ваш выбор!</p>
               <p className="text-xs text-gray-500 mt-1">📞 +7 (4012) 52-07-25</p>
             </div>
@@ -345,7 +303,7 @@ export default function Cart() {
             className="w-full h-12 border-2 border-dashed border-blue-300 hover:border-blue-400 hover:bg-blue-50"
           >
             <Icon name="Plus" size={18} className="mr-2" />
-            Добавить ещё услуги
+            Добавить ещё услуги в план работ
           </Button>
 
           <Button
@@ -359,15 +317,17 @@ export default function Cart() {
       </div>
 
       <ServiceModal open={showServiceModal} onClose={() => setShowServiceModal(false)} />
+      <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
 
-      <a
-        href="tel:+74012520725"
-        className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white rounded-2xl shadow-2xl hover:shadow-3xl flex items-center justify-center transition-all duration-300 hover:scale-110 group z-50"
-        title="Связаться с нами"
-      >
-        <Icon name="Phone" size={28} className="group-hover:animate-wiggle" />
-        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-      </a>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.4s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

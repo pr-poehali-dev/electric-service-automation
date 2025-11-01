@@ -77,7 +77,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                       onCheckedChange={() => updateOption(product.id, 'install-only')}
                     />
                     <label htmlFor={`${product.id}-install`} className="text-xs cursor-pointer">
-                      Установка изделия ({product.priceInstallOnly} ₽)
+                      +{product.priceInstallOnly} ₽ Установить {product.name.toLowerCase()}
                     </label>
                   </div>
                   
@@ -88,7 +88,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                       onCheckedChange={() => updateOption(product.id, 'full-wiring')}
                     />
                     <label htmlFor={`${product.id}-wiring`} className="text-xs cursor-pointer">
-                      Черновой монтаж (+{product.priceWithWiring - product.priceInstallOnly} ₽)
+                      +{product.priceWithWiring - product.priceInstallOnly} ₽ Подготовить проводку
                     </label>
                   </div>
 
@@ -119,11 +119,21 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
     );
   };
 
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Выберите услуги</DialogTitle>
+          {totalItems > 0 && (
+            <Button
+              onClick={onClose}
+              className="absolute top-4 right-16 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700"
+            >
+              Подтвердить ({totalItems})
+            </Button>
+          )}
         </DialogHeader>
         
         <div className="space-y-6">

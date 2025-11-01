@@ -4,20 +4,15 @@ import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
 import ServiceModal from '@/components/ServiceModal';
-import NewProgressBar from '@/components/NewProgressBar';
+import ContactModal from '@/components/ContactModal';
 
 export default function Products() {
   const navigate = useNavigate();
   const { cart } = useCart();
   const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  const steps = [
-    { id: 1, label: 'Выберите услугу', icon: 'List', onClick: () => setShowServiceModal(true) },
-    { id: 2, label: 'План работ', icon: 'ClipboardList', onClick: () => totalItems > 0 && navigate('/cart') },
-    { id: 3, label: 'Оформление', icon: 'CheckCircle', onClick: () => navigate('/checkout') }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
@@ -29,7 +24,7 @@ export default function Products() {
 
       <div className="max-w-md mx-auto">
         <div className="bg-white shadow-lg p-6 space-y-4">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
@@ -38,44 +33,16 @@ export default function Products() {
               >
                 <Icon name="ArrowLeft" size={24} />
               </Button>
-              <h1 className="text-2xl font-bold text-gray-800">Услуги</h1>
+              <h1 className="text-2xl font-bold text-gray-800 flex-1">Услуги</h1>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setShowServiceModal(true)}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all p-0 relative"
-                title="Каталог услуг"
-              >
-                <Icon name="List" size={20} />
-              </Button>
-              {totalItems > 0 && (
-                <Button
-                  onClick={() => navigate('/cart')}
-                  className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all p-0 relative"
-                  title="План работ"
-                >
-                  <Icon name="ShoppingBag" size={20} />
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white">
-                    {totalItems}
-                  </span>
-                </Button>
-              )}
-              <Button
-                onClick={() => navigate('/profile')}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all p-0"
-                title="Личный кабинет"
-              >
-                <Icon name="User" size={20} />
-              </Button>
-            </div>
+            <Button
+              onClick={() => setShowContactModal(true)}
+              className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 p-0 hover:scale-110"
+              title="Меню связи"
+            >
+              <Icon name="Menu" size={24} />
+            </Button>
           </div>
-          
-          <NewProgressBar 
-            steps={steps}
-            currentStep={totalItems > 0 ? 1 : 0}
-            hasItems={totalItems > 0}
-            cartConfirmed={false}
-          />
         </div>
 
         <div className="p-6 text-center space-y-6">
@@ -118,15 +85,7 @@ export default function Products() {
       </div>
 
       <ServiceModal open={showServiceModal} onClose={() => setShowServiceModal(false)} />
-
-      <a
-        href="tel:+74012520725"
-        className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white rounded-2xl shadow-2xl hover:shadow-3xl flex items-center justify-center transition-all duration-300 hover:scale-110 group z-50"
-        title="Связаться с нами"
-      >
-        <Icon name="Phone" size={28} className="group-hover:animate-wiggle" />
-        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-      </a>
+      <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
     </div>
   );
 }
