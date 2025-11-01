@@ -29,15 +29,15 @@ export default function Services() {
         <div className="bg-white shadow-xl p-6 space-y-6">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-800 flex-1">
-              Услуги электрика тел. 52-07-25
+              БАЛТСЕТЬ | Услуги электрика ³⁹
             </h1>
-            <Button
+            <button
               onClick={() => setShowContactModal(true)}
-              className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 p-0 hover:scale-110"
+              className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-gray-700 hover:text-blue-600 transition-colors duration-300"
               title="Меню связи"
             >
-              <Icon name="Menu" size={24} />
-            </Button>
+              <Icon name="Menu" size={28} />
+            </button>
           </div>
 
           <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 p-6 space-y-4">
@@ -50,21 +50,12 @@ export default function Services() {
               </p>
             </div>
 
-            <div className="flex gap-3">
-              <Button
-                onClick={() => setShowCalculatorModal(true)}
-                className="flex-1 h-14 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg"
-              >
-                📋 Анкета для расчёта работ
-              </Button>
-              <Button
-                onClick={() => setShowServiceModal(true)}
-                className="flex-1 h-14 text-base font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg"
-              >
-                <Icon name="List" size={20} className="mr-2" />
-                Добавить услуги
-              </Button>
-            </div>
+            <Button
+              onClick={() => setShowCalculatorModal(true)}
+              className="w-full h-14 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg"
+            >
+              📋 Анкета для расчёта работ
+            </Button>
           </Card>
 
           {totalItems > 0 && (
@@ -73,10 +64,7 @@ export default function Services() {
               onClick={() => navigate('/cart')}
               className="w-full h-16 text-lg font-bold shadow-xl bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 relative animate-pulse-subtle"
             >
-              Перейти к плану работ
-              <span className="ml-3 bg-white text-orange-600 font-bold px-3 py-1 rounded-full text-sm">
-                {totalItems}
-              </span>
+              Перейти к плану работ ({totalItems})
             </Button>
           )}
 

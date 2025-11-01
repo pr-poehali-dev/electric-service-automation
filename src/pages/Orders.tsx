@@ -6,6 +6,8 @@ import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
 import { Order } from '@/types/electrical';
 import ContactModal from '@/components/ContactModal';
+import ProductSelectionModal from '@/components/ProductSelectionModal';
+import CalculatorModal from '@/components/CalculatorModal';
 import {
   Accordion,
   AccordionContent,
@@ -33,6 +35,8 @@ export default function Orders() {
   const { orders } = useCart();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [showCalculatorModal, setShowCalculatorModal] = useState(false);
 
   useEffect(() => {
     const newOrderId = location.state?.newOrderId;
@@ -78,13 +82,13 @@ export default function Orders() {
                 </Button>
                 <h1 className="text-2xl font-bold text-gray-800 flex-1">Заявка {selectedOrder.id}</h1>
               </div>
-              <Button
+              <button
                 onClick={() => setShowContactModal(true)}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 p-0 hover:scale-110"
+                className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-gray-700 hover:text-blue-600 transition-colors duration-300"
                 title="Меню связи"
               >
-                <Icon name="Menu" size={24} />
-              </Button>
+                <Icon name="Menu" size={28} />
+              </button>
             </div>
           </div>
 
@@ -291,7 +295,7 @@ export default function Orders() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
       <img 
         src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
         alt="Калининград"
@@ -301,27 +305,31 @@ export default function Orders() {
       <div className="max-w-md mx-auto">
         <div className="bg-white shadow-lg p-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/profile')}
-              >
-                <Icon name="ArrowLeft" size={24} />
-              </Button>
-              <h1 className="text-2xl font-bold text-gray-800 flex-1">Мои заявки</h1>
-            </div>
-            <Button
+            <h1 className="text-2xl font-bold text-gray-800">БАЛТСЕТЬ | Услуги электрика ³⁹</h1>
+            <button
               onClick={() => setShowContactModal(true)}
-              className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 p-0 hover:scale-110"
+              className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-gray-700 hover:text-blue-600 transition-colors duration-300"
               title="Меню связи"
             >
-              <Icon name="Menu" size={24} />
-            </Button>
+              <Icon name="Menu" size={28} />
+            </button>
           </div>
         </div>
 
         <div className="p-6 space-y-4">
+          <Card className="p-6 bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+            <h2 className="text-xl font-bold mb-4">Рассчитать стоимость работ</h2>
+            <p className="text-sm mb-4 opacity-90">
+              Ответьте на несколько вопросов, чтобы получить предварительную оценку
+            </p>
+            <Button
+              onClick={() => setShowCalculatorModal(true)}
+              className="w-full bg-white text-blue-600 hover:bg-gray-100"
+            >
+              Анкета для расчёта работ
+            </Button>
+          </Card>
+
           {orders.length === 0 ? (
             <Card className="p-12 text-center">
               <Icon name="ShoppingBag" size={64} className="text-gray-300 mx-auto mb-4" />
@@ -330,50 +338,73 @@ export default function Orders() {
                 Создайте первую заявку на услуги
               </p>
               <Button
-                onClick={() => navigate('/')}
+                onClick={() => setShowProductModal(true)}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
-                Создать заявку
+                Добавить услуги
               </Button>
             </Card>
           ) : (
-            orders.map(order => (
-              <Card 
-                key={order.id}
-                className="p-6 cursor-pointer hover:shadow-lg transition-all animate-fadeIn hover:scale-105"
-                onClick={() => setSelectedOrder(order)}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-bold text-lg">Заявка {order.id}</h3>
-                  <span className={`text-xs font-semibold py-1 px-3 rounded-full ${STATUS_COLORS[order.status]}`}>
-                    {STATUS_LABELS[order.status]}
-                  </span>
-                </div>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Icon name="Calendar" size={16} />
-                    <span>{order.date} в {order.time}</span>
+            <>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-800">Мои заявки</h2>
+                <Button
+                  onClick={() => setShowProductModal(true)}
+                  size="sm"
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <Icon name="Plus" size={16} />
+                  Добавить услуги
+                </Button>
+              </div>
+              
+              {orders.map(order => (
+                <Card 
+                  key={order.id}
+                  className="p-6 cursor-pointer hover:shadow-lg transition-all animate-fadeIn hover:scale-105"
+                  onClick={() => setSelectedOrder(order)}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-bold text-lg">Заявка {order.id}</h3>
+                    <span className={`text-xs font-semibold py-1 px-3 rounded-full ${STATUS_COLORS[order.status]}`}>
+                      {STATUS_LABELS[order.status]}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Icon name="MapPin" size={16} />
-                    <span className="truncate">{order.address}</span>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Icon name="Calendar" size={16} />
+                      <span>{order.date} в {order.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Icon name="MapPin" size={16} />
+                      <span className="truncate">{order.address}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Icon name="Package" size={16} />
+                      <span>{order.items.length} услуг</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Icon name="Package" size={16} />
-                    <span>{order.items.length} услуг</span>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Нажмите для подробностей</span>
+                    <Icon name="ChevronRight" size={20} className="text-primary" />
                   </div>
-                </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Нажмите для подробностей</span>
-                  <Icon name="ChevronRight" size={20} className="text-primary" />
-                </div>
-              </Card>
-            ))
+                </Card>
+              ))}
+            </>
           )}
         </div>
       </div>
 
       <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
+      <ProductSelectionModal 
+        open={showProductModal} 
+        onClose={() => setShowProductModal(false)} 
+      />
+      <CalculatorModal 
+        open={showCalculatorModal} 
+        onClose={() => setShowCalculatorModal(false)} 
+      />
 
       <style>{`
         @keyframes fadeIn {

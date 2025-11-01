@@ -6,12 +6,12 @@ import Icon from '@/components/ui/icon';
 import { PRODUCTS, Product, MASTER_VISIT_ID, calculateItemPrice } from '@/types/electrical';
 import { useCart } from '@/contexts/CartContext';
 
-interface ServiceModalProps {
+interface ProductSelectionModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-export default function ServiceModal({ open, onClose }: ServiceModalProps) {
+export default function ProductSelectionModal({ open, onClose }: ProductSelectionModalProps) {
   const { cart, addToCart, updateQuantity, updateOption, toggleAdditionalOption } = useCart();
 
   const popularServices = PRODUCTS.filter(p => p.serviceCategory === 'popular' && p.id !== MASTER_VISIT_ID);

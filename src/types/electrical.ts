@@ -21,7 +21,7 @@ export const ROOM_LABELS: Record<RoomType, string> = {
 
 export type ProductType = 'switch-single' | 'switch-double' | 'outlet-single' | 'outlet-double' | 'outlet-triple' | 'outlet-quad' | 'outlet-penta' | 'cable' | 'chandelier';
 
-export type ServiceOption = 'install-only' | 'full-wiring';
+export type ServiceOption = 'install-only' | 'full-wiring' | 'repair';
 
 export interface Product {
   id: string;
@@ -94,7 +94,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'sw-1',
     type: 'switch-single',
-    name: 'Добавить 1 выключатель',
+    name: 'Выключатель',
     image: 'https://cdn.poehali.dev/files/switch-single.jpg',
     description: 'Установка выключателя',
     category: 'switch',
@@ -102,20 +102,34 @@ export const PRODUCTS: Product[] = [
     installType: 'finish',
     slots: 1,
     priceInstallOnly: 150,
-    priceWithWiring: 1500
+    priceWithWiring: 1500,
+    options: [
+      {
+        id: 'repair',
+        name: 'Отремонтировать',
+        price: 250
+      }
+    ]
   },
   {
     id: 'out-1',
     type: 'outlet-single',
-    name: 'Добавить розетку',
+    name: 'Розетка',
     image: 'https://cdn.poehali.dev/files/outlet-single.jpg',
     description: 'Установка розетки',
     category: 'outlet',
     serviceCategory: 'popular',
     installType: 'finish',
     slots: 1,
-    priceInstallOnly: 250,
-    priceWithWiring: 1000
+    priceInstallOnly: 850,
+    priceWithWiring: 1000,
+    options: [
+      {
+        id: 'repair',
+        name: 'Отремонтировать',
+        price: 300
+      }
+    ]
   },
   {
     id: 'chandelier-1',
@@ -194,13 +208,20 @@ export const PRODUCTS: Product[] = [
     type: 'cable',
     name: 'Монтаж кабеля 10 пог.м',
     image: 'https://cdn.poehali.dev/files/cable.jpg',
-    description: 'Прокладка и монтаж кабеля со штроблением',
+    description: 'Прокладка и монтаж кабеля',
     category: 'cable',
     serviceCategory: 'construction',
     installType: 'rough',
     slots: 0,
     priceInstallOnly: 2000,
-    priceWithWiring: 2000
+    priceWithWiring: 2000,
+    options: [
+      {
+        id: 'conduit',
+        name: 'Затянуть кабель в гофру/трубу',
+        price: 80
+      }
+    ]
   }
 ];
 

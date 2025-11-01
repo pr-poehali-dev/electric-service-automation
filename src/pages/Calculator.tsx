@@ -24,41 +24,11 @@ export default function Calculator() {
 
       <div className="max-w-md mx-auto">
         <div className="bg-white shadow-lg p-6 space-y-6">
-          <div className="flex items-center justify-between gap-4">
-            <h1 className="text-2xl font-bold text-gray-800 flex-1">
-              <span className="font-extrabold text-primary">РАССЧИТАЙТЕ СТОИМОСТЬ РАБОТЫ</span>
-              <br />
-              <span className="text-lg text-gray-600">ЗА 2 МИНУТЫ</span>
-            </h1>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => navigate('/products')}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all p-0 relative"
-                title="Услуги"
-              >
-                <Icon name="List" size={20} />
-              </Button>
-              {totalItems > 0 && (
-                <Button
-                  onClick={() => navigate('/cart')}
-                  className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all p-0 relative"
-                  title="План работ"
-                >
-                  <Icon name="ShoppingBag" size={20} />
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white">
-                    {totalItems}
-                  </span>
-                </Button>
-              )}
-              <Button
-                onClick={() => navigate('/profile')}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all p-0"
-                title="Личный кабинет"
-              >
-                <Icon name="User" size={20} />
-              </Button>
-            </div>
-          </div>
+          <h1 className="text-2xl font-bold text-gray-800">
+            <span className="font-extrabold text-primary">РАССЧИТАЙТЕ СТОИМОСТЬ РАБОТЫ</span>
+            <br />
+            <span className="text-lg text-gray-600">ЗА 2 МИНУТЫ</span>
+          </h1>
 
           <div className="space-y-4">
             <div>
@@ -125,6 +95,21 @@ export default function Calculator() {
                         Оформите заявку — мы свяжемся с вами
                       </p>
                     </div>
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Icon name="Phone" size={18} className="text-blue-600" />
+                        <p className="font-semibold text-sm text-blue-900">Или свяжитесь с нами прямо сейчас</p>
+                      </div>
+                      <a 
+                        href="tel:+74012520725"
+                        className="text-xl font-bold text-blue-600 hover:text-blue-700"
+                      >
+                        +7 (4012) 52-07-25
+                      </a>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Вызовите мастера на осмотр в Калининграде
+                      </p>
+                    </div>
                   </div>
                 </div>
               </>
@@ -139,7 +124,7 @@ export default function Calculator() {
               className="w-full font-semibold h-14 text-base shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               onClick={() => navigate('/products')}
             >
-              Выбрать услуги →
+              Уточнить детали →
             </Button>
           </div>
         )}

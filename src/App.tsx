@@ -47,13 +47,13 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-      <Route path="/" element={<Services />} />
+      <Route path="/" element={<Orders />} />
+      <Route path="/services" element={<Services />} />
       <Route path="/calculator" element={<Calculator />} />
       <Route path="/electrical" element={<ElectricalHome />} />
       <Route path="/products" element={<Products />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />
-      <Route path="/orders" element={<Orders />} />
       <Route path="/portfolio" element={<Portfolio />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/old-home" element={<Home />} />
