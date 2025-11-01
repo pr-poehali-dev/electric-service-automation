@@ -30,6 +30,7 @@ export interface Product {
   image: string;
   description: string;
   category: 'switch' | 'outlet' | 'cable' | 'chandelier';
+  serviceCategory: 'popular' | 'construction';
   installType: 'rough' | 'finish';
   slots: number;
   priceInstallOnly: number;
@@ -84,6 +85,7 @@ export const PRODUCTS: Product[] = [
     image: 'https://cdn.poehali.dev/files/switch-single.jpg',
     description: 'Обязательная услуга при оформлении заявки',
     category: 'switch',
+    serviceCategory: 'popular',
     installType: 'finish',
     slots: 0,
     priceInstallOnly: 500,
@@ -96,6 +98,7 @@ export const PRODUCTS: Product[] = [
     image: 'https://cdn.poehali.dev/files/switch-single.jpg',
     description: 'Установка выключателя',
     category: 'switch',
+    serviceCategory: 'popular',
     installType: 'finish',
     slots: 1,
     priceInstallOnly: 150,
@@ -108,70 +111,11 @@ export const PRODUCTS: Product[] = [
     image: 'https://cdn.poehali.dev/files/outlet-single.jpg',
     description: 'Установка розетки',
     category: 'outlet',
+    serviceCategory: 'popular',
     installType: 'finish',
     slots: 1,
     priceInstallOnly: 250,
     priceWithWiring: 1000
-  },
-  {
-    id: 'out-2',
-    type: 'outlet-double',
-    name: 'Блок из 2-х розеток',
-    image: 'https://cdn.poehali.dev/files/outlet-double.jpg',
-    description: 'Установка блока розеток',
-    category: 'outlet',
-    installType: 'rough',
-    slots: 2,
-    priceInstallOnly: 500,
-    priceWithWiring: 1200
-  },
-  {
-    id: 'out-3',
-    type: 'outlet-triple',
-    name: 'Блок из 3-х розеток',
-    image: 'https://cdn.poehali.dev/files/outlet-triple.jpg',
-    description: 'Установка блока розеток',
-    category: 'outlet',
-    installType: 'rough',
-    slots: 3,
-    priceInstallOnly: 750,
-    priceWithWiring: 2500
-  },
-  {
-    id: 'out-4',
-    type: 'outlet-quad',
-    name: 'Блок из 4-х розеток',
-    image: 'https://cdn.poehali.dev/files/outlet-quad.jpg',
-    description: 'Установка блока розеток',
-    category: 'outlet',
-    installType: 'rough',
-    slots: 4,
-    priceInstallOnly: 1000,
-    priceWithWiring: 3000
-  },
-  {
-    id: 'out-5',
-    type: 'outlet-penta',
-    name: 'Блок из 5 розеток',
-    image: 'https://cdn.poehali.dev/files/outlet-penta.jpg',
-    description: 'Установка блока розеток',
-    category: 'outlet',
-    installType: 'rough',
-    slots: 5,
-    priceInstallOnly: 1250,
-    priceWithWiring: 3500
-  },
-  {
-    id: 'cable-1',
-    type: 'cable',
-    name: 'Монтаж кабеля 10 пог.м',
-    image: 'https://cdn.poehali.dev/files/cable.jpg',
-    description: 'Прокладка и монтаж кабеля',
-    category: 'cable',
-    installType: 'rough',
-    slots: 0,
-    priceInstallOnly: 2000,
-    priceWithWiring: 2000
   },
   {
     id: 'chandelier-1',
@@ -180,6 +124,7 @@ export const PRODUCTS: Product[] = [
     image: 'https://cdn.poehali.dev/files/chandelier.jpg',
     description: 'Установка или замена люстры',
     category: 'chandelier',
+    serviceCategory: 'popular',
     installType: 'finish',
     slots: 0,
     priceInstallOnly: 500,
@@ -191,6 +136,71 @@ export const PRODUCTS: Product[] = [
         price: 500
       }
     ]
+  },
+  {
+    id: 'out-2',
+    type: 'outlet-double',
+    name: 'Блок из 2-х розеток',
+    image: 'https://cdn.poehali.dev/files/outlet-double.jpg',
+    description: 'Установка блока розеток со штроблением',
+    category: 'outlet',
+    serviceCategory: 'construction',
+    installType: 'rough',
+    slots: 2,
+    priceInstallOnly: 500,
+    priceWithWiring: 1200
+  },
+  {
+    id: 'out-3',
+    type: 'outlet-triple',
+    name: 'Блок из 3-х розеток',
+    image: 'https://cdn.poehali.dev/files/outlet-triple.jpg',
+    description: 'Установка блока розеток со штроблением',
+    category: 'outlet',
+    serviceCategory: 'construction',
+    installType: 'rough',
+    slots: 3,
+    priceInstallOnly: 750,
+    priceWithWiring: 2500
+  },
+  {
+    id: 'out-4',
+    type: 'outlet-quad',
+    name: 'Блок из 4-х розеток',
+    image: 'https://cdn.poehali.dev/files/outlet-quad.jpg',
+    description: 'Установка блока розеток со штроблением',
+    category: 'outlet',
+    serviceCategory: 'construction',
+    installType: 'rough',
+    slots: 4,
+    priceInstallOnly: 1000,
+    priceWithWiring: 3000
+  },
+  {
+    id: 'out-5',
+    type: 'outlet-penta',
+    name: 'Блок из 5 розеток',
+    image: 'https://cdn.poehali.dev/files/outlet-penta.jpg',
+    description: 'Установка блока розеток со штроблением',
+    category: 'outlet',
+    serviceCategory: 'construction',
+    installType: 'rough',
+    slots: 5,
+    priceInstallOnly: 1250,
+    priceWithWiring: 3500
+  },
+  {
+    id: 'cable-1',
+    type: 'cable',
+    name: 'Монтаж кабеля 10 пог.м',
+    image: 'https://cdn.poehali.dev/files/cable.jpg',
+    description: 'Прокладка и монтаж кабеля со штроблением',
+    category: 'cable',
+    serviceCategory: 'construction',
+    installType: 'rough',
+    slots: 0,
+    priceInstallOnly: 2000,
+    priceWithWiring: 2000
   }
 ];
 
