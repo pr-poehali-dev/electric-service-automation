@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import ContactModal from '@/components/ContactModal';
 import PageHeader from '@/components/PageHeader';
+import PageNavigation from '@/components/PageNavigation';
 
 export default function Services() {
   const navigate = useNavigate();
@@ -13,12 +14,11 @@ export default function Services() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <PageHeader />
+      
+      <div className="max-w-md mx-auto">
+        <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
-      <div className="max-w-md mx-auto p-6 space-y-6">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">УСЛУГИ ЭЛЕКТРИКА</h1>
-          <p className="text-gray-600">Рассчитайте стоимость работы в Калининграде за 2 минуты</p>
-        </div>
+        <div className="p-6 space-y-6">
 
         <Card className="p-6 bg-white shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/orders')}>
           <div className="flex items-center gap-4">
@@ -39,7 +39,7 @@ export default function Services() {
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-gray-800 mb-1">Новая заявка</h2>
-              <p className="text-sm text-gray-600">Заказать услуги</p>
+              <p className="text-sm text-gray-600">Услуги электрика</p>
             </div>
           </div>
         </Card>
@@ -71,7 +71,7 @@ export default function Services() {
               <Icon name="MessageCircle" size={20} className="text-blue-500" />
               <div>
                 <p className="text-sm text-gray-500">ВКонтакте</p>
-                <p className="font-semibold">Бесплатная консультация</p>
+                <p className="font-semibold">Задать вопрос</p>
               </div>
             </a>
           </div>
@@ -83,13 +83,14 @@ export default function Services() {
             О нас
           </h3>
           <p className="text-sm text-gray-700 mb-2">
-            БАЛТСЕТЬ | Услуги электрика ³⁹
+            ООО "Кёниг Электрик" — профессиональные электромонтажные работы в Калининграде и области
           </p>
           <p className="text-sm text-gray-600 flex items-center gap-2">
             <Icon name="Clock" size={16} className="text-orange-600" />
             Работаем: Пн-Вс, 10:00 - 18:00
           </p>
         </Card>
+        </div>
       </div>
 
       <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />

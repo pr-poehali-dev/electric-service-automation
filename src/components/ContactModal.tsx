@@ -97,8 +97,23 @@ export default function ContactModal({ open, onClose }: ContactModalProps) {
               <Icon name="Star" size={24} />
             </div>
             <div className="flex-1">
-              <p className="font-semibold">Яндекс Отзывы</p>
+              <p className="font-semibold">Отзывы</p>
               <p className="text-sm opacity-90">Оцените нашу работу</p>
+            </div>
+          </a>
+
+          <a
+            href="https://baltset.ru/portfolio/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+          >
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Icon name="Image" size={24} />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold">Портфолио</p>
+              <p className="text-sm opacity-90">Наши работы</p>
             </div>
           </a>
 

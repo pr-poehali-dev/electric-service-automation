@@ -25,6 +25,7 @@ import Calculator from "./pages/Calculator";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import CheckoutPage from "./pages/CheckoutPage";
 import Orders from "./pages/Orders";
 import Portfolio from "./pages/Portfolio";
 import Profile from "./pages/Profile";
@@ -52,7 +53,7 @@ const AppRoutes = () => {
       <Route path="/electrical" element={<ElectricalHome />} />
       <Route path="/products" element={<Products />} />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/portfolio" element={<Portfolio />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/orders" element={<Orders />} />

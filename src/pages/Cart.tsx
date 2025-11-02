@@ -8,7 +8,7 @@ import { useCart } from '@/contexts/CartContext';
 import { calculateItemPrice, getDiscount, MASTER_VISIT_ID, calculateFrames } from '@/types/electrical';
 import ServiceModal from '@/components/ServiceModal';
 import ContactModal from '@/components/ContactModal';
-import CheckoutModal from '@/components/CheckoutModal';
+
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 
@@ -17,7 +17,7 @@ export default function Cart() {
   const { cart, updateQuantity, removeFromCart, updateOption, toggleAdditionalOption } = useCart();
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
-  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+
   const [editMode, setEditMode] = useState(false);
 
   const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
@@ -258,12 +258,12 @@ export default function Cart() {
             className="w-full h-12 border-2 border-dashed border-blue-300 hover:border-blue-400 hover:bg-blue-50"
           >
             <Icon name="Plus" size={18} className="mr-2" />
-            Добавить ещё услуги в план работ
+            Добавить ещё задачи в план работ
           </Button>
 
           <Button
             size="lg"
-            onClick={() => setShowCheckoutModal(true)}
+            onClick={() => navigate('/checkout')}
             className="w-full h-14 text-base font-semibold shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
           >
             Далее
@@ -273,10 +273,6 @@ export default function Cart() {
 
       <ServiceModal open={showServiceModal} onClose={() => setShowServiceModal(false)} />
       <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
-      <CheckoutModal 
-        open={showCheckoutModal} 
-        onClose={() => setShowCheckoutModal(false)} 
-      />
 
       <style>{`
         @keyframes fadeIn {

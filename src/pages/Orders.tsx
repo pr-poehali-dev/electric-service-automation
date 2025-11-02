@@ -86,7 +86,7 @@ export default function Orders() {
                 >
                   <Icon name="ArrowLeft" size={24} />
                 </Button>
-                <h1 className="text-2xl font-bold text-gray-800 flex-1">Заявка {selectedOrder.id}</h1>
+                <h1 className="text-2xl font-bold text-gray-800 flex-1">Заявка #{selectedOrder.id.slice(-6)}</h1>
               </div>
             </div>
           </div>
@@ -175,8 +175,8 @@ export default function Orders() {
               >
                 <Icon name="MessageCircle" size={24} />
                 <div className="flex-1">
-                  <p className="font-bold">Уточнить детали по заявке</p>
-                  <p className="text-sm opacity-90">Написать в Telegram</p>
+                  <p className="font-bold">Есть вопрос?</p>
+                  <p className="text-sm opacity-90">Напишите в Telegram</p>
                 </div>
                 <Icon name="ArrowRight" size={20} />
               </a>
@@ -327,7 +327,7 @@ export default function Orders() {
                   className="gap-2"
                 >
                   <Icon name="Plus" size={16} />
-                  + Добавить заказ
+                  + Добавить задачи
                 </Button>
               </div>
               
@@ -338,20 +338,24 @@ export default function Orders() {
                   onClick={() => setSelectedOrder(order)}
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-bold text-lg">Заявка {order.id}</h3>
+                    <h3 className="font-bold text-lg">Заявка #{order.id.slice(-6)}</h3>
                     <span className={`text-xs font-semibold py-1 px-3 rounded-full ${STATUS_COLORS[order.status]}`}>
                       {STATUS_LABELS[order.status]}
                     </span>
                   </div>
                   <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Icon name="Calendar" size={16} />
-                      <span>{order.date} в {order.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Icon name="MapPin" size={16} />
-                      <span className="truncate">{order.address}</span>
-                    </div>
+                    {order.address && (
+                      <div className="flex items-center gap-2">
+                        <Icon name="MapPin" size={16} />
+                        <span className="truncate">{order.address}</span>
+                      </div>
+                    )}
+                    {order.date && (
+                      <div className="flex items-center gap-2">
+                        <Icon name="Calendar" size={16} />
+                        <span>{order.date}{order.time ? ` в ${order.time}` : ''}</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <Icon name="Package" size={16} />
                       <span>{order.items.length} услуг</span>

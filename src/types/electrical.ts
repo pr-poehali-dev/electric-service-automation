@@ -101,8 +101,8 @@ export const PRODUCTS: Product[] = [
     serviceCategory: 'popular',
     installType: 'finish',
     slots: 1,
-    priceInstallOnly: 0,
-    priceWithWiring: 150
+    priceInstallOnly: 250,
+    priceWithWiring: 1500
   },
   {
     id: 'out-1',
@@ -127,8 +127,8 @@ export const PRODUCTS: Product[] = [
     serviceCategory: 'popular',
     installType: 'finish',
     slots: 0,
-    priceInstallOnly: 500,
-    priceWithWiring: 500,
+    priceInstallOnly: 1000,
+    priceWithWiring: 1000,
     options: [
       {
         id: 'dismantle',
@@ -142,86 +142,7 @@ export const PRODUCTS: Product[] = [
       }
     ]
   },
-  {
-    id: 'out-2',
-    type: 'outlet-double',
-    name: 'Блок из 2-х розеток',
-    image: 'https://cdn.poehali.dev/files/outlet-double.jpg',
-    description: 'Установка блока розеток со штроблением',
-    category: 'outlet',
-    serviceCategory: 'construction',
-    installType: 'rough',
-    slots: 2,
-    priceInstallOnly: 500,
-    priceWithWiring: 1200,
-    options: [
-      {
-        id: 'install-products',
-        name: 'Электроустановка',
-        price: 500
-      }
-    ]
-  },
-  {
-    id: 'out-3',
-    type: 'outlet-triple',
-    name: 'Блок из 3-х розеток',
-    image: 'https://cdn.poehali.dev/files/outlet-triple.jpg',
-    description: 'Установка блока розеток со штроблением',
-    category: 'outlet',
-    serviceCategory: 'construction',
-    installType: 'rough',
-    slots: 3,
-    priceInstallOnly: 750,
-    priceWithWiring: 2500,
-    options: [
-      {
-        id: 'install-products',
-        name: 'Электроустановка',
-        price: 750
-      }
-    ]
-  },
-  {
-    id: 'out-4',
-    type: 'outlet-quad',
-    name: 'Блок из 4-х розеток',
-    image: 'https://cdn.poehali.dev/files/outlet-quad.jpg',
-    description: 'Установка блока розеток со штроблением',
-    category: 'outlet',
-    serviceCategory: 'construction',
-    installType: 'rough',
-    slots: 4,
-    priceInstallOnly: 1000,
-    priceWithWiring: 3000,
-    options: [
-      {
-        id: 'install-products',
-        name: 'Электроустановка',
-        price: 1000
-      }
-    ]
-  },
-  {
-    id: 'out-5',
-    type: 'outlet-penta',
-    name: 'Блок из 5 розеток',
-    image: 'https://cdn.poehali.dev/files/outlet-penta.jpg',
-    description: 'Установка блока розеток со штроблением',
-    category: 'outlet',
-    serviceCategory: 'construction',
-    installType: 'rough',
-    slots: 5,
-    priceInstallOnly: 1250,
-    priceWithWiring: 3500,
-    options: [
-      {
-        id: 'install-products',
-        name: 'Электроустановка',
-        price: 1250
-      }
-    ]
-  }
+
 ];
 
 export function calculateFrames(items: CartItem[]): number {

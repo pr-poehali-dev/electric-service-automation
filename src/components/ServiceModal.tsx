@@ -247,7 +247,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
               Строительные услуги
             </h3>
             <p className="text-xs text-muted-foreground mb-3">
-              Этими услугами обычно пользуются дизайнеры интерьеров
+              Этими услугами пользуются дизайнеры интерьеров
             </p>
             <div className="space-y-3">
               {constructionServices.map(renderServiceCard)}
