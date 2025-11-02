@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCart } from '@/contexts/CartContext';
-import { calculateItemPrice, getDiscount, MASTER_VISIT_ID } from '@/types/electrical';
+import { calculateItemPrice, getDiscount, MASTER_VISIT_ID, calculateFrames } from '@/types/electrical';
 import ServiceModal from '@/components/ServiceModal';
 import ContactModal from '@/components/ContactModal';
 import CheckoutModal from '@/components/CheckoutModal';
@@ -26,9 +26,9 @@ export default function Cart() {
     return sum + (fullPrice * discount / 100);
   }, 0);
 
-  const cableMeters = cart
-    .filter(item => item.selectedOption === 'full-wiring')
-    .reduce((sum, item) => sum + (item.product.slots * item.quantity * 7), 0);
+  const wiringItems = cart.filter(item => item.selectedOption === 'full-wiring');
+  const totalFrames = calculateFrames(wiringItems);
+  const cableMeters = totalFrames * 8;
   
   const cableCost = cableMeters * 100;
   const finalTotal = totalPrice + cableCost;
@@ -193,7 +193,7 @@ export default function Cart() {
                                 onCheckedChange={() => updateOption(item.product.id, 'full-wiring')}
                               />
                               <label htmlFor={`${item.product.id}-wiring`} className="text-xs cursor-pointer">
-                                +{item.product.priceWithWiring - item.product.priceInstallOnly} ₽ Подготовить проводку
+                                +{item.product.priceWithWiring - item.product.priceInstallOnly} ₽ Электромонтаж
                               </label>
                             </div>
 
@@ -217,7 +217,7 @@ export default function Cart() {
                           <p className="text-xs text-gray-600">
                             {item.selectedOption === 'install-only' 
                               ? `Установить ${item.product.name.toLowerCase()}` 
-                              : 'Подготовить проводку'}
+                              : 'Электромонтаж'}
                           </p>
                           {item.additionalOptions && item.additionalOptions.length > 0 && (
                             <p className="text-xs text-gray-600">
@@ -266,6 +266,15 @@ export default function Cart() {
                       <span className="text-gray-600">Примерный метраж кабеля</span>
                       <span className="font-semibold">{cableMeters} м</span>
                     </div>
+                    <div className="flex justify-between text-sm text-gray-500 text-xs">
+                      <span>Из расчёта 8м на точку</span>
+                    </div>
+                    {totalFrames > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Потребуется рамок</span>
+                        <span className="font-semibold">{totalFrames} шт</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Стоимость монтажа кабеля</span>
                       <span className="font-semibold">{cableCost.toLocaleString('ru-RU')} ₽</span>

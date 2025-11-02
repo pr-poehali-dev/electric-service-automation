@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
-import { calculateItemPrice, getDiscount } from '@/types/electrical';
+import { calculateItemPrice, getDiscount, calculateFrames } from '@/types/electrical';
 import NewProgressBar from '@/components/NewProgressBar';
 import ContactModal from '@/components/ContactModal';
 
@@ -78,9 +78,9 @@ export default function Checkout() {
     return sum + (fullPrice * discount / 100);
   }, 0);
 
-  const cableMeters = cart
-    .filter(item => item.selectedOption === 'full-wiring')
-    .reduce((sum, item) => sum + (item.product.slots * item.quantity * 7), 0);
+  const wiringItems = cart.filter(item => item.selectedOption === 'full-wiring');
+  const totalFrames = calculateFrames(wiringItems);
+  const cableMeters = totalFrames * 8;
   
   const cableCost = cableMeters * 100;
   const finalTotal = totalPrice + cableCost;

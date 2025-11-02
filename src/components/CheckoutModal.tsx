@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
-import { calculateItemPrice, getDiscount } from '@/types/electrical';
+import { calculateItemPrice, getDiscount, calculateFrames } from '@/types/electrical';
 
 interface CheckoutModalProps {
   open: boolean;
@@ -119,9 +119,9 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
     return sum + (fullPrice * discount / 100);
   }, 0);
 
-  const cableMeters = cart
-    .filter(item => item.selectedOption === 'full-wiring')
-    .reduce((sum, item) => sum + (item.product.slots * item.quantity * 7), 0);
+  const wiringItems = cart.filter(item => item.selectedOption === 'full-wiring');
+  const totalFrames = calculateFrames(wiringItems);
+  const cableMeters = totalFrames * 8;
   
   const cableCost = cableMeters * 100;
   const finalTotal = totalPrice + cableCost;
@@ -254,10 +254,15 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
             )}
             {cableMeters > 0 && (
               <div className="text-sm text-green-700 font-medium bg-green-100 p-3 rounded-lg">
-                Кабель: примерно {cableMeters} метров (из расчёта 7м на точку)
+                Кабель: примерно {cableMeters} метров (из расчёта 8м на точку)
                 <div className="text-xs text-green-600 mt-1">
                   Стоимость кабеля: ~{cableCost.toLocaleString('ru-RU')} ₽
                 </div>
+                {totalFrames > 0 && (
+                  <div className="text-xs text-green-600 mt-2">
+                    Потребуется рамок: {totalFrames} шт.
+                  </div>
+                )}
               </div>
             )}
           </Card>

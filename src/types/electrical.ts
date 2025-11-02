@@ -246,8 +246,8 @@ export function calculateFrames(items: CartItem[]): number {
   return totalFrames;
 }
 
-export function calculateCable(totalPoints: number): number {
-  return Math.ceil(totalPoints * 7);
+export function calculateCable(totalFrames: number): number {
+  return Math.ceil(totalFrames * 8);
 }
 
 export function calculateTotals(items: CartItem[]) {
@@ -265,8 +265,8 @@ export function calculateTotals(items: CartItem[]) {
   });
   
   const totalPoints = totalSwitches + totalOutlets;
-  const estimatedCable = calculateCable(totalPoints) || 0;
   const estimatedFrames = calculateFrames(items) || 0;
+  const estimatedCable = calculateCable(estimatedFrames) || 0;
   
   return {
     totalSwitches: totalSwitches || 0,
