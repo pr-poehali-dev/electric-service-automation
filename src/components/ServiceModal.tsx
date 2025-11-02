@@ -22,21 +22,24 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
     const quantity = inCart?.quantity || 0;
     const isRepairSelected = inCart?.selectedOption === 'repair';
     const isInstallOrWiringSelected = inCart?.selectedOption === 'install-only' || inCart?.selectedOption === 'full-wiring';
+    const showOptions = quantity > 0;
 
     return (
       <Card key={product.id} className="p-4 hover:shadow-lg transition-all">
-        <div className="flex items-start gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl flex-shrink-0 flex items-center justify-center border border-blue-200">
-            {product.category === 'switch' ? (
-              <Icon name="Power" size={32} className="text-primary" />
-            ) : product.category === 'cable' ? (
-              <Icon name="Cable" size={32} className="text-primary" />
-            ) : product.category === 'chandelier' ? (
-              <Icon name="Lightbulb" size={32} className="text-primary" />
-            ) : (
-              <Icon name="Plug" size={32} className="text-primary" />
-            )}
-          </div>
+        <div className="flex items-start gap-3">
+          {!showOptions && (
+            <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl flex-shrink-0 flex items-center justify-center border border-blue-200">
+              {product.category === 'switch' ? (
+                <Icon name="Power" size={28} className="text-primary" />
+              ) : product.category === 'cable' ? (
+                <Icon name="Cable" size={28} className="text-primary" />
+              ) : product.category === 'chandelier' ? (
+                <Icon name="Lightbulb" size={28} className="text-primary" />
+              ) : (
+                <Icon name="Plug" size={28} className="text-primary" />
+              )}
+            </div>
+          )}
           
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-base mb-1">{product.name}</h3>
@@ -52,26 +55,28 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                 Добавить
               </Button>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => updateQuantity(product.id, quantity - 1)}
+                    className="h-8 w-8 p-0"
                   >
                     <Icon name="Minus" size={14} />
                   </Button>
-                  <span className="font-semibold text-sm px-2">{quantity}</span>
+                  <span className="font-semibold text-sm px-2 min-w-[2rem] text-center">{quantity}</span>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => updateQuantity(product.id, quantity + 1)}
+                    className="h-8 w-8 p-0"
                   >
                     <Icon name="Plus" size={14} />
                   </Button>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Checkbox
                       id={`${product.id}-install`}
@@ -79,7 +84,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                       onCheckedChange={() => updateOption(product.id, 'install-only')}
                       disabled={isRepairSelected}
                     />
-                    <label htmlFor={`${product.id}-install`} className={`text-xs cursor-pointer ${isRepairSelected ? 'opacity-50' : ''}`}>
+                    <label htmlFor={`${product.id}-install`} className={`text-xs cursor-pointer flex-1 ${isRepairSelected ? 'opacity-50' : ''}`}>
                       +{product.priceInstallOnly} ₽ Установить {product.name.toLowerCase()}
                     </label>
                   </div>
@@ -91,7 +96,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                       onCheckedChange={() => updateOption(product.id, 'full-wiring')}
                       disabled={isRepairSelected}
                     />
-                    <label htmlFor={`${product.id}-wiring`} className={`text-xs cursor-pointer ${isRepairSelected ? 'opacity-50' : ''}`}>
+                    <label htmlFor={`${product.id}-wiring`} className={`text-xs cursor-pointer flex-1 ${isRepairSelected ? 'opacity-50' : ''}`}>
                       +{product.priceWithWiring - product.priceInstallOnly} ₽ Подготовить проводку
                     </label>
                   </div>
@@ -121,7 +126,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                         />
                         <label 
                           htmlFor={`${product.id}-${option.id}`} 
-                          className={`text-xs cursor-pointer ${disabled ? 'opacity-50' : ''}`}
+                          className={`text-xs cursor-pointer flex-1 ${disabled ? 'opacity-50' : ''}`}
                         >
                           {isConduitOption ? `+${option.price} ₽ ${option.name}` : (
                             isRepairOption ? `${option.name}` : `+${option.price} ₽ ${option.name}`
@@ -132,11 +137,19 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                   })}
                 </div>
 
-                {inCart && (
-                  <div className="text-sm font-bold text-primary">
-                    Итого: {calculateItemPrice(inCart).toLocaleString('ru-RU')} ₽
-                  </div>
-                )}
+                <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                  <span className="text-sm font-bold text-primary">
+                    {calculateItemPrice(inCart!).toLocaleString('ru-RU')} ₽
+                  </span>
+                  <Button
+                    size="sm"
+                    onClick={() => addToCart(product, quantity)}
+                    className="bg-primary hover:bg-primary/90 h-8"
+                  >
+                    <Icon name="Check" size={14} className="mr-1" />
+                    Добавить
+                  </Button>
+                </div>
               </div>
             )}
           </div>

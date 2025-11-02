@@ -17,112 +17,98 @@ export default function Services() {
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const handleNewOrderClick = () => {
+    setShowCalculatorModal(true);
+  };
+
+  const handleCalculatorClose = () => {
+    setShowCalculatorModal(false);
+    setShowServiceModal(true);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-white">
       <img 
-        src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
+        src="https://cdn.poehali.dev/files/79f8adc0-8ecb-49ba-b486-a4809ae5c84e.png"
         alt="Калининград"
-        className="w-full h-48 object-cover"
+        className="w-full h-auto object-cover"
       />
 
-      <div className="max-w-md mx-auto">
-        <div className="bg-white shadow-xl p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-800 flex-1">
-              БАЛТСЕТЬ | Услуги электрика ³⁹
-            </h1>
-            <button
-              onClick={() => setShowContactModal(true)}
-              className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-gray-700 hover:text-blue-600 transition-colors duration-300"
-              title="Меню связи"
-            >
-              <Icon name="Menu" size={28} />
-            </button>
+      <div className="max-w-md mx-auto p-6 space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform" onClick={() => navigate('/orders')}>
+            <Icon name="ClipboardList" size={32} className="text-white" />
           </div>
-
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 p-6 space-y-4">
-            <div className="text-center space-y-2">
-              <h2 className="text-3xl font-bold text-gray-800">
-                УСЛУГИ ЭЛЕКТРИКА
-              </h2>
-              <p className="text-lg text-gray-700">
-                Рассчитайте стоимость работы в Калининграде за 2 минуты
-              </p>
-            </div>
-
-            <Button
-              onClick={() => setShowCalculatorModal(true)}
-              className="w-full h-14 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg"
-            >
-              📋 Анкета для расчёта работ
-            </Button>
-          </Card>
-
-          {totalItems > 0 && (
-            <Button
-              size="lg"
-              onClick={() => navigate('/cart')}
-              className="w-full h-16 text-lg font-bold shadow-xl bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 relative animate-pulse-subtle"
-            >
-              Перейти к плану работ ({totalItems})
-            </Button>
-          )}
-
-          <div className="grid grid-cols-2 gap-4 pt-4">
-            <Card className="p-6 text-center hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer" onClick={() => navigate('/portfolio')}>
-              <Icon name="ImageIcon" size={40} className="text-blue-600 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-800">Портфолио</h3>
-              <p className="text-sm text-gray-600 mt-1">Наши работы</p>
-            </Card>
-            <Card className="p-6 text-center hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer" onClick={() => navigate('/profile')}>
-              <Icon name="User" size={40} className="text-indigo-600 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-800">Личный кабинет</h3>
-              <p className="text-sm text-gray-600 mt-1">Мои заявки</p>
-            </Card>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-800">Мои заявки</h2>
+            <p className="text-sm text-gray-600">История и статусы заказов</p>
           </div>
-
-          <Card className="bg-blue-50 border-blue-200 p-6 text-center">
-            <h3 className="font-bold text-lg mb-3 text-gray-800">Наши преимущества</h3>
-            <div className="space-y-3 text-left">
-              <div className="flex items-start gap-3">
-                <Icon name="CheckCircle" size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-gray-800">Опыт более 10 лет</p>
-                  <p className="text-sm text-gray-600">Профессиональная команда</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Icon name="CheckCircle" size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-gray-800">Гарантия на работы</p>
-                  <p className="text-sm text-gray-600">Качество подтверждено документально</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Icon name="CheckCircle" size={20} className="text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-gray-800">Прозрачные цены</p>
-                  <p className="text-sm text-gray-600">Никаких скрытых платежей</p>
-                </div>
-              </div>
-            </div>
-          </Card>
         </div>
+
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform" onClick={handleNewOrderClick}>
+            <Icon name="Plus" size={32} className="text-white" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-800">Новая заявка</h2>
+            <p className="text-sm text-gray-600">Заказать услуги электрика</p>
+          </div>
+        </div>
+
+        <Card className="bg-blue-50 border-blue-200 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Icon name="Phone" size={24} className="text-blue-600" />
+            <h3 className="font-bold text-lg text-gray-800">Контакты</h3>
+          </div>
+          
+          <div className="space-y-3">
+            <a href="tel:+74012520725" className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors">
+              <Icon name="Phone" size={20} className="text-green-600" />
+              <div>
+                <p className="font-semibold text-gray-800">Позвонить</p>
+                <p className="text-sm text-gray-600">+7 (4012) 52-07-25</p>
+              </div>
+            </a>
+            
+            <a href="https://t.me/konigelectric" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors">
+              <Icon name="Send" size={20} className="text-blue-600" />
+              <div>
+                <p className="font-semibold text-gray-800">Telegram</p>
+                <p className="text-sm text-gray-600">@konigelectric</p>
+              </div>
+            </a>
+            
+            <a href="https://vk.com/konigelectric" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors">
+              <Icon name="MessageCircle" size={20} className="text-indigo-600" />
+              <div>
+                <p className="font-semibold text-gray-800">ВКонтакте</p>
+                <p className="text-sm text-gray-600">Бесплатная консультация</p>
+              </div>
+            </a>
+          </div>
+        </Card>
+
+        <Card className="bg-yellow-50 border-yellow-200 p-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Icon name="Info" size={24} className="text-yellow-600" />
+            <h3 className="font-bold text-lg text-gray-800">О нас</h3>
+          </div>
+          <p className="text-sm text-gray-700 mb-2">
+            <strong>БАЛТСЕТЬ | Услуги электрика ³⁹</strong>
+          </p>
+          <p className="text-sm text-gray-700 mb-2">
+            ООО "Кёниг Электрик" — профессиональные электромонтажные работы в Калининграде и области
+          </p>
+          <div className="flex items-center gap-2 text-sm text-gray-600 mt-3">
+            <Icon name="Clock" size={16} className="text-orange-600" />
+            <span>Работаем: Пн-Вс, 8:00 - 20:00</span>
+          </div>
+        </Card>
       </div>
 
       <ServiceModal open={showServiceModal} onClose={() => setShowServiceModal(false)} />
       <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
-      <CalculatorModal open={showCalculatorModal} onClose={() => setShowCalculatorModal(false)} />
-
-      <style>{`
-        @keyframes pulse-subtle {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.02); }
-        }
-        .animate-pulse-subtle {
-          animation: pulse-subtle 2s ease-in-out infinite;
-        }
-      `}</style>
+      <CalculatorModal open={showCalculatorModal} onClose={handleCalculatorClose} />
     </div>
   );
 }

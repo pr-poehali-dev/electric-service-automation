@@ -18,8 +18,9 @@ export default function CalculatorModal({ open, onClose }: CalculatorModalProps)
   const defaults = selectedRoom ? ROOM_DEFAULTS[selectedRoom as RoomType] : null;
 
   const handleContinue = () => {
-    onClose();
-    navigate('/products');
+    if (selectedRoom) {
+      onClose();
+    }
   };
 
   return (

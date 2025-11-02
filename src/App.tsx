@@ -47,8 +47,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-      <Route path="/" element={<Orders />} />
-      <Route path="/services" element={<Services />} />
+      <Route path="/" element={<Services />} />
       <Route path="/calculator" element={<Calculator />} />
       <Route path="/electrical" element={<ElectricalHome />} />
       <Route path="/products" element={<Products />} />
@@ -56,6 +55,7 @@ const AppRoutes = () => {
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/portfolio" element={<Portfolio />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/orders" element={<Orders />} />
       <Route path="/old-home" element={<Home />} />
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/schedule" element={<Schedule />} />
