@@ -43,7 +43,7 @@ export default function Orders() {
 
   const handleNewOrder = () => {
     clearCart();
-    setShowProductModal(true);
+    navigate('/products');
   };
 
   useEffect(() => {

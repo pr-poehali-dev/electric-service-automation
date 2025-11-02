@@ -23,7 +23,8 @@ export default function Products() {
     const inCart = cart.find(item => item.product.id === product.id);
     const quantity = inCart?.quantity || 0;
     const isRepairSelected = inCart?.selectedOption === 'repair';
-    const isInstallOrWiringSelected = inCart?.selectedOption === 'install-only' || inCart?.selectedOption === 'full-wiring';
+    const isInstallSelected = inCart?.additionalOptions?.includes('install') || inCart?.selectedOption === 'install-only';
+    const isWiringSelected = inCart?.additionalOptions?.includes('wiring') || inCart?.selectedOption === 'full-wiring';
     const showOptions = expandedProduct === product.id;
 
     return (
@@ -106,7 +107,7 @@ export default function Products() {
                   
                   {product.options?.map(option => {
                     const isRepairOption = option.id === 'repair';
-                    const disabled = isRepairOption && isInstallOrWiringSelected;
+                    const disabled = isRepairOption && (isInstallSelected || isWiringSelected);
 
                     return (
                       <div 
@@ -154,15 +155,15 @@ export default function Products() {
                     <>
                       <div 
                         className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
-                          inCart?.selectedOption === 'install-only'
+                          isInstallSelected
                             ? 'bg-green-100 shadow-sm' 
                             : 'bg-white hover:bg-gray-50'
                         } ${isRepairSelected ? 'opacity-50' : ''}`}
-                        onClick={() => !isRepairSelected && updateOption(product.id, 'install-only')}
+                        onClick={() => !isRepairSelected && toggleAdditionalOption(product.id, 'install')}
                       >
                         <Checkbox
                           id={`${product.id}-install`}
-                          checked={inCart?.selectedOption === 'install-only'}
+                          checked={isInstallSelected}
                           disabled={isRepairSelected}
                           className="cursor-pointer"
                         />
@@ -175,27 +176,27 @@ export default function Products() {
                           </span>
                         ) : (
                           <span className="text-xs text-gray-500">
-                            250 ₽/штука
+                            250 ₽/шт
                           </span>
                         )}
                       </div>
                       
                       <div 
                         className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
-                          inCart?.selectedOption === 'full-wiring'
+                          isWiringSelected
                             ? 'bg-green-100 shadow-sm' 
                             : 'bg-white hover:bg-gray-50'
                         } ${isRepairSelected ? 'opacity-50' : ''}`}
-                        onClick={() => !isRepairSelected && updateOption(product.id, 'full-wiring')}
+                        onClick={() => !isRepairSelected && toggleAdditionalOption(product.id, 'wiring')}
                       >
                         <Checkbox
                           id={`${product.id}-wiring`}
-                          checked={inCart?.selectedOption === 'full-wiring'}
+                          checked={isWiringSelected}
                           disabled={isRepairSelected}
                           className="cursor-pointer"
                         />
                         <label htmlFor={`${product.id}-wiring`} className="text-sm cursor-pointer flex-1 font-medium">
-                          Добавить / Перенести
+                          Добавить/перенести
                         </label>
                         <span className="text-sm font-bold text-green-600">
                           +{product.priceWithWiring} ₽

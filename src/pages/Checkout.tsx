@@ -235,10 +235,9 @@ export default function Checkout() {
           <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 animate-fadeIn">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm text-green-800 font-medium mb-1">💰 Стоимость работ</p>
+                <p className="text-sm text-green-800 font-medium mb-1">Стоимость работ</p>
                 <div className="text-3xl font-bold text-green-900">{finalTotal.toLocaleString('ru-RU')} ₽</div>
               </div>
-              <Icon name="BadgeCheck" size={48} className="text-green-600" />
             </div>
             {totalDiscount > 0 && (
               <div className="text-sm text-green-700 mb-2">
@@ -247,7 +246,7 @@ export default function Checkout() {
             )}
             {cableMeters > 0 && (
               <div className="text-sm text-green-700">
-                📏 Примерный метраж кабеля: {cableMeters} м
+                📏 Материал исходя из {cableMeters} м кабеля: ~{cableCost.toLocaleString('ru-RU')} ₽
               </div>
             )}
           </Card>

@@ -103,7 +103,7 @@ export default function ContactModal({ open, onClose }: ContactModalProps) {
           </a>
 
           <a
-            href="https://baltset.ru/portfolio/"
+            href="https://vk.com/wall1166188_6467"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-xl shadow-lg transition-all duration-300 hover:scale-105"

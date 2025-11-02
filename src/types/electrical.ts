@@ -200,18 +200,29 @@ export function calculateTotals(items: CartItem[]) {
 export function calculateItemPrice(item: CartItem): number {
   let basePrice = 0;
   
-  if (item.selectedOption === 'install-only') {
+  const hasInstall = item.additionalOptions?.includes('install') || item.selectedOption === 'install-only';
+  const hasWiring = item.additionalOptions?.includes('wiring') || item.selectedOption === 'full-wiring';
+  
+  if (hasInstall && hasWiring) {
+    basePrice = item.product.priceInstallOnly + item.product.priceWithWiring;
+  } else if (hasInstall) {
     basePrice = item.product.priceInstallOnly;
-  } else {
+  } else if (hasWiring) {
+    basePrice = item.product.priceWithWiring;
+  } else if (item.selectedOption === 'install-only') {
+    basePrice = item.product.priceInstallOnly;
+  } else if (item.selectedOption === 'full-wiring') {
     basePrice = item.product.priceWithWiring;
   }
   
   let optionsPrice = 0;
   if (item.additionalOptions && item.product.options) {
     item.additionalOptions.forEach(optionId => {
-      const option = item.product.options?.find(o => o.id === optionId);
-      if (option) {
-        optionsPrice += option.price;
+      if (optionId !== 'install' && optionId !== 'wiring') {
+        const option = item.product.options?.find(o => o.id === optionId);
+        if (option) {
+          optionsPrice += option.price;
+        }
       }
     });
   }

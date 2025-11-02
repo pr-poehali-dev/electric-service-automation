@@ -54,10 +54,10 @@ export default function Cart() {
                 Добавьте услуги для формирования плана работ
               </p>
               <Button
-                onClick={() => setShowServiceModal(true)}
+                onClick={() => navigate('/products')}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
-                Добавить услуги
+                Добавить задачи
               </Button>
             </Card>
           </div>
@@ -77,11 +77,7 @@ export default function Cart() {
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
         <div className="p-6 space-y-4">
-          <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-200 overflow-hidden animate-fadeIn">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 text-center">
-              <h2 className="text-2xl font-bold mb-1">Список задач</h2>
-            </div>
-
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-fadeIn">
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-gray-700">План</h3>
@@ -139,8 +135,8 @@ export default function Cart() {
                             <div className="flex items-center gap-2">
                               <Checkbox
                                 id={`${item.product.id}-install`}
-                                checked={item.selectedOption === 'install-only'}
-                                onCheckedChange={() => updateOption(item.product.id, 'install-only')}
+                                checked={item.additionalOptions?.includes('install')}
+                                onCheckedChange={() => toggleAdditionalOption(item.product.id, 'install')}
                               />
                               <label htmlFor={`${item.product.id}-install`} className="text-xs cursor-pointer">
                                 +{item.product.priceInstallOnly} ₽ Установить {item.product.name.toLowerCase()}
@@ -150,11 +146,11 @@ export default function Cart() {
                             <div className="flex items-center gap-2">
                               <Checkbox
                                 id={`${item.product.id}-wiring`}
-                                checked={item.selectedOption === 'full-wiring'}
-                                onCheckedChange={() => updateOption(item.product.id, 'full-wiring')}
+                                checked={item.additionalOptions?.includes('wiring')}
+                                onCheckedChange={() => toggleAdditionalOption(item.product.id, 'wiring')}
                               />
                               <label htmlFor={`${item.product.id}-wiring`} className="text-xs cursor-pointer">
-                                +{item.product.priceWithWiring - item.product.priceInstallOnly} ₽ Электромонтаж
+                                +{item.product.priceWithWiring} ₽ Добавить/перенести
                               </label>
                             </div>
 
@@ -175,9 +171,10 @@ export default function Cart() {
                       ) : (
                         <div className="mt-1">
                           <p className="text-xs text-gray-600">
-                            Количество: {item.quantity} шт, {item.selectedOption === 'install-only' 
-                              ? `Установить ${item.product.name.toLowerCase()}` 
-                              : 'Электромонтаж'}{item.additionalOptions && item.additionalOptions.length > 0 && `, + ${item.product.options?.filter(o => item.additionalOptions?.includes(o.id)).map(o => o.name).join(', ')}`}
+                            {item.quantity} шт
+                            {item.additionalOptions?.includes('install') && `, Установить`}
+                            {item.additionalOptions?.includes('wiring') && `, Добавить/перенести`}
+                            {item.additionalOptions && item.product.options && item.additionalOptions.filter(id => id !== 'install' && id !== 'wiring').length > 0 && `, + ${item.product.options.filter(o => item.additionalOptions?.includes(o.id)).map(o => o.name).join(', ')}`}
                           </p>
                         </div>
                       )}
@@ -253,12 +250,12 @@ export default function Cart() {
           </div>
 
           <Button
-            onClick={() => setShowServiceModal(true)}
+            onClick={() => navigate('/products')}
             variant="outline"
             className="w-full h-12 border-2 border-dashed border-blue-300 hover:border-blue-400 hover:bg-blue-50"
           >
             <Icon name="Plus" size={18} className="mr-2" />
-            Добавить ещё задачи в план работ
+            Добавить ещё задачи
           </Button>
 
           <Button
