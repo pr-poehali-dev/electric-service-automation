@@ -49,9 +49,9 @@ export default function Cart() {
           <div className="p-6">
             <Card className="p-12 text-center bg-white">
               <Icon name="ShoppingCart" size={64} className="text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">План работ пуст</h3>
+              <h3 className="text-lg font-semibold mb-2">Задачи</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Добавьте услуги для формирования плана работ
+                Добавьте услуги для формирования списка задач
               </p>
               <Button
                 onClick={() => navigate('/products')}
@@ -80,7 +80,7 @@ export default function Cart() {
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-fadeIn">
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-700">План</h3>
+                <h3 className="font-semibold text-gray-700">Задачи</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -252,7 +252,7 @@ export default function Cart() {
           <Button
             onClick={() => navigate('/products')}
             variant="outline"
-            className="w-full h-12 border-2 border-dashed border-blue-300 hover:border-blue-400 hover:bg-blue-50"
+            className="w-full h-12 border-2 border-dashed border-blue-300 hover:border-blue-400 hover:bg-blue-50 hover:text-foreground"
           >
             <Icon name="Plus" size={18} className="mr-2" />
             Добавить ещё задачи

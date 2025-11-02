@@ -92,32 +92,6 @@ export const PRODUCTS: Product[] = [
     priceWithWiring: 500
   },
   {
-    id: 'sw-1',
-    type: 'switch-single',
-    name: 'Выключатель',
-    image: 'https://cdn.poehali.dev/files/switch-single.jpg',
-    description: 'Установка выключателя',
-    category: 'switch',
-    serviceCategory: 'popular',
-    installType: 'finish',
-    slots: 1,
-    priceInstallOnly: 250,
-    priceWithWiring: 1500
-  },
-  {
-    id: 'out-1',
-    type: 'outlet-single',
-    name: 'Розетка',
-    image: 'https://cdn.poehali.dev/files/outlet-single.jpg',
-    description: 'Установка розетки',
-    category: 'outlet',
-    serviceCategory: 'popular',
-    installType: 'finish',
-    slots: 1,
-    priceInstallOnly: 250,
-    priceWithWiring: 850
-  },
-  {
     id: 'chandelier-1',
     type: 'chandelier',
     name: 'Установить люстру',
@@ -139,6 +113,54 @@ export const PRODUCTS: Product[] = [
         id: 'assemble',
         name: 'Сборка люстры',
         price: 500
+      }
+    ]
+  },
+  {
+    id: 'sw-1',
+    type: 'switch-single',
+    name: 'Выключатель',
+    image: 'https://cdn.poehali.dev/files/switch-single.jpg',
+    description: 'Установка выключателя',
+    category: 'switch',
+    serviceCategory: 'popular',
+    installType: 'finish',
+    slots: 1,
+    priceInstallOnly: 250,
+    priceWithWiring: 1500
+  },
+  {
+    id: 'out-1',
+    type: 'outlet-single',
+    name: 'Розетка',
+    image: 'https://cdn.poehali.dev/files/outlet-single.jpg',
+    description: 'Черновые работы со штроблением, сверлением и установкой подрозетника',
+    category: 'outlet',
+    serviceCategory: 'popular',
+    installType: 'finish',
+    slots: 1,
+    priceInstallOnly: 250,
+    priceWithWiring: 850,
+    options: [
+      {
+        id: 'block-2',
+        name: 'Блок из 2-х розеток',
+        price: 1200
+      },
+      {
+        id: 'block-3',
+        name: 'Блок из 3-х розеток',
+        price: 2500
+      },
+      {
+        id: 'block-4',
+        name: 'Блок из 4-х розеток',
+        price: 3000
+      },
+      {
+        id: 'block-5',
+        name: 'Блок из 5 розеток',
+        price: 3500
       }
     ]
   },

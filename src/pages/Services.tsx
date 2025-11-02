@@ -83,7 +83,7 @@ export default function Services() {
             О нас
           </h3>
           <p className="text-sm text-gray-700 mb-2">
-            ООО "Кёниг Электрик" — профессиональные электромонтажные работы в Калининграде и области
+            БАЛТСЕТЬ <sup className="text-xs text-primary">³⁹</sup> — профессиональные электромонтажные работы в Калининграде и области
           </p>
           <p className="text-sm text-gray-600 flex items-center gap-2">
             <Icon name="Clock" size={16} className="text-orange-600" />

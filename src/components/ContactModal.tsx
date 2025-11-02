@@ -30,21 +30,6 @@ export default function ContactModal({ open, onClose }: ContactModalProps) {
           </a>
 
           <a
-            href="https://t.me/konigelectric"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
-          >
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <Icon name="Send" size={24} />
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold">Telegram</p>
-              <p className="text-sm opacity-90">@konigelectric</p>
-            </div>
-          </a>
-
-          <a
             href="https://vk.com/im?sel=-23524557"
             target="_blank"
             rel="noopener noreferrer"

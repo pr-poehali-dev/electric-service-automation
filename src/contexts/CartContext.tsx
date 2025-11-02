@@ -48,7 +48,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : item
         );
       } else {
-        updatedCart = [...prev, { product, quantity, selectedOption: option, additionalOptions: [] }];
+        const initialOptions: string[] = [];
+        if (product.category === 'switch' || product.category === 'outlet') {
+          initialOptions.push('install');
+        }
+        updatedCart = [...prev, { product, quantity, selectedOption: option, additionalOptions: initialOptions }];
       }
       
       // Автоматически добавляем выезд мастера, если его нет и это не сам выезд мастера

@@ -17,7 +17,6 @@ export default function Products() {
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
 
   const popularServices = PRODUCTS.filter(p => p.serviceCategory === 'popular' && p.id !== MASTER_VISIT_ID);
-  const constructionServices = PRODUCTS.filter(p => p.serviceCategory === 'construction');
 
   const renderServiceCard = (product: Product) => {
     const inCart = cart.find(item => item.product.id === product.id);
@@ -254,21 +253,9 @@ export default function Products() {
 
         <div className="p-6 space-y-6">
           <div>
-            <h3 className="font-semibold text-lg mb-3 text-gray-800">Популярные услуги</h3>
+            <h3 className="font-semibold text-lg mb-3 text-gray-800">Электромонтажные работы</h3>
             <div className="space-y-3">
               {popularServices.map(renderServiceCard)}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-lg mb-3 text-gray-800">
-              Строительные услуги
-            </h3>
-            <p className="text-xs text-muted-foreground mb-3">
-              Этими услугами пользуются дизайнеры интерьеров
-            </p>
-            <div className="space-y-3">
-              {constructionServices.map(renderServiceCard)}
             </div>
           </div>
         </div>
@@ -282,7 +269,7 @@ export default function Products() {
               className="flex-1 h-14 text-base font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
             >
               <Icon name="Check" size={18} className="mr-2" />
-              Перейти в план работ ({totalItems})
+              Список задач ({totalItems})
             </Button>
           </div>
         </div>

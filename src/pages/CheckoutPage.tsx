@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import InputMask from 'react-input-mask';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
@@ -34,10 +34,36 @@ export default function CheckoutPage() {
     return sum + (fullPrice * discount / 100);
   }, 0);
 
-  const wiringItems = cart.filter(item => item.selectedOption === 'full-wiring');
-  const totalFrames = calculateFrames(wiringItems);
-  const cableMeters = totalFrames * 8;
-  const cableCost = cableMeters * 100;
+  const wiringItems = cart.filter(item => 
+    item.additionalOptions?.includes('wiring') || 
+    item.selectedOption === 'full-wiring' ||
+    item.additionalOptions?.some(opt => opt.startsWith('block-'))
+  );
+  
+  const totalFrames = wiringItems.reduce((sum, item) => {
+    let frames = 0;
+    if (item.additionalOptions?.includes('install') || item.selectedOption === 'install-only') {
+      frames += item.quantity;
+    }
+    if (item.additionalOptions?.some(opt => opt.startsWith('block-'))) {
+      frames += item.quantity * item.additionalOptions.filter(opt => opt.startsWith('block-')).length;
+    }
+    return sum + frames;
+  }, 0);
+  
+  const cableMeters = wiringItems.reduce((sum, item) => {
+    let meters = 0;
+    if (item.additionalOptions?.includes('wiring') || item.selectedOption === 'full-wiring') {
+      meters += item.quantity * 8;
+    }
+    if (item.additionalOptions?.some(opt => opt.startsWith('block-'))) {
+      const blockCount = item.additionalOptions.filter(opt => opt.startsWith('block-')).length;
+      meters += item.quantity * blockCount * 8;
+    }
+    return sum + meters;
+  }, 0);
+  
+  const cableCost = Math.round(cableMeters * 100);
   const materialsCost = Math.round(cableMeters * 130);
   const finalTotal = totalPrice + cableCost;
 
@@ -74,8 +100,8 @@ export default function CheckoutPage() {
               <label className="block text-sm font-semibold mb-2">
                 Телефон <span className="text-red-500">*</span>
               </label>
-              <InputMask
-                mask="+7 (999) 999-99-99"
+              <input
+                type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
@@ -104,7 +130,7 @@ export default function CheckoutPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold mb-2">
-                  Дата (необязательно)
+                  Дата
                 </label>
                 <input
                   type="date"
@@ -116,7 +142,7 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="block text-sm font-semibold mb-2">
-                  Время (необязательно)
+                  Время
                 </label>
                 <input
                   type="time"
@@ -142,15 +168,26 @@ export default function CheckoutPage() {
 
               {cableMeters > 0 && (
                 <>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Ориентировочный метраж кабеля:</span>
+                    <span className="font-semibold">{cableMeters} м</span>
+                  </div>
                   <div className="flex justify-between text-sm">
-                    <span>Монтаж кабеля ({cableMeters} м):</span>
+                    <span>Монтаж кабеля:</span>
                     <span className="font-bold">{cableCost.toLocaleString('ru-RU')} ₽</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>~Базовые материалы:</span>
+                    <span>Базовые материалы (ориентировочно):</span>
                     <span className="font-semibold">{materialsCost.toLocaleString('ru-RU')} ₽</span>
                   </div>
                 </>
+              )}
+              
+              {totalFrames > 0 && (
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Необходимо рамок:</span>
+                  <span className="font-semibold">{totalFrames} шт</span>
+                </div>
               )}
 
               {totalDiscount > 0 && (

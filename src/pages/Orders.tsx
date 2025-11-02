@@ -327,7 +327,7 @@ export default function Orders() {
                   className="gap-2"
                 >
                   <Icon name="Plus" size={16} />
-                  + Добавить задачи
+                  Добавить задачи
                 </Button>
               </div>
               
