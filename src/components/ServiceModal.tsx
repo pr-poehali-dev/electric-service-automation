@@ -230,7 +230,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader className="relative">
+        <DialogHeader className="relative sr-only">
           <DialogTitle>Выберите услуги</DialogTitle>
         </DialogHeader>
         

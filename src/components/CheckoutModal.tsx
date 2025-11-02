@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import InputMask from 'react-input-mask';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -44,23 +45,11 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
       time: ''
     };
 
-    if (!formData.phone) {
+    if (!formData.phone || formData.phone.replace(/[^0-9]/g, '').length < 11) {
       newErrors.phone = 'Укажите номер телефона';
-    } else if (!/^\+?[0-9]{10,15}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = 'Некорректный формат телефона';
     }
 
-    if (!formData.address) {
-      newErrors.address = 'Укажите адрес';
-    }
 
-    if (!formData.date) {
-      newErrors.date = 'Выберите дату';
-    }
-
-    if (!formData.time) {
-      newErrors.time = 'Выберите время';
-    }
 
     setErrors(newErrors);
     return !Object.values(newErrors).some(err => err);
@@ -129,7 +118,7 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="sr-only">
           <DialogTitle className="text-2xl font-bold">Запись к мастеру</DialogTitle>
         </DialogHeader>
 
@@ -145,11 +134,11 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
                 <label className="text-sm font-medium mb-2 block">
                   Номер телефона <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="tel"
-                  placeholder="+7 (___) ___-__-__"
+                <InputMask
+                  mask="+7 (999) 999-99-99"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="+7 (___) ___-__-__"
                   className={`w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
                     errors.phone ? 'border-red-500' : 'border-gray-300'
                   }`}
@@ -164,7 +153,7 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
 
               <div ref={addressRef} className={shakeField === 'address' ? 'shake-animation' : ''}>
                 <label className="text-sm font-medium mb-2 block">
-                  Адрес выполнения работ <span className="text-red-500">*</span>
+                  Адрес выполнения работ
                 </label>
                 <input
                   type="text"
@@ -194,7 +183,7 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
             <div className="grid grid-cols-2 gap-4">
               <div ref={dateRef} className={shakeField === 'date' ? 'shake-animation' : ''}>
                 <label className="text-sm font-medium mb-2 block text-gray-700">
-                  Дата <span className="text-red-500">*</span>
+                  Дата
                 </label>
                 <input
                   type="date"
@@ -211,7 +200,7 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
               </div>
               <div ref={timeRef} className={shakeField === 'time' ? 'shake-animation' : ''}>
                 <label className="text-sm font-medium mb-2 block text-gray-700">
-                  Время <span className="text-red-500">*</span>
+                  Время
                 </label>
                 <select
                   value={formData.time}
@@ -253,17 +242,20 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
               </div>
             )}
             {cableMeters > 0 && (
-              <div className="text-sm text-green-700 font-medium bg-green-100 p-3 rounded-lg">
-                Кабель: примерно {cableMeters} метров (из расчёта 8м на точку)
-                <div className="text-xs text-green-600 mt-1">
-                  Стоимость кабеля: ~{cableCost.toLocaleString('ru-RU')} ₽
-                </div>
-                {totalFrames > 0 && (
-                  <div className="text-xs text-green-600 mt-2">
-                    Потребуется рамок: {totalFrames} шт.
+              <>
+                <div className="text-sm text-green-700 font-medium bg-green-100 p-3 rounded-lg">
+                  Кабель: примерно {cableMeters} метров
+                  <div className="text-xs text-green-600 mt-1">
+                    Стоимость кабеля: ~{cableCost.toLocaleString('ru-RU')} ₽
                   </div>
-                )}
-              </div>
+                </div>
+                <div className="text-sm text-green-700 font-medium bg-green-100 p-3 rounded-lg mt-2">
+                  Базовые материалы для черновых работ: ~{Math.round(cableMeters * 130).toLocaleString('ru-RU')} ₽
+                  <div className="text-xs text-green-600 mt-1">
+                    Из расчёта 130₽ на 1 погонный метр кабеля
+                  </div>
+                </div>
+              </>
             )}
           </Card>
 

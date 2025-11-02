@@ -88,13 +88,6 @@ export default function Orders() {
                 </Button>
                 <h1 className="text-2xl font-bold text-gray-800 flex-1">Заявка {selectedOrder.id}</h1>
               </div>
-              <button
-                onClick={() => setShowContactModal(true)}
-                className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-gray-700 hover:text-blue-600 transition-colors duration-300"
-                title="Меню связи"
-              >
-                <Icon name="Menu" size={28} />
-              </button>
             </div>
           </div>
 
@@ -224,7 +217,7 @@ export default function Orders() {
                   <AccordionTrigger className="px-6 hover:no-underline">
                     <div className="flex items-center gap-2">
                       <Icon name="Calculator" size={20} className="text-primary" />
-                      <span className="font-bold">Расчёты</span>
+                      <span className="font-bold">Объём работ</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-6">
@@ -320,7 +313,7 @@ export default function Orders() {
                 onClick={handleNewOrder}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
-                Уточнить задачу
++ Добавить заказ
               </Button>
             </Card>
           ) : (
@@ -334,7 +327,7 @@ export default function Orders() {
                   className="gap-2"
                 >
                   <Icon name="Plus" size={16} />
-                  Уточнить задачу
+                  + Добавить заказ
                 </Button>
               </div>
               

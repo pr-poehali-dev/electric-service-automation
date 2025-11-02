@@ -14,6 +14,14 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
       <Button 
         variant="ghost" 
         size="icon" 
+        onClick={() => navigate('/')}
+        title="Главная"
+      >
+        <Icon name="Home" size={20} />
+      </Button>
+      <Button 
+        variant="ghost" 
+        size="icon" 
         onClick={onContactClick}
         title="Связь"
       >
@@ -30,18 +38,18 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
       <Button 
         variant="ghost" 
         size="icon" 
-        onClick={() => navigate('/cart')}
-        title="План"
+        onClick={() => navigate('/orders')}
+        title="История заказов"
       >
-        <Icon name="ClipboardList" size={20} />
+        <Icon name="FileText" size={20} />
       </Button>
       <Button 
         variant="ghost" 
         size="icon" 
-        onClick={() => navigate('/portfolio')}
-        title="Портфолио"
+        onClick={() => navigate('/cart')}
+        title="План работ"
       >
-        <Icon name="ImageIcon" size={20} />
+        <Icon name="ClipboardList" size={20} />
       </Button>
       <div className="flex-1" />
       <a 

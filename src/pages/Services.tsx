@@ -20,14 +20,14 @@ export default function Services() {
           <p className="text-gray-600">Рассчитайте стоимость работы в Калининграде за 2 минуты</p>
         </div>
 
-        <Card className="p-6 bg-white shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/cart')}>
+        <Card className="p-6 bg-white shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/orders')}>
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
               <Icon name="Mail" size={32} className="text-white" />
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-gray-800 mb-1">Мои заявки</h2>
-              <p className="text-sm text-gray-600">История и статусы заказов</p>
+              <p className="text-sm text-gray-600">История и статусы</p>
             </div>
           </div>
         </Card>
@@ -39,7 +39,7 @@ export default function Services() {
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-gray-800 mb-1">Новая заявка</h2>
-              <p className="text-sm text-gray-600">Заказать услуги электрика</p>
+              <p className="text-sm text-gray-600">Заказать услуги</p>
             </div>
           </div>
         </Card>
@@ -83,11 +83,11 @@ export default function Services() {
             О нас
           </h3>
           <p className="text-sm text-gray-700 mb-2">
-            ООО "Кёниг Электрик" — профессиональные электромонтажные работы в Калининграде и области
+            БАЛТСЕТЬ | Услуги электрика ³⁹
           </p>
           <p className="text-sm text-gray-600 flex items-center gap-2">
             <Icon name="Clock" size={16} className="text-orange-600" />
-            Работаем: Пн-Вс, 8:00 - 20:00
+            Работаем: Пн-Вс, 10:00 - 18:00
           </p>
         </Card>
       </div>

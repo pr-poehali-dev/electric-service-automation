@@ -84,7 +84,7 @@ export default function Cart() {
 
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-700">Задачи</h3>
+                <h3 className="font-semibold text-gray-700">План</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -173,8 +173,7 @@ export default function Cart() {
                           </div>
                         </div>
                       ) : (
-                        <div className="mt-1 space-y-1">
-                          <p className="text-xs text-gray-600">Количество: {item.quantity} шт</p>
+                        <div className="mt-1">
                           <p className="text-xs text-gray-600">
                             Количество: {item.quantity} шт, {item.selectedOption === 'install-only' 
                               ? `Установить ${item.product.name.toLowerCase()}` 
@@ -219,11 +218,8 @@ export default function Cart() {
                 {cableMeters > 0 && (
                   <>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Примерный метраж кабеля</span>
+                      <span className="text-gray-600">Ориентировочно кабеля</span>
                       <span className="font-semibold">{cableMeters} м</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-500 text-xs">
-                      <span>Из расчёта 8м на точку</span>
                     </div>
                     {totalFrames > 0 && (
                       <div className="flex justify-between text-sm">
@@ -249,7 +245,7 @@ export default function Cart() {
 
             <div className="bg-gray-50 p-4 text-center border-t space-y-2">
               <p className="text-xs text-gray-500">
-                Welcome to <a href="https://t.me/konigelectric" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Telegram</a>
+                Welcome to <a href="https://t.me/konigelectric" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Telegram</a> 🚀
               </p>
               <p className="text-xs text-gray-500">Спасибо за ваш выбор!</p>
               <p className="text-xs text-gray-500 mt-1">📞 +7 (4012) 52-07-25</p>
@@ -270,7 +266,7 @@ export default function Cart() {
             onClick={() => setShowCheckoutModal(true)}
             className="w-full h-14 text-base font-semibold shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
           >
-            Оформить заявку
+            Далее
           </Button>
         </div>
       </div>
