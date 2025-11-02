@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,21 +10,10 @@ import CalculatorModal from '@/components/CalculatorModal';
 
 export default function Services() {
   const navigate = useNavigate();
-  const { cart } = useCart();
-  const [showServiceModal, setShowServiceModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [showCalculatorModal, setShowCalculatorModal] = useState(false);
-
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  const handleNewOrderClick = () => {
-    setShowCalculatorModal(true);
-  };
-
-  const handleCalculatorClose = () => {
-    setShowCalculatorModal(false);
-    setShowServiceModal(true);
-  };
+  
+  useEffect(() => {
+    navigate('/orders');
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-white">

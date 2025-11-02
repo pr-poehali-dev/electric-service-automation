@@ -107,7 +107,7 @@ export const PRODUCTS: Product[] = [
       {
         id: 'repair',
         name: 'Отремонтировать',
-        price: 250
+        price: 1500
       }
     ]
   },
@@ -127,7 +127,7 @@ export const PRODUCTS: Product[] = [
       {
         id: 'repair',
         name: 'Отремонтировать',
-        price: 300
+        price: 1500
       }
     ]
   },

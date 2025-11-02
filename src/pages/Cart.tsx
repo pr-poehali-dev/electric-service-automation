@@ -8,12 +8,14 @@ import { useCart } from '@/contexts/CartContext';
 import { calculateItemPrice, getDiscount, MASTER_VISIT_ID } from '@/types/electrical';
 import ServiceModal from '@/components/ServiceModal';
 import ContactModal from '@/components/ContactModal';
+import CheckoutModal from '@/components/CheckoutModal';
 
 export default function Cart() {
   const navigate = useNavigate();
   const { cart, updateQuantity, removeFromCart, updateOption, toggleAdditionalOption } = useCart();
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
   const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
@@ -91,7 +93,7 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
       <img 
-        src="https://cdn.poehali.dev/files/6c409522-72a0-424a-95d5-7c20d103daa1.jpg"
+        src="https://cdn.poehali.dev/files/22222.jpg"
         alt="Калининград"
         className="w-full h-auto object-cover"
       />
@@ -116,17 +118,17 @@ export default function Cart() {
         <div className="p-6 space-y-4">
           <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-200 overflow-hidden animate-fadeIn">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 text-center">
-              <h2 className="text-2xl font-bold mb-1">План работ на {new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</h2>
+              <h2 className="text-2xl font-bold mb-1">План работ</h2>
             </div>
 
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-700">Выбранные услуги</h3>
+                <h3 className="font-semibold text-gray-700">Задачи</h3>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setEditMode(!editMode)}
-                  className="text-xs"
+                  className={editMode ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold shadow-lg" : "text-xs"}
                 >
                   <Icon name={editMode ? 'Check' : 'Edit'} size={14} className="mr-1" />
                   {editMode ? 'Готово' : 'Редактировать'}
@@ -300,16 +302,20 @@ export default function Cart() {
 
           <Button
             size="lg"
-            onClick={() => navigate('/checkout')}
+            onClick={() => setShowCheckoutModal(true)}
             className="w-full h-14 text-base font-semibold shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
           >
-            Далее →
+            Оформить заявку
           </Button>
         </div>
       </div>
 
       <ServiceModal open={showServiceModal} onClose={() => setShowServiceModal(false)} />
       <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
+      <CheckoutModal 
+        open={showCheckoutModal} 
+        onClose={() => setShowCheckoutModal(false)} 
+      />
 
       <style>{`
         @keyframes fadeIn {

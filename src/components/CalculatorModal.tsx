@@ -33,6 +33,20 @@ export default function CalculatorModal({ open, onClose }: CalculatorModalProps)
           <p className="text-center text-sm text-muted-foreground">
             Рассчитайте стоимость работы за 2 минуты
           </p>
+          <div className="text-center pt-2">
+            <Button
+              variant="link"
+              size="sm"
+              onClick={() => {
+                onClose();
+                navigate('/cart');
+              }}
+              className="text-xs text-blue-600 hover:text-blue-700"
+            >
+              <Icon name="ClipboardList" size={14} className="mr-1" />
+              Перейти к плану работ
+            </Button>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6 py-4">

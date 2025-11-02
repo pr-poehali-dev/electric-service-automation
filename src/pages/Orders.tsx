@@ -8,6 +8,7 @@ import { Order } from '@/types/electrical';
 import ContactModal from '@/components/ContactModal';
 import ProductSelectionModal from '@/components/ProductSelectionModal';
 import CalculatorModal from '@/components/CalculatorModal';
+import BottomMenu from '@/components/BottomMenu';
 import {
   Accordion,
   AccordionContent,
@@ -32,11 +33,16 @@ const STATUS_COLORS = {
 export default function Orders() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { orders } = useCart();
+  const { orders, clearCart } = useCart();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [showCalculatorModal, setShowCalculatorModal] = useState(false);
+
+  const handleNewOrder = () => {
+    clearCart();
+    setShowProductModal(true);
+  };
 
   useEffect(() => {
     const newOrderId = location.state?.newOrderId;
@@ -297,26 +303,30 @@ export default function Orders() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
       <img 
-        src="https://cdn.poehali.dev/files/6c409522-72a0-424a-95d5-7c20d103daa1.jpg"
-        alt="Калининград"
+        src="https://cdn.poehali.dev/files/22222.jpg"
+        alt="БАЛТСЕТЬ"
         className="w-full h-auto object-cover"
       />
 
       <div className="max-w-md mx-auto">
         <div className="p-6 space-y-4">
 
+          <div className="mb-4">
+            <BottomMenu />
+          </div>
+          
           {orders.length === 0 ? (
             <Card className="p-12 text-center">
               <Icon name="ShoppingBag" size={64} className="text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Пока нет заявок</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Создайте первую заявку на услуги
+                Создайте первую заявку
               </p>
               <Button
-                onClick={() => setShowProductModal(true)}
+                onClick={handleNewOrder}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
-                Добавить услуги
+                Уточнить задачу
               </Button>
             </Card>
           ) : (
@@ -324,13 +334,13 @@ export default function Orders() {
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-800">Мои заявки</h2>
                 <Button
-                  onClick={() => setShowProductModal(true)}
+                  onClick={handleNewOrder}
                   size="sm"
                   variant="outline"
                   className="gap-2"
                 >
                   <Icon name="Plus" size={16} />
-                  Добавить услуги
+                  Уточнить задачу
                 </Button>
               </div>
               

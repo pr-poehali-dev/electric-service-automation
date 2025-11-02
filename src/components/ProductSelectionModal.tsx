@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import Icon from '@/components/ui/icon';
 import { PRODUCTS, Product, MASTER_VISIT_ID, calculateItemPrice } from '@/types/electrical';
 import { useCart } from '@/contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductSelectionModalProps {
   open: boolean;
@@ -13,6 +14,7 @@ interface ProductSelectionModalProps {
 
 export default function ProductSelectionModal({ open, onClose }: ProductSelectionModalProps) {
   const { cart, addToCart, updateQuantity, updateOption, toggleAdditionalOption } = useCart();
+  const navigate = useNavigate();
 
   const popularServices = PRODUCTS.filter(p => p.serviceCategory === 'popular' && p.id !== MASTER_VISIT_ID);
   const constructionServices = PRODUCTS.filter(p => p.serviceCategory === 'construction');
@@ -72,29 +74,33 @@ export default function ProductSelectionModal({ open, onClose }: ProductSelectio
                 </div>
 
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id={`${product.id}-install`}
-                      checked={inCart?.selectedOption === 'install-only'}
-                      onCheckedChange={() => updateOption(product.id, 'install-only')}
-                      disabled={isRepairSelected}
-                    />
-                    <label htmlFor={`${product.id}-install`} className={`text-xs cursor-pointer ${isRepairSelected ? 'opacity-50' : ''}`}>
-                      +{product.priceInstallOnly} ₽ Установить {product.name.toLowerCase()}
-                    </label>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id={`${product.id}-wiring`}
-                      checked={inCart?.selectedOption === 'full-wiring'}
-                      onCheckedChange={() => updateOption(product.id, 'full-wiring')}
-                      disabled={isRepairSelected}
-                    />
-                    <label htmlFor={`${product.id}-wiring`} className={`text-xs cursor-pointer ${isRepairSelected ? 'opacity-50' : ''}`}>
-                      +{product.priceWithWiring - product.priceInstallOnly} ₽ Подготовить проводку
-                    </label>
-                  </div>
+                  {product.category !== 'cable' && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id={`${product.id}-install`}
+                          checked={inCart?.selectedOption === 'install-only'}
+                          onCheckedChange={() => updateOption(product.id, 'install-only')}
+                          disabled={isRepairSelected}
+                        />
+                        <label htmlFor={`${product.id}-install`} className={`text-xs cursor-pointer ${isRepairSelected ? 'opacity-50' : ''}`}>
+                          +{product.priceInstallOnly} ₽ Установить {product.name.toLowerCase()}
+                        </label>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id={`${product.id}-wiring`}
+                          checked={inCart?.selectedOption === 'full-wiring'}
+                          onCheckedChange={() => updateOption(product.id, 'full-wiring')}
+                          disabled={isRepairSelected}
+                        />
+                        <label htmlFor={`${product.id}-wiring`} className={`text-xs cursor-pointer ${isRepairSelected ? 'opacity-50' : ''}`}>
+                          +{product.priceWithWiring - product.priceInstallOnly} ₽ Электромонтаж
+                        </label>
+                      </div>
+                    </>
+                  )}
 
                   {product.options?.map(option => {
                     const isConduitOption = option.id === 'conduit';
@@ -178,7 +184,10 @@ export default function ProductSelectionModal({ open, onClose }: ProductSelectio
         <div className="flex gap-2 pt-4 border-t sticky bottom-0 bg-white">
           {totalItems > 0 ? (
             <Button 
-              onClick={onClose} 
+              onClick={() => {
+                onClose();
+                navigate('/cart');
+              }} 
               className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
             >
               <Icon name="Check" size={18} className="mr-2" />

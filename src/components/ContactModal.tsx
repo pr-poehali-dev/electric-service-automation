@@ -87,6 +87,21 @@ export default function ContactModal({ open, onClose }: ContactModalProps) {
             </p>
           </div>
 
+          <a
+            href="https://yandex.ru/maps/org/159261695633"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-4 p-4 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
+          >
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Icon name="Star" size={24} />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold">Яндекс Отзывы</p>
+              <p className="text-sm opacity-90">Оцените нашу работу</p>
+            </div>
+          </a>
+
           <Button
             onClick={onClose}
             variant="outline"

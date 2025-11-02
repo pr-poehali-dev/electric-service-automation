@@ -66,30 +66,43 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
               </Button>
             ) : (
               <div className="space-y-3">
-                <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        if (quantity > 1) {
+                          updateQuantity(product.id, quantity - 1);
+                        } else {
+                          setExpandedProduct(null);
+                          updateQuantity(product.id, 0);
+                        }
+                      }}
+                      className="h-9 w-9 p-0 rounded-full bg-gray-100 hover:bg-gray-200 border-2 border-gray-300"
+                    >
+                      <Icon name="Minus" size={16} />
+                    </Button>
+                    <span className="font-bold text-xl px-3 min-w-[2.5rem] text-center">{quantity}</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => updateQuantity(product.id, quantity + 1)}
+                      className="h-9 w-9 p-0 rounded-full bg-orange-500 hover:bg-orange-600 text-white border-0"
+                    >
+                      <Icon name="Plus" size={16} />
+                    </Button>
+                  </div>
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="ghost"
                     onClick={() => {
-                      if (quantity > 1) {
-                        updateQuantity(product.id, quantity - 1);
-                      } else {
-                        setExpandedProduct(null);
-                        updateQuantity(product.id, 0);
-                      }
+                      setExpandedProduct(null);
+                      updateQuantity(product.id, 0);
                     }}
-                    className="h-10 w-10 p-0 rounded-full bg-gray-100 hover:bg-gray-200 border-2 border-gray-300"
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50 h-9"
                   >
-                    <Icon name="Minus" size={16} />
-                  </Button>
-                  <span className="font-bold text-2xl px-4 min-w-[3rem] text-center">{quantity}</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => updateQuantity(product.id, quantity + 1)}
-                    className="h-10 w-10 p-0 rounded-full bg-orange-500 hover:bg-orange-600 text-white border-0"
-                  >
-                    <Icon name="Plus" size={16} />
+                    <Icon name="Trash2" size={16} />
                   </Button>
                 </div>
 
@@ -142,68 +155,60 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                     );
                   })}
                   
-                  <div 
-                    className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
-                      inCart?.selectedOption === 'install-only'
-                        ? 'bg-green-100 shadow-sm' 
-                        : 'bg-white hover:bg-gray-50'
-                    } ${isRepairSelected ? 'opacity-50' : ''}`}
-                    onClick={() => !isRepairSelected && updateOption(product.id, 'install-only')}
-                  >
-                    <Checkbox
-                      id={`${product.id}-install`}
-                      checked={inCart?.selectedOption === 'install-only'}
-                      disabled={isRepairSelected}
-                      className="cursor-pointer"
-                    />
-                    <label htmlFor={`${product.id}-install`} className="text-sm cursor-pointer flex-1 font-medium">
-                      Установить {product.name.toLowerCase()}
-                    </label>
-                    <span className="text-sm font-bold text-green-600">
-                      +{product.priceInstallOnly} ₽
-                    </span>
-                  </div>
-                  
-                  <div 
-                    className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
-                      inCart?.selectedOption === 'full-wiring'
-                        ? 'bg-green-100 shadow-sm' 
-                        : 'bg-white hover:bg-gray-50'
-                    } ${isRepairSelected ? 'opacity-50' : ''}`}
-                    onClick={() => !isRepairSelected && updateOption(product.id, 'full-wiring')}
-                  >
-                    <Checkbox
-                      id={`${product.id}-wiring`}
-                      checked={inCart?.selectedOption === 'full-wiring'}
-                      disabled={isRepairSelected}
-                      className="cursor-pointer"
-                    />
-                    <label htmlFor={`${product.id}-wiring`} className="text-sm cursor-pointer flex-1 font-medium">
-                      Подготовить проводку
-                    </label>
-                    <span className="text-sm font-bold text-green-600">
-                      +{product.priceWithWiring - product.priceInstallOnly} ₽
-                    </span>
-                  </div>
+                  {product.category !== 'cable' && (
+                    <>
+                      <div 
+                        className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
+                          inCart?.selectedOption === 'install-only'
+                            ? 'bg-green-100 shadow-sm' 
+                            : 'bg-white hover:bg-gray-50'
+                        } ${isRepairSelected ? 'opacity-50' : ''}`}
+                        onClick={() => !isRepairSelected && updateOption(product.id, 'install-only')}
+                      >
+                        <Checkbox
+                          id={`${product.id}-install`}
+                          checked={inCart?.selectedOption === 'install-only'}
+                          disabled={isRepairSelected}
+                          className="cursor-pointer"
+                        />
+                        <label htmlFor={`${product.id}-install`} className="text-sm cursor-pointer flex-1 font-medium">
+                          Установить {product.name.toLowerCase()}
+                        </label>
+                        <span className="text-sm font-bold text-green-600">
+                          +{product.priceInstallOnly} ₽
+                        </span>
+                      </div>
+                      
+                      <div 
+                        className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
+                          inCart?.selectedOption === 'full-wiring'
+                            ? 'bg-green-100 shadow-sm' 
+                            : 'bg-white hover:bg-gray-50'
+                        } ${isRepairSelected ? 'opacity-50' : ''}`}
+                        onClick={() => !isRepairSelected && updateOption(product.id, 'full-wiring')}
+                      >
+                        <Checkbox
+                          id={`${product.id}-wiring`}
+                          checked={inCart?.selectedOption === 'full-wiring'}
+                          disabled={isRepairSelected}
+                          className="cursor-pointer"
+                        />
+                        <label htmlFor={`${product.id}-wiring`} className="text-sm cursor-pointer flex-1 font-medium">
+                          Электромонтаж
+                        </label>
+                        <span className="text-sm font-bold text-green-600">
+                          +{product.priceWithWiring - product.priceInstallOnly} ₽
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                <div className="flex items-center justify-between gap-3 pt-3 mt-3 border-t-2 border-gray-200">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-600">Итого:</span>
-                    <span className="text-2xl font-bold text-orange-600">
-                      {inCart ? calculateItemPrice(inCart).toLocaleString('ru-RU') : '0'} ₽
-                    </span>
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setExpandedProduct(null);
-                    }}
-                    className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold shadow-lg hover:shadow-xl transition-all h-12 px-6 rounded-xl"
-                  >
-                    <Icon name="Check" size={18} className="mr-2" />
-                    Готово
-                  </Button>
+                <div className="flex items-center justify-between pt-3 mt-3 border-t-2 border-orange-200">
+                  <span className="text-base font-semibold">Итого за товар:</span>
+                  <span className="font-bold text-2xl bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                    {inCart ? calculateItemPrice(inCart).toLocaleString('ru-RU') : '0'} ₽
+                  </span>
                 </div>
               </div>
             )}
