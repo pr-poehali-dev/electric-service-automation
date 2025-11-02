@@ -297,38 +297,13 @@ export default function Orders() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
       <img 
-        src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
+        src="https://cdn.poehali.dev/files/6c409522-72a0-424a-95d5-7c20d103daa1.jpg"
         alt="Калининград"
-        className="w-full h-48 object-cover"
+        className="w-full h-auto object-cover"
       />
 
       <div className="max-w-md mx-auto">
-        <div className="bg-white shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-800">БАЛТСЕТЬ | Услуги электрика ³⁹</h1>
-            <button
-              onClick={() => setShowContactModal(true)}
-              className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-gray-700 hover:text-blue-600 transition-colors duration-300"
-              title="Меню связи"
-            >
-              <Icon name="Menu" size={28} />
-            </button>
-          </div>
-        </div>
-
         <div className="p-6 space-y-4">
-          <Card className="p-6 bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-            <h2 className="text-xl font-bold mb-4">Рассчитать стоимость работ</h2>
-            <p className="text-sm mb-4 opacity-90">
-              Ответьте на несколько вопросов, чтобы получить предварительную оценку
-            </p>
-            <Button
-              onClick={() => setShowCalculatorModal(true)}
-              className="w-full bg-white text-blue-600 hover:bg-gray-100"
-            >
-              Анкета для расчёта работ
-            </Button>
-          </Card>
 
           {orders.length === 0 ? (
             <Card className="p-12 text-center">

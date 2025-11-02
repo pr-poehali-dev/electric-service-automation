@@ -91,9 +91,9 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
       <img 
-        src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
+        src="https://cdn.poehali.dev/files/6c409522-72a0-424a-95d5-7c20d103daa1.jpg"
         alt="Калининград"
-        className="w-full h-48 object-cover"
+        className="w-full h-auto object-cover"
       />
 
       <div className="max-w-md mx-auto">

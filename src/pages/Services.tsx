@@ -29,14 +29,14 @@ export default function Services() {
   return (
     <div className="min-h-screen bg-white">
       <img 
-        src="https://cdn.poehali.dev/files/79f8adc0-8ecb-49ba-b486-a4809ae5c84e.png"
+        src="https://cdn.poehali.dev/files/6c409522-72a0-424a-95d5-7c20d103daa1.jpg"
         alt="Калининград"
         className="w-full h-auto object-cover"
       />
 
       <div className="max-w-md mx-auto p-6 space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform" onClick={() => navigate('/orders')}>
+        <div className="flex items-center gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-xl transition-all" onClick={() => navigate('/orders')}>
+          <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
             <Icon name="ClipboardList" size={32} className="text-white" />
           </div>
           <div className="flex-1">
@@ -45,8 +45,8 @@ export default function Services() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform" onClick={handleNewOrderClick}>
+        <div className="flex items-center gap-4 cursor-pointer hover:bg-gray-50 p-3 rounded-xl transition-all" onClick={handleNewOrderClick}>
+          <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
             <Icon name="Plus" size={32} className="text-white" />
           </div>
           <div className="flex-1">
@@ -97,7 +97,7 @@ export default function Services() {
             <strong>БАЛТСЕТЬ | Услуги электрика ³⁹</strong>
           </p>
           <p className="text-sm text-gray-700 mb-2">
-            ООО "Кёниг Электрик" — профессиональные электромонтажные работы в Калининграде и области
+            Профессиональные электромонтажные работы в Калининграде и области
           </p>
           <div className="flex items-center gap-2 text-sm text-gray-600 mt-3">
             <Icon name="Clock" size={16} className="text-orange-600" />

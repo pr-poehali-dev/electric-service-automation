@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,17 +14,20 @@ interface ServiceModalProps {
 }
 
 export default function ServiceModal({ open, onClose }: ServiceModalProps) {
+  const navigate = useNavigate();
   const { cart, addToCart, updateQuantity, updateOption, toggleAdditionalOption } = useCart();
 
   const popularServices = PRODUCTS.filter(p => p.serviceCategory === 'popular' && p.id !== MASTER_VISIT_ID);
   const constructionServices = PRODUCTS.filter(p => p.serviceCategory === 'construction');
+
+  const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
 
   const renderServiceCard = (product: Product) => {
     const inCart = cart.find(item => item.product.id === product.id);
     const quantity = inCart?.quantity || 0;
     const isRepairSelected = inCart?.selectedOption === 'repair';
     const isInstallOrWiringSelected = inCart?.selectedOption === 'install-only' || inCart?.selectedOption === 'full-wiring';
-    const showOptions = quantity > 0;
+    const showOptions = expandedProduct === product.id;
 
     return (
       <Card key={product.id} className="p-4 hover:shadow-lg transition-all">
@@ -45,69 +50,75 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
             <h3 className="font-semibold text-base mb-1">{product.name}</h3>
             <p className="text-xs text-muted-foreground mb-2">{product.description}</p>
             
-            {quantity === 0 ? (
+            {!showOptions ? (
               <Button
                 size="sm"
-                onClick={() => addToCart(product, 1)}
-                className="w-full bg-primary hover:bg-primary/90"
+                onClick={() => {
+                  if (quantity === 0) {
+                    addToCart(product, 1);
+                  }
+                  setExpandedProduct(product.id);
+                }}
+                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg"
               >
                 <Icon name="Plus" size={16} className="mr-1" />
                 Добавить
               </Button>
             ) : (
               <div className="space-y-3">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-3 mb-4">
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => updateQuantity(product.id, quantity - 1)}
-                    className="h-8 w-8 p-0"
+                    onClick={() => {
+                      if (quantity > 1) {
+                        updateQuantity(product.id, quantity - 1);
+                      } else {
+                        setExpandedProduct(null);
+                        updateQuantity(product.id, 0);
+                      }
+                    }}
+                    className="h-10 w-10 p-0 rounded-full bg-gray-100 hover:bg-gray-200 border-2 border-gray-300"
                   >
-                    <Icon name="Minus" size={14} />
+                    <Icon name="Minus" size={16} />
                   </Button>
-                  <span className="font-semibold text-sm px-2 min-w-[2rem] text-center">{quantity}</span>
+                  <span className="font-bold text-2xl px-4 min-w-[3rem] text-center">{quantity}</span>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => updateQuantity(product.id, quantity + 1)}
-                    className="h-8 w-8 p-0"
+                    className="h-10 w-10 p-0 rounded-full bg-orange-500 hover:bg-orange-600 text-white border-0"
                   >
-                    <Icon name="Plus" size={14} />
+                    <Icon name="Plus" size={16} />
                   </Button>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id={`${product.id}-install`}
-                      checked={inCart?.selectedOption === 'install-only'}
-                      onCheckedChange={() => updateOption(product.id, 'install-only')}
-                      disabled={isRepairSelected}
-                    />
-                    <label htmlFor={`${product.id}-install`} className={`text-xs cursor-pointer flex-1 ${isRepairSelected ? 'opacity-50' : ''}`}>
-                      +{product.priceInstallOnly} ₽ Установить {product.name.toLowerCase()}
-                    </label>
-                  </div>
+                <div className="space-y-1 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                  <p className="text-xs font-semibold text-gray-700 mb-2">Дополнительно:</p>
                   
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id={`${product.id}-wiring`}
-                      checked={inCart?.selectedOption === 'full-wiring'}
-                      onCheckedChange={() => updateOption(product.id, 'full-wiring')}
-                      disabled={isRepairSelected}
-                    />
-                    <label htmlFor={`${product.id}-wiring`} className={`text-xs cursor-pointer flex-1 ${isRepairSelected ? 'opacity-50' : ''}`}>
-                      +{product.priceWithWiring - product.priceInstallOnly} ₽ Подготовить проводку
-                    </label>
-                  </div>
-
                   {product.options?.map(option => {
-                    const isConduitOption = option.id === 'conduit';
                     const isRepairOption = option.id === 'repair';
                     const disabled = isRepairOption && isInstallOrWiringSelected;
 
                     return (
-                      <div key={option.id} className="flex items-center gap-2">
+                      <div 
+                        key={option.id} 
+                        className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
+                          (isRepairOption && inCart?.selectedOption === 'repair') || 
+                          (!isRepairOption && inCart?.additionalOptions?.includes(option.id))
+                            ? 'bg-green-100 shadow-sm' 
+                            : 'bg-white hover:bg-gray-50'
+                        } ${disabled ? 'opacity-50' : ''}`}
+                        onClick={() => {
+                          if (!disabled) {
+                            if (isRepairOption) {
+                              updateOption(product.id, 'repair');
+                            } else {
+                              toggleAdditionalOption(product.id, option.id);
+                            }
+                          }
+                        }}
+                      >
                         <Checkbox
                           id={`${product.id}-${option.id}`}
                           checked={
@@ -115,39 +126,83 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                               ? inCart?.selectedOption === 'repair'
                               : inCart?.additionalOptions?.includes(option.id)
                           }
-                          onCheckedChange={() => {
-                            if (isRepairOption) {
-                              updateOption(product.id, 'repair');
-                            } else {
-                              toggleAdditionalOption(product.id, option.id);
-                            }
-                          }}
                           disabled={disabled}
+                          className="cursor-pointer"
                         />
                         <label 
                           htmlFor={`${product.id}-${option.id}`} 
-                          className={`text-xs cursor-pointer flex-1 ${disabled ? 'opacity-50' : ''}`}
+                          className="text-sm cursor-pointer flex-1 font-medium"
                         >
-                          {isConduitOption ? `+${option.price} ₽ ${option.name}` : (
-                            isRepairOption ? `${option.name}` : `+${option.price} ₽ ${option.name}`
-                          )}
+                          {option.name}
                         </label>
+                        <span className="text-sm font-bold text-green-600">
+                          +{option.price} ₽
+                        </span>
                       </div>
                     );
                   })}
+                  
+                  <div 
+                    className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
+                      inCart?.selectedOption === 'install-only'
+                        ? 'bg-green-100 shadow-sm' 
+                        : 'bg-white hover:bg-gray-50'
+                    } ${isRepairSelected ? 'opacity-50' : ''}`}
+                    onClick={() => !isRepairSelected && updateOption(product.id, 'install-only')}
+                  >
+                    <Checkbox
+                      id={`${product.id}-install`}
+                      checked={inCart?.selectedOption === 'install-only'}
+                      disabled={isRepairSelected}
+                      className="cursor-pointer"
+                    />
+                    <label htmlFor={`${product.id}-install`} className="text-sm cursor-pointer flex-1 font-medium">
+                      Установить {product.name.toLowerCase()}
+                    </label>
+                    <span className="text-sm font-bold text-green-600">
+                      +{product.priceInstallOnly} ₽
+                    </span>
+                  </div>
+                  
+                  <div 
+                    className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
+                      inCart?.selectedOption === 'full-wiring'
+                        ? 'bg-green-100 shadow-sm' 
+                        : 'bg-white hover:bg-gray-50'
+                    } ${isRepairSelected ? 'opacity-50' : ''}`}
+                    onClick={() => !isRepairSelected && updateOption(product.id, 'full-wiring')}
+                  >
+                    <Checkbox
+                      id={`${product.id}-wiring`}
+                      checked={inCart?.selectedOption === 'full-wiring'}
+                      disabled={isRepairSelected}
+                      className="cursor-pointer"
+                    />
+                    <label htmlFor={`${product.id}-wiring`} className="text-sm cursor-pointer flex-1 font-medium">
+                      Подготовить проводку
+                    </label>
+                    <span className="text-sm font-bold text-green-600">
+                      +{product.priceWithWiring - product.priceInstallOnly} ₽
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t">
-                  <span className="text-sm font-bold text-primary">
-                    {calculateItemPrice(inCart!).toLocaleString('ru-RU')} ₽
-                  </span>
+                <div className="flex items-center justify-between gap-3 pt-3 mt-3 border-t-2 border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-600">Итого:</span>
+                    <span className="text-2xl font-bold text-orange-600">
+                      {inCart ? calculateItemPrice(inCart).toLocaleString('ru-RU') : '0'} ₽
+                    </span>
+                  </div>
                   <Button
                     size="sm"
-                    onClick={() => addToCart(product, quantity)}
-                    className="bg-primary hover:bg-primary/90 h-8"
+                    onClick={() => {
+                      setExpandedProduct(null);
+                    }}
+                    className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold shadow-lg hover:shadow-xl transition-all h-12 px-6 rounded-xl"
                   >
-                    <Icon name="Check" size={14} className="mr-1" />
-                    Добавить
+                    <Icon name="Check" size={18} className="mr-2" />
+                    Готово
                   </Button>
                 </div>
               </div>
@@ -191,8 +246,11 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
         <div className="flex gap-2 pt-4 border-t sticky bottom-0 bg-white">
           {totalItems > 0 ? (
             <Button 
-              onClick={onClose} 
-              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+              onClick={() => {
+                onClose();
+                navigate('/cart');
+              }} 
+              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-12 text-base font-bold"
             >
               <Icon name="Check" size={18} className="mr-2" />
               Подтвердить ({totalItems})
