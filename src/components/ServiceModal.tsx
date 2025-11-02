@@ -174,9 +174,16 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                         <label htmlFor={`${product.id}-install`} className="text-sm cursor-pointer flex-1 font-medium">
                           Установить {product.name.toLowerCase()}
                         </label>
-                        <span className="text-sm font-bold text-green-600">
-                          +{product.priceInstallOnly} ₽
-                        </span>
+                        {product.priceInstallOnly > 0 && (
+                          <span className="text-sm font-bold text-green-600">
+                            +{product.priceInstallOnly} ₽
+                          </span>
+                        )}
+                        {product.priceInstallOnly === 0 && product.slots > 1 && (
+                          <span className="text-xs text-gray-500">
+                            250 ₽/штука
+                          </span>
+                        )}
                       </div>
                       
                       <div 
@@ -197,7 +204,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                           Электромонтаж
                         </label>
                         <span className="text-sm font-bold text-green-600">
-                          +{product.priceWithWiring - product.priceInstallOnly} ₽
+                          +{product.priceWithWiring} ₽
                         </span>
                       </div>
                     </>
@@ -205,7 +212,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
                 </div>
 
                 <div className="flex items-center justify-between pt-3 mt-3 border-t-2 border-orange-200">
-                  <span className="text-base font-semibold">Итого за товар:</span>
+                  <span className="text-base font-semibold">Итого за услугу:</span>
                   <span className="font-bold text-2xl bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                     {inCart ? calculateItemPrice(inCart).toLocaleString('ru-RU') : '0'} ₽
                   </span>
@@ -229,7 +236,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
         
         <div className="space-y-6">
           <div>
-            <h3 className="font-semibold text-lg mb-3 text-gray-800">📌 Популярные услуги</h3>
+            <h3 className="font-semibold text-lg mb-3 text-gray-800">Популярные услуги</h3>
             <div className="space-y-3">
               {popularServices.map(renderServiceCard)}
             </div>
@@ -237,10 +244,10 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
 
           <div>
             <h3 className="font-semibold text-lg mb-3 text-gray-800">
-              🏗️ Строительные услуги
+              Строительные услуги
             </h3>
             <p className="text-xs text-muted-foreground mb-3">
-              Опционально идут как дополнение для повышения комфорта вашего дома
+              Этими услугами обычно пользуются дизайнеры интерьеров
             </p>
             <div className="space-y-3">
               {constructionServices.map(renderServiceCard)}
@@ -258,7 +265,7 @@ export default function ServiceModal({ open, onClose }: ServiceModalProps) {
               className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-12 text-base font-bold"
             >
               <Icon name="Check" size={18} className="mr-2" />
-              Подтвердить ({totalItems})
+              Добавить ({totalItems})
             </Button>
           ) : (
             <Button onClick={onClose} variant="outline" className="flex-1">

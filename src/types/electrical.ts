@@ -101,15 +101,8 @@ export const PRODUCTS: Product[] = [
     serviceCategory: 'popular',
     installType: 'finish',
     slots: 1,
-    priceInstallOnly: 150,
-    priceWithWiring: 1500,
-    options: [
-      {
-        id: 'repair',
-        name: 'Отремонтировать',
-        price: 1500
-      }
-    ]
+    priceInstallOnly: 0,
+    priceWithWiring: 150
   },
   {
     id: 'out-1',
@@ -121,29 +114,27 @@ export const PRODUCTS: Product[] = [
     serviceCategory: 'popular',
     installType: 'finish',
     slots: 1,
-    priceInstallOnly: 850,
-    priceWithWiring: 1000,
-    options: [
-      {
-        id: 'repair',
-        name: 'Отремонтировать',
-        price: 1500
-      }
-    ]
+    priceInstallOnly: 250,
+    priceWithWiring: 850
   },
   {
     id: 'chandelier-1',
     type: 'chandelier',
-    name: 'Установить/заменить люстру',
+    name: 'Установить люстру',
     image: 'https://cdn.poehali.dev/files/chandelier.jpg',
-    description: 'Установка или замена люстры',
+    description: 'Установка люстры',
     category: 'chandelier',
     serviceCategory: 'popular',
     installType: 'finish',
     slots: 0,
     priceInstallOnly: 500,
-    priceWithWiring: 1500,
+    priceWithWiring: 500,
     options: [
+      {
+        id: 'dismantle',
+        name: 'Демонтаж старой люстры',
+        price: 500
+      },
       {
         id: 'assemble',
         name: 'Сборка люстры',
@@ -162,7 +153,14 @@ export const PRODUCTS: Product[] = [
     installType: 'rough',
     slots: 2,
     priceInstallOnly: 500,
-    priceWithWiring: 1200
+    priceWithWiring: 1200,
+    options: [
+      {
+        id: 'install-products',
+        name: 'Электроустановка',
+        price: 500
+      }
+    ]
   },
   {
     id: 'out-3',
@@ -175,7 +173,14 @@ export const PRODUCTS: Product[] = [
     installType: 'rough',
     slots: 3,
     priceInstallOnly: 750,
-    priceWithWiring: 2500
+    priceWithWiring: 2500,
+    options: [
+      {
+        id: 'install-products',
+        name: 'Электроустановка',
+        price: 750
+      }
+    ]
   },
   {
     id: 'out-4',
@@ -188,7 +193,14 @@ export const PRODUCTS: Product[] = [
     installType: 'rough',
     slots: 4,
     priceInstallOnly: 1000,
-    priceWithWiring: 3000
+    priceWithWiring: 3000,
+    options: [
+      {
+        id: 'install-products',
+        name: 'Электроустановка',
+        price: 1000
+      }
+    ]
   },
   {
     id: 'out-5',
@@ -201,25 +213,12 @@ export const PRODUCTS: Product[] = [
     installType: 'rough',
     slots: 5,
     priceInstallOnly: 1250,
-    priceWithWiring: 3500
-  },
-  {
-    id: 'cable-1',
-    type: 'cable',
-    name: 'Монтаж кабеля 10 пог.м',
-    image: 'https://cdn.poehali.dev/files/cable.jpg',
-    description: 'Прокладка и монтаж кабеля',
-    category: 'cable',
-    serviceCategory: 'construction',
-    installType: 'rough',
-    slots: 0,
-    priceInstallOnly: 2000,
-    priceWithWiring: 2000,
+    priceWithWiring: 3500,
     options: [
       {
-        id: 'conduit',
-        name: 'Затянуть кабель в гофру/трубу',
-        price: 80
+        id: 'install-products',
+        name: 'Электроустановка',
+        price: 1250
       }
     ]
   }

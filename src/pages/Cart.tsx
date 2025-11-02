@@ -9,6 +9,8 @@ import { calculateItemPrice, getDiscount, MASTER_VISIT_ID, calculateFrames } fro
 import ServiceModal from '@/components/ServiceModal';
 import ContactModal from '@/components/ContactModal';
 import CheckoutModal from '@/components/CheckoutModal';
+import PageHeader from '@/components/PageHeader';
+import PageNavigation from '@/components/PageNavigation';
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -39,34 +41,10 @@ export default function Cart() {
   if (cart.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-        <img 
-          src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
-          alt="Калининград"
-          className="w-full h-48 object-cover"
-        />
+        <PageHeader />
         
         <div className="max-w-md mx-auto">
-          <div className="bg-white shadow-lg p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => navigate('/')}
-                >
-                  <Icon name="ArrowLeft" size={24} />
-                </Button>
-                <h1 className="text-2xl font-bold text-gray-800 flex-1">План работ</h1>
-              </div>
-              <Button
-                onClick={() => setShowContactModal(true)}
-                className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 p-0 hover:scale-110"
-                title="Меню связи"
-              >
-                <Icon name="Menu" size={24} />
-              </Button>
-            </div>
-          </div>
+          <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
           <div className="p-6">
             <Card className="p-12 text-center bg-white">
@@ -76,49 +54,32 @@ export default function Cart() {
                 Добавьте услуги для формирования плана работ
               </p>
               <Button
-                onClick={() => navigate('/')}
+                onClick={() => setShowServiceModal(true)}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
-                На главную
+                Добавить услуги
               </Button>
             </Card>
           </div>
         </div>
 
         <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
+        <ServiceModal open={showServiceModal} onClose={() => setShowServiceModal(false)} />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
-      <img 
-        src="https://cdn.poehali.dev/files/22222.jpg"
-        alt="Калининград"
-        className="w-full h-auto object-cover"
-      />
+      <PageHeader />
 
       <div className="max-w-md mx-auto">
-        <div className="bg-white shadow-lg p-4 flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-            <Icon name="Home" size={20} />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => navigate('/portfolio')}>
-            <Icon name="ImageIcon" size={20} />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => navigate('/orders')}>
-            <Icon name="ClipboardList" size={20} />
-          </Button>
-          <div className="flex-1" />
-          <Button variant="ghost" size="icon" onClick={() => setShowContactModal(true)}>
-            <Icon name="Menu" size={20} />
-          </Button>
-        </div>
+        <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
         <div className="p-6 space-y-4">
           <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-200 overflow-hidden animate-fadeIn">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 text-center">
-              <h2 className="text-2xl font-bold mb-1">План работ</h2>
+              <h2 className="text-2xl font-bold mb-1">Список задач</h2>
             </div>
 
             <div className="p-6 space-y-4">
@@ -215,15 +176,10 @@ export default function Cart() {
                         <div className="mt-1 space-y-1">
                           <p className="text-xs text-gray-600">Количество: {item.quantity} шт</p>
                           <p className="text-xs text-gray-600">
-                            {item.selectedOption === 'install-only' 
+                            Количество: {item.quantity} шт, {item.selectedOption === 'install-only' 
                               ? `Установить ${item.product.name.toLowerCase()}` 
-                              : 'Электромонтаж'}
+                              : 'Электромонтаж'}{item.additionalOptions && item.additionalOptions.length > 0 && `, + ${item.product.options?.filter(o => item.additionalOptions?.includes(o.id)).map(o => o.name).join(', ')}`}
                           </p>
-                          {item.additionalOptions && item.additionalOptions.length > 0 && (
-                            <p className="text-xs text-gray-600">
-                              + {item.product.options?.filter(o => item.additionalOptions?.includes(o.id)).map(o => o.name).join(', ')}
-                            </p>
-                          )}
                         </div>
                       )}
                     </div>

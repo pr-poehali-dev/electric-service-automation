@@ -84,7 +84,7 @@ export default function ProductSelectionModal({ open, onClose }: ProductSelectio
                           disabled={isRepairSelected}
                         />
                         <label htmlFor={`${product.id}-install`} className={`text-xs cursor-pointer ${isRepairSelected ? 'opacity-50' : ''}`}>
-                          +{product.priceInstallOnly} ₽ Установить {product.name.toLowerCase()}
+                          {product.priceInstallOnly > 0 ? `+${product.priceInstallOnly} ₽` : '250 ₽/штука'} Установить {product.name.toLowerCase()}
                         </label>
                       </div>
                       
@@ -96,7 +96,7 @@ export default function ProductSelectionModal({ open, onClose }: ProductSelectio
                           disabled={isRepairSelected}
                         />
                         <label htmlFor={`${product.id}-wiring`} className={`text-xs cursor-pointer ${isRepairSelected ? 'opacity-50' : ''}`}>
-                          +{product.priceWithWiring - product.priceInstallOnly} ₽ Электромонтаж
+                          +{product.priceWithWiring} ₽ Электромонтаж
                         </label>
                       </div>
                     </>
@@ -140,7 +140,7 @@ export default function ProductSelectionModal({ open, onClose }: ProductSelectio
 
                 {inCart && (
                   <div className="text-sm font-bold text-primary">
-                    Итого: {calculateItemPrice(inCart).toLocaleString('ru-RU')} ₽
+                    Итого за услугу: {calculateItemPrice(inCart).toLocaleString('ru-RU')} ₽
                   </div>
                 )}
               </div>
@@ -170,10 +170,10 @@ export default function ProductSelectionModal({ open, onClose }: ProductSelectio
 
           <div>
             <h3 className="font-semibold text-lg mb-3 text-gray-800">
-              🏗️ Строительные услуги
+              Строительные услуги
             </h3>
             <p className="text-xs text-muted-foreground mb-3">
-              Опционально идут как дополнение для повышения комфорта вашего дома
+              Этими услугами обычно пользуются дизайнеры интерьеров
             </p>
             <div className="space-y-3">
               {constructionServices.map(renderServiceCard)}
@@ -191,7 +191,7 @@ export default function ProductSelectionModal({ open, onClose }: ProductSelectio
               className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
             >
               <Icon name="Check" size={18} className="mr-2" />
-              Подтвердить ({totalItems})
+              Добавить ({totalItems})
             </Button>
           ) : (
             <Button onClick={onClose} variant="outline" className="flex-1">

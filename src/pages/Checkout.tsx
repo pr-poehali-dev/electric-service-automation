@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import InputMask from 'react-input-mask';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
@@ -7,6 +8,8 @@ import { useCart } from '@/contexts/CartContext';
 import { calculateItemPrice, getDiscount, calculateFrames } from '@/types/electrical';
 import NewProgressBar from '@/components/NewProgressBar';
 import ContactModal from '@/components/ContactModal';
+import PageHeader from '@/components/PageHeader';
+import PageNavigation from '@/components/PageNavigation';
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -98,32 +101,21 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
-      <img 
-        src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
-        alt="Калининград"
-        className="w-full h-48 object-cover"
-      />
+      <PageHeader />
 
       <div className="max-w-md mx-auto">
+        <PageNavigation onContactClick={() => setShowContactModal(true)} />
+        
         <div className="bg-white shadow-lg p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/cart')}
-              >
-                <Icon name="ArrowLeft" size={24} />
-              </Button>
-              <h1 className="text-2xl font-bold text-gray-800 flex-1">Запись к мастеру</h1>
-            </div>
+          <div className="flex items-center gap-3">
             <Button
-              onClick={() => setShowContactModal(true)}
-              className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 p-0 hover:scale-110"
-              title="Меню связи"
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/cart')}
             >
-              <Icon name="Menu" size={24} />
+              <Icon name="ArrowLeft" size={24} />
             </Button>
+            <h1 className="text-2xl font-bold text-gray-800 flex-1">Запись к мастеру</h1>
           </div>
 
           <NewProgressBar 
@@ -146,11 +138,11 @@ export default function Checkout() {
                 <label className="text-sm font-medium mb-2 block">
                   Номер телефона <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="tel"
-                  placeholder="+7 (___) ___-__-__"
+                <InputMask
+                  mask="+7 (999) 999-99-99"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="+7 (___) ___-__-__"
                   className={`w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
                     errors.phone ? 'border-red-500' : 'border-gray-300'
                   }`}
@@ -295,18 +287,9 @@ export default function Checkout() {
               <Icon name="MessageCircle" size={24} className="text-indigo-600" />
               <h3 className="font-bold text-lg">Бесплатная консультация</h3>
             </div>
-            <p className="text-sm text-gray-700 mb-3">
+            <p className="text-sm text-gray-700">
               Есть вопросы? Напишите нам во ВКонтакте — мы с радостью проконсультируем вас!
             </p>
-            <a
-              href="https://vk.com/im?sel=-23524557"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all font-semibold"
-            >
-              <Icon name="MessageSquare" size={18} />
-              Написать ВКонтакте
-            </a>
           </Card>
 
           <Button

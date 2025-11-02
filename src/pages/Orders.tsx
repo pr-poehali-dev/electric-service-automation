@@ -9,6 +9,8 @@ import ContactModal from '@/components/ContactModal';
 import ProductSelectionModal from '@/components/ProductSelectionModal';
 import CalculatorModal from '@/components/CalculatorModal';
 import BottomMenu from '@/components/BottomMenu';
+import PageHeader from '@/components/PageHeader';
+import PageNavigation from '@/components/PageNavigation';
 import {
   Accordion,
   AccordionContent,
@@ -69,13 +71,11 @@ export default function Orders() {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
-        <img 
-          src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
-          alt="Калининград"
-          className="w-full h-48 object-cover"
-        />
+        <PageHeader />
 
         <div className="max-w-md mx-auto">
+          <PageNavigation onContactClick={() => setShowContactModal(true)} />
+          
           <div className="bg-white shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -302,18 +302,12 @@ export default function Orders() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
-      <img 
-        src="https://cdn.poehali.dev/files/22222.jpg"
-        alt="БАЛТСЕТЬ"
-        className="w-full h-auto object-cover"
-      />
+      <PageHeader />
 
       <div className="max-w-md mx-auto">
+        <PageNavigation onContactClick={() => setShowContactModal(true)} />
+        
         <div className="p-6 space-y-4">
-
-          <div className="mb-4">
-            <BottomMenu />
-          </div>
           
           {orders.length === 0 ? (
             <Card className="p-12 text-center">
