@@ -62,14 +62,22 @@ export function useProductsLogic() {
           const product = PRODUCTS.find(p => p.id === container.productId);
           
           if (product) {
-            if (option.id === 'install') {
+            if (option.id.startsWith('block-')) {
+              const virtualProduct: typeof product = {
+                ...product,
+                id: `${container.productId}-${option.id}`,
+                name: option.name,
+                description: option.name,
+                priceInstallOnly: option.price,
+                priceWithWiring: option.price
+              };
+              addToCart(virtualProduct, option.quantity, 'full-wiring');
+            } else if (option.id === 'install') {
               addToCart(product, option.quantity, 'install-only');
             } else if (option.id === 'wiring') {
               addToCart(product, option.quantity, 'full-wiring');
             } else if (option.id === 'dismantle' || option.id === 'assemble') {
               addToCart(product, option.quantity, 'install-only', [option.id]);
-            } else if (option.id.startsWith('block-')) {
-              addToCart(product, option.quantity, 'full-wiring', [option.id]);
             } else {
               addToCart(product, option.quantity);
             }
