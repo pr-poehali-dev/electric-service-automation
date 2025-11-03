@@ -160,6 +160,17 @@ export default function Cart() {
                                   </label>
                                 </div>
                               ))
+                            ) : item.product.id.includes('block-') && item.product.id.startsWith('wiring-complex') ? (
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  id={`${item.product.id}-install-blocks`}
+                                  checked={item.additionalOptions?.includes('install-blocks')}
+                                  onCheckedChange={() => toggleAdditionalOption(item.product.id, 'install-blocks')}
+                                />
+                                <label htmlFor={`${item.product.id}-install-blocks`} className="text-xs cursor-pointer">
+                                  +250 ₽/шт · Установить розетки/выключатели
+                                </label>
+                              </div>
                             ) : (
                               <p className="text-xs text-gray-500 italic">Нет доступных опций для редактирования</p>
                             )}

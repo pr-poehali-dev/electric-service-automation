@@ -7,11 +7,14 @@ import ContactModal from '@/components/ContactModal';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import Landing from '@/components/Landing';
+import { useCart } from '@/contexts/CartContext';
 
 export default function Services() {
   const navigate = useNavigate();
+  const { cart } = useCart();
   const [showContactModal, setShowContactModal] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const hasItems = cart.length > 0;
 
   useEffect(() => {
     const checkDesktop = () => {
@@ -36,6 +39,20 @@ export default function Services() {
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
         <div className="p-6 space-y-6">
+
+        {hasItems && (
+          <Card className="p-6 bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/cart')}>
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Icon name="PlayCircle" size={32} className="text-white" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-white mb-1">Продолжить работу</h2>
+                <p className="text-sm text-blue-100">Список задач ({cart.length})</p>
+              </div>
+            </div>
+          </Card>
+        )}
 
         <Card className="p-6 bg-white shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/orders')}>
           <div className="flex items-center gap-4">

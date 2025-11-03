@@ -69,7 +69,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const removeFromCart = (productId: string) => {
-    setCart(prev => prev.filter(item => item.product.id !== productId));
+    setCart(prev => {
+      // Если удаляется блок розеток с опцией install-blocks, удаляем и Электроустановку
+      const item = prev.find(i => i.product.id === productId);
+      if (item && item.product.id.includes('block-') && item.additionalOptions?.includes('install-blocks')) {
+        const electricalInstallId = `${productId}-electrical-install`;
+        return prev.filter(i => i.product.id !== productId && i.product.id !== electricalInstallId);
+      }
+      
+      return prev.filter(item => item.product.id !== productId);
+    });
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
@@ -77,11 +86,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeFromCart(productId);
       return;
     }
-    setCart(prev =>
-      prev.map(item =>
+    setCart(prev => {
+      let updatedCart = prev.map(item =>
         item.product.id === productId ? { ...item, quantity } : item
-      )
-    );
+      );
+
+      // Если это блок розеток с опцией install-blocks, обновляем количество Электроустановки
+      const item = updatedCart.find(i => i.product.id === productId);
+      if (item && item.product.id.includes('block-') && item.additionalOptions?.includes('install-blocks')) {
+        let outletsCount = 1;
+        if (item.product.id.includes('block-2')) outletsCount = 2;
+        else if (item.product.id.includes('block-3')) outletsCount = 3;
+        else if (item.product.id.includes('block-4')) outletsCount = 4;
+        else if (item.product.id.includes('block-5')) outletsCount = 5;
+
+        const totalOutlets = outletsCount * quantity;
+        const electricalInstallId = `${productId}-electrical-install`;
+
+        updatedCart = updatedCart.map(i => 
+          i.product.id === electricalInstallId 
+            ? { ...i, quantity: totalOutlets }
+            : i
+        );
+      }
+
+      return updatedCart;
+    });
   };
 
   const updateOption = (productId: string, option: ServiceOption) => {
@@ -93,8 +123,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleAdditionalOption = (productId: string, optionId: string) => {
-    setCart(prev =>
-      prev.map(item => {
+    setCart(prev => {
+      let updatedCart = prev.map(item => {
         if (item.product.id === productId) {
           const options = item.additionalOptions || [];
           if (options.includes(optionId)) {
@@ -104,8 +134,62 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }
         }
         return item;
-      })
-    );
+      });
+
+      // Если включается опция "install-blocks" для блока розеток
+      if (optionId === 'install-blocks' && !prev.find(i => i.product.id === productId)?.additionalOptions?.includes(optionId)) {
+        const item = updatedCart.find(i => i.product.id === productId);
+        if (item && item.product.id.includes('block-')) {
+          // Подсчитываем количество розеток в блоке
+          let outletsCount = 1;
+          if (item.product.id.includes('block-2')) outletsCount = 2;
+          else if (item.product.id.includes('block-3')) outletsCount = 3;
+          else if (item.product.id.includes('block-4')) outletsCount = 4;
+          else if (item.product.id.includes('block-5')) outletsCount = 5;
+
+          const totalOutlets = outletsCount * item.quantity;
+
+          // Создаем или обновляем Электроустановку
+          const electricalInstallId = `${productId}-electrical-install`;
+          const existingInstall = updatedCart.find(i => i.product.id === electricalInstallId);
+          
+          if (existingInstall) {
+            updatedCart = updatedCart.map(i => 
+              i.product.id === electricalInstallId 
+                ? { ...i, quantity: totalOutlets }
+                : i
+            );
+          } else {
+            const baseProduct = PRODUCTS.find(p => p.id === 'chandelier-1');
+            if (baseProduct) {
+              const virtualProduct: Product = {
+                ...baseProduct,
+                id: electricalInstallId,
+                name: 'Электроустановка',
+                description: 'Установка розеток/выключателей',
+                priceInstallOnly: 250,
+                priceWithWiring: 250,
+                options: []
+              };
+              updatedCart = [...updatedCart, { 
+                product: virtualProduct, 
+                quantity: totalOutlets, 
+                selectedOption: 'install-only',
+                additionalOptions: []
+              }];
+            }
+          }
+        }
+      }
+
+      // Если отключается опция "install-blocks", удаляем Электроустановку
+      if (optionId === 'install-blocks' && prev.find(i => i.product.id === productId)?.additionalOptions?.includes(optionId)) {
+        const electricalInstallId = `${productId}-electrical-install`;
+        updatedCart = updatedCart.filter(i => i.product.id !== electricalInstallId);
+      }
+
+      return updatedCart;
+    });
   };
 
   const clearCart = () => {
