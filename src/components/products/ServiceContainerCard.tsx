@@ -84,8 +84,22 @@ export default function ServiceContainerCard({
               htmlFor={`${container.productId}-${option.id}`}
               className="text-sm font-medium cursor-pointer flex-1"
             >
-              {option.name}
-              {option.unit && <span className="text-xs text-gray-500 ml-1">({option.unit})</span>}
+              <div className="flex items-center gap-2">
+                <span>{option.name}</span>
+                {option.description && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Icon name="Info" size={16} className="text-blue-500 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="text-xs">{option.description}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                {option.unit && <span className="text-xs text-gray-500">({option.unit})</span>}
+              </div>
               {option.customPrice && (
                 <p className="text-xs text-blue-600 mt-1">
                   Полная замена старого вводного кабеля, либо наращивание существующего

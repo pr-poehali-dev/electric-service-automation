@@ -164,11 +164,19 @@ export function useProductsLogic() {
               };
               addToCart(virtualProduct, option.quantity, 'install-only');
             } else if (option.id === 'repair' || option.id === 'surface-outlet') {
+              let contextName = option.name;
+              if (option.id === 'repair') {
+                if (container.productId === 'sw-install') {
+                  contextName = 'Ремонт выключателя с учётом материалов';
+                } else if (container.productId === 'out-install') {
+                  contextName = 'Ремонт розетки с учётом материалов';
+                }
+              }
               const virtualProduct: typeof product = {
                 ...product,
                 id: `${container.productId}-${option.id}`,
-                name: option.name,
-                description: option.name,
+                name: contextName,
+                description: contextName,
                 priceInstallOnly: finalPrice,
                 priceWithWiring: finalPrice
               };

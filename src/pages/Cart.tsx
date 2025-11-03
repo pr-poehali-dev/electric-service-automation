@@ -171,9 +171,7 @@ export default function Cart() {
                                   +250 ₽/шт · Установить розетки/выключатели
                                 </label>
                               </div>
-                            ) : (
-                              <p className="text-xs text-gray-500 italic">Нет доступных опций для редактирования</p>
-                            )}
+                            ) : null}
                           </div>
                         </div>
                       ) : (
