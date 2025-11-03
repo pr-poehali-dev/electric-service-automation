@@ -147,22 +147,6 @@ export default function Cart() {
                           </div>
 
                           <div className="space-y-1">
-                            {/* Опції для монтажу кабеля */}
-                            {item.product.id === 'auto-cable-wiring' && item.product.options && item.product.options.length > 0 && (
-                              item.product.options.map(option => (
-                                <div key={option.id} className="flex items-center gap-2">
-                                  <Checkbox
-                                    id={`${item.product.id}-${option.id}`}
-                                    checked={item.additionalOptions?.includes(option.id)}
-                                    onCheckedChange={() => toggleAdditionalOption(item.product.id, option.id)}
-                                  />
-                                  <label htmlFor={`${item.product.id}-${option.id}`} className="text-xs cursor-pointer">
-                                    +{option.price} ₽ {option.name}
-                                  </label>
-                                </div>
-                              ))
-                            )}
-                            
                             {/* Опції для світильника */}
                             {(item.product.id.includes('chandelier-1') || item.product.name.includes('светильник')) && item.product.options && item.product.options.length > 0 && (
                               item.product.options.map(option => (

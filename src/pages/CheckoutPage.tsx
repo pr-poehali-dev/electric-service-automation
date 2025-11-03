@@ -34,6 +34,9 @@ export default function CheckoutPage() {
     return sum + (fullPrice * discount / 100);
   }, 0);
 
+  const cableWiringItem = cart.find(item => item.product.id === 'auto-cable-wiring');
+  const cableMeters = cableWiringItem ? cableWiringItem.quantity : 0;
+  
   const wiringItems = cart.filter(item => 
     item.additionalOptions?.includes('wiring') || 
     item.selectedOption === 'full-wiring' ||
@@ -49,18 +52,6 @@ export default function CheckoutPage() {
       frames += item.quantity * item.additionalOptions.filter(opt => opt.startsWith('block-')).length;
     }
     return sum + frames;
-  }, 0);
-  
-  const cableMeters = wiringItems.reduce((sum, item) => {
-    let meters = 0;
-    if (item.additionalOptions?.includes('wiring') || item.selectedOption === 'full-wiring') {
-      meters += item.quantity * 8;
-    }
-    if (item.additionalOptions?.some(opt => opt.startsWith('block-'))) {
-      const blockCount = item.additionalOptions.filter(opt => opt.startsWith('block-')).length;
-      meters += item.quantity * blockCount * 8;
-    }
-    return sum + meters;
   }, 0);
   
   const cableCost = Math.round(cableMeters * 100);

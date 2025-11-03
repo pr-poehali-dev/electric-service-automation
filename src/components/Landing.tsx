@@ -58,8 +58,8 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Электромонтажные работы в Калининграде
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                Электромонтажные работы в&nbsp;Калининграде
               </h1>
               <p className="text-xl text-gray-600 mb-8">
                 Профессиональные услуги электрика для квартир, домов и коммерческих объектов. Быстро, качественно, с гарантией.
