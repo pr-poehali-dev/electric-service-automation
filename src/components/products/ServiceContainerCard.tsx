@@ -3,6 +3,13 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ServiceContainer, ServiceOption } from './types';
+import { useState } from 'react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface ServiceContainerCardProps {
   container: ServiceContainer;
@@ -21,6 +28,12 @@ export default function ServiceContainerCard({
   updateOptionQuantity,
   calculateContainerTotal
 }: ServiceContainerCardProps) {
+  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({
+    main: true,
+    construction: false,
+    panel: false
+  });
+
   const isSingleOption = container.options.length === 1;
   const singleOption = isSingleOption ? container.options[0] : null;
 
@@ -120,9 +133,18 @@ export default function ServiceContainerCard({
       <Card key={container.productId} className="overflow-hidden">
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex-1">
+            <div className="flex-1 flex items-center gap-2">
               <h4 className="font-semibold text-base">{container.productName}</h4>
-              <p className="text-xs text-gray-600 mt-1">{container.productDescription}</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Icon name="Info" size={14} className="text-gray-400 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Цены для высоты потолков до 3.5м. Выше — +50%</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
           
@@ -153,9 +175,18 @@ export default function ServiceContainerCard({
         className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={() => toggleContainer(actualIndex)}
       >
-        <div className="flex-1">
+        <div className="flex-1 flex items-center gap-2">
           <h4 className="font-semibold text-base">{container.productName}</h4>
-          <p className="text-xs text-gray-600 mt-1">{container.productDescription}</p>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Icon name="Info" size={14} className="text-gray-400 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Цены для высоты потолков до 3.5м. Выше — +50%</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <Icon 
           name={container.expanded ? 'ChevronUp' : 'ChevronDown'} 
@@ -165,40 +196,70 @@ export default function ServiceContainerCard({
       </div>
 
       {container.expanded && (
-        <div className="px-4 pb-4">
-          <div className="bg-amber-50 border-l-4 border-amber-400 p-3 mb-4 rounded">
-            <p className="text-xs text-amber-800">
-              ℹ️ Все цены указаны для высоты потолков до 3.5 метров. Если потолок выше — цены увеличиваются на 50%.
-            </p>
-          </div>
-
-          <div className="bg-gray-50 rounded-xl p-4 space-y-4">
-            <p className="text-sm font-semibold text-gray-700">Уточните задачу:</p>
+        <div className="px-4 pb-4 space-y-3">
+          <div className="bg-gray-50 rounded-xl p-4">
+            <div 
+              className="flex items-center justify-between cursor-pointer"
+              onClick={() => setExpandedSections(prev => ({ ...prev, main: !prev.main }))}
+            >
+              <p className="text-sm font-semibold text-gray-700">Уточните задачу:</p>
+              <Icon 
+                name={expandedSections.main ? 'ChevronUp' : 'ChevronDown'} 
+                size={18} 
+                className="text-gray-500"
+              />
+            </div>
             
-            {otherOptions.length > 0 && (
-              <div className="space-y-2">
+            {expandedSections.main && otherOptions.length > 0 && (
+              <div className="space-y-2 mt-3">
                 {otherOptions.map(renderOption)}
               </div>
             )}
+          </div>
 
-            {constructionOptions.length > 0 && (
-              <div>
-                <h5 className="text-sm font-bold text-gray-800 mb-2 mt-4">Строительные работы</h5>
-                <div className="space-y-2">
+          {constructionOptions.length > 0 && (
+            <div className="bg-gray-50 rounded-xl p-4">
+              <div 
+                className="flex items-center justify-between cursor-pointer"
+                onClick={() => setExpandedSections(prev => ({ ...prev, construction: !prev.construction }))}
+              >
+                <h5 className="text-sm font-bold text-gray-800">Строительные работы</h5>
+                <Icon 
+                  name={expandedSections.construction ? 'ChevronUp' : 'ChevronDown'} 
+                  size={18} 
+                  className="text-gray-500"
+                />
+              </div>
+              
+              {expandedSections.construction && (
+                <div className="space-y-2 mt-3">
                   {constructionOptions.map(renderOption)}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+          )}
 
-            {panelOptions.length > 0 && (
-              <div>
-                <h5 className="text-sm font-bold text-gray-800 mb-2 mt-4">Сборка электрощитка</h5>
-                <div className="space-y-2">
+          {panelOptions.length > 0 && (
+            <div className="bg-gray-50 rounded-xl p-4">
+              <div 
+                className="flex items-center justify-between cursor-pointer"
+                onClick={() => setExpandedSections(prev => ({ ...prev, panel: !prev.panel }))}
+              >
+                <h5 className="text-sm font-bold text-gray-800">Монтаж и сборка электрощитов</h5>
+                <Icon 
+                  name={expandedSections.panel ? 'ChevronUp' : 'ChevronDown'} 
+                  size={18} 
+                  className="text-gray-500"
+                />
+              </div>
+              
+              {expandedSections.panel && (
+                <div className="space-y-2 mt-3">
                   {panelOptions.map(renderOption)}
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {calculateContainerTotal(container) > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-200">

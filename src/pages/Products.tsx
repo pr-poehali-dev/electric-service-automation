@@ -24,7 +24,9 @@ export default function Products() {
     calculateContainerTotal,
     calculateGrandTotal,
     handleAddToCart,
-    hasAnyEnabledOptions
+    hasAnyEnabledOptions,
+    hasWiringOptions,
+    calculateEstimatedCableMeters
   } = useProductsLogic();
 
   return (
@@ -71,13 +73,15 @@ export default function Products() {
                 })}
               </div>
               
-              <Button
-                onClick={() => setShowSurveyDialog(true)}
-                variant="outline"
-                className="w-full mt-4 border-2 border-blue-400 bg-white hover:bg-blue-50 text-blue-700 font-semibold"
-              >
-                Рассчитать стоимость
-              </Button>
+              {!hasAnyEnabledOptions && (
+                <Button
+                  onClick={() => setShowSurveyDialog(true)}
+                  variant="outline"
+                  className="w-full mt-4 border-2 border-blue-400 bg-white hover:bg-blue-50 text-blue-700 font-semibold"
+                >
+                  Рассчитать стоимость
+                </Button>
+              )}
             </div>
           </div>
 
@@ -90,6 +94,17 @@ export default function Products() {
                     {calculateGrandTotal().toLocaleString('ru-RU')} ₽
                   </span>
                 </div>
+                
+                {hasWiringOptions && (
+                  <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-xs text-blue-700">
+                      💡 Примерный метраж кабеля: <span className="font-bold">{calculateEstimatedCableMeters()}м</span>
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Автоматически добавлено: Монтаж кабеля (100₽/м)
+                    </p>
+                  </div>
+                )}
                 
                 <Button
                   size="lg"

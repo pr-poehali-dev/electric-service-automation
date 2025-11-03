@@ -60,10 +60,32 @@ export function useProductsLogic() {
   };
 
   const calculateGrandTotal = () => {
-    return containers.reduce((sum, container) => sum + calculateContainerTotal(container), 0);
+    let total = containers.reduce((sum, container) => sum + calculateContainerTotal(container), 0);
+    
+    if (hasWiringOptions) {
+      const cableMeters = calculateEstimatedCableMeters();
+      total += cableMeters * 100;
+    }
+    
+    return total;
   };
 
   const handleAddToCart = () => {
+    const wiringProduct = PRODUCTS.find(p => p.id === 'chandelier-1');
+    
+    if (hasWiringOptions && wiringProduct) {
+      const cableMeters = calculateEstimatedCableMeters();
+      const cableVirtualProduct: typeof wiringProduct = {
+        ...wiringProduct,
+        id: 'auto-cable-wiring',
+        name: 'Монтаж кабеля (автоматически)',
+        description: `Примерный метраж: ${cableMeters}м`,
+        priceInstallOnly: 100,
+        priceWithWiring: 100
+      };
+      addToCart(cableVirtualProduct, cableMeters, 'full-wiring');
+    }
+    
     containers.forEach(container => {
       container.options.forEach(option => {
         if (option.enabled && !option.customPrice) {
@@ -83,7 +105,7 @@ export function useProductsLogic() {
             if (option.id.startsWith('block-') || option.id === 'add-outlet' || option.id === 'move-switch' || option.id === 'move-switch-alt' || 
                 option.id === 'cable-10m' || option.id === 'cable-corrugated' || option.id === 'breaker-install' || 
                 option.id === 'breaker-replace' || option.id === 'meter-230v' || option.id === 'meter-380v' || 
-                option.id === 'box-surface' || option.id === 'box-flush') {
+                option.id === 'box-surface' || option.id === 'box-flush' || option.id === 'drilling-porcelain' || option.id === 'electrical-install') {
               const virtualProduct: typeof product = {
                 ...product,
                 id: `${container.productId}-${option.id}`,
@@ -125,8 +147,24 @@ export function useProductsLogic() {
     navigate('/cart');
   };
 
+  const calculateEstimatedCableMeters = () => {
+    let totalPoints = 0;
+    containers.forEach(container => {
+      container.options.forEach(option => {
+        if (option.enabled && container.sectionCategory === 'wiring') {
+          totalPoints += option.quantity;
+        }
+      });
+    });
+    return Math.ceil(totalPoints * 3.5);
+  };
+
   const hasAnyEnabledOptions = containers.some(container => 
     container.options.some(opt => opt.enabled)
+  );
+  
+  const hasWiringOptions = containers.some(container => 
+    container.sectionCategory === 'wiring' && container.options.some(opt => opt.enabled)
   );
 
   const servicesContainers = containers.filter(c => c.sectionCategory === 'services');
@@ -142,6 +180,8 @@ export function useProductsLogic() {
     calculateContainerTotal,
     calculateGrandTotal,
     handleAddToCart,
-    hasAnyEnabledOptions
+    hasAnyEnabledOptions,
+    hasWiringOptions,
+    calculateEstimatedCableMeters
   };
 }
