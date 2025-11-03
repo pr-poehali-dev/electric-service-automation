@@ -5,129 +5,40 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCart } from '@/contexts/CartContext';
-import { MASTER_VISIT_ID, PRODUCTS } from '@/types/electrical';
+import { calculateItemPrice, getDiscount, MASTER_VISIT_ID, calculateFrames } from '@/types/electrical';
 import ServiceModal from '@/components/ServiceModal';
 import ContactModal from '@/components/ContactModal';
 
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 
-interface ServiceOption {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  enabled: boolean;
-}
-
-interface ServiceContainer {
-  productId: string;
-  productName: string;
-  productDescription: string;
-  category: string;
-  options: ServiceOption[];
-}
-
 export default function Cart() {
   const navigate = useNavigate();
-  const { cart } = useCart();
+  const { cart, updateQuantity, removeFromCart, updateOption, toggleAdditionalOption } = useCart();
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
 
-  const [containers, setContainers] = useState<ServiceContainer[]>(() => {
-    const chandelier = PRODUCTS.find(p => p.id === 'chandelier-1');
-    const outlet = PRODUCTS.find(p => p.id === 'out-1');
-    const switchProduct = PRODUCTS.find(p => p.id === 'sw-1');
+  const [editMode, setEditMode] = useState(false);
 
-    return [
-      {
-        productId: 'chandelier-1',
-        productName: chandelier?.name || 'Установить люстру',
-        productDescription: chandelier?.description || '',
-        category: 'chandelier',
-        options: [
-          { id: 'install', name: 'Установить люстру', price: 1000, quantity: 1, enabled: false },
-          { id: 'dismantle', name: 'Демонтаж старой люстры', price: 500, quantity: 1, enabled: false },
-          { id: 'assemble', name: 'Сборка люстры', price: 500, quantity: 1, enabled: false },
-        ]
-      },
-      {
-        productId: 'sw-1',
-        productName: switchProduct?.name || 'Установить выключатель',
-        productDescription: switchProduct?.description || '',
-        category: 'switch',
-        options: [
-          { id: 'install', name: 'Установить выключатель', price: 250, quantity: 1, enabled: false },
-          { id: 'wiring', name: 'Добавить/перенести', price: 1500, quantity: 1, enabled: false },
-        ]
-      },
-      {
-        productId: 'out-1',
-        productName: outlet?.name || 'Установить розетку',
-        productDescription: outlet?.description || 'Черновые работы со штроблением, сверлением и установкой подрозетника',
-        category: 'outlet',
-        options: [
-          { id: 'block-2', name: 'Блок из 2-х розеток', price: 1200, quantity: 1, enabled: false },
-          { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
-          { id: 'block-4', name: 'Блок из 4-х розеток', price: 3000, quantity: 1, enabled: false },
-          { id: 'block-5', name: 'Блок из 5 розеток', price: 3500, quantity: 1, enabled: false },
-          { id: 'install', name: 'Установить розетку', price: 250, quantity: 1, enabled: false },
-          { id: 'wiring', name: 'Добавить/перенести', price: 850, quantity: 1, enabled: false },
-        ]
-      }
-    ];
-  });
+  const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
+  const totalDiscount = cart.reduce((sum, item) => {
+    const discount = getDiscount(item.quantity);
+    const basePrice = item.selectedOption === 'install-only' ? item.product.priceInstallOnly : item.product.priceWithWiring;
+    const fullPrice = basePrice * item.quantity;
+    return sum + (fullPrice * discount / 100);
+  }, 0);
 
-  const toggleOption = (containerIndex: number, optionId: string) => {
-    setContainers(prev => prev.map((container, idx) => {
-      if (idx === containerIndex) {
-        return {
-          ...container,
-          options: container.options.map(opt => 
-            opt.id === optionId ? { ...opt, enabled: !opt.enabled } : opt
-          )
-        };
-      }
-      return container;
-    }));
-  };
+  const wiringItems = cart.filter(item => item.selectedOption === 'full-wiring');
+  const totalFrames = calculateFrames(wiringItems);
+  const cableMeters = totalFrames * 8;
+  
+  const cableCost = cableMeters * 100;
+  const finalTotal = totalPrice + cableCost;
+  
+  const masterVisit = cart.find(item => item.product.id === MASTER_VISIT_ID);
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const updateOptionQuantity = (containerIndex: number, optionId: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setContainers(prev => prev.map((container, idx) => {
-      if (idx === containerIndex) {
-        return {
-          ...container,
-          options: container.options.map(opt => 
-            opt.id === optionId ? { ...opt, quantity: newQuantity } : opt
-          )
-        };
-      }
-      return container;
-    }));
-  };
-
-  const calculateTotal = () => {
-    let total = 0;
-    containers.forEach(container => {
-      container.options.forEach(option => {
-        if (option.enabled) {
-          total += option.price * option.quantity;
-        }
-      });
-    });
-    const masterVisit = cart.find(item => item.product.id === MASTER_VISIT_ID);
-    if (masterVisit) {
-      total += masterVisit.product.priceInstallOnly;
-    }
-    return total;
-  };
-
-  const hasAnyEnabledOptions = containers.some(container => 
-    container.options.some(opt => opt.enabled)
-  );
-
-  if (!hasAnyEnabledOptions && cart.length === 0) {
+  if (cart.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
         <PageHeader />
@@ -158,8 +69,6 @@ export default function Cart() {
     );
   }
 
-  const masterVisit = cart.find(item => item.product.id === MASTER_VISIT_ID);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
       <PageHeader />
@@ -168,111 +77,171 @@ export default function Cart() {
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
         <div className="p-6 space-y-4">
-          {containers.map((container, containerIndex) => (
-            <Card key={container.productId} className="overflow-hidden">
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">{container.productName}</h3>
-                <p className="text-sm text-gray-600 mb-4">{container.productDescription}</p>
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-fadeIn">
+            <div className="p-6 space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-gray-700">Задачи</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditMode(!editMode)}
+                  className={editMode ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold shadow-lg" : "text-xs"}
+                >
+                  <Icon name={editMode ? 'Check' : 'Edit'} size={14} className="mr-1" />
+                  {editMode ? 'Готово' : 'Редактировать'}
+                </Button>
+              </div>
 
-                <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-                  <p className="text-sm font-semibold text-gray-700 mb-3">Дополнительно:</p>
-                  
-                  {container.options.map((option) => (
-                    <div 
-                      key={option.id}
-                      className={`flex items-center justify-between p-3 rounded-lg transition-all ${
-                        option.enabled ? 'bg-green-100' : 'bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 flex-1">
-                        <Checkbox
-                          id={`${container.productId}-${option.id}`}
-                          checked={option.enabled}
-                          onCheckedChange={() => toggleOption(containerIndex, option.id)}
-                        />
-                        <label 
-                          htmlFor={`${container.productId}-${option.id}`}
-                          className="text-sm font-medium cursor-pointer flex-1"
-                        >
-                          {option.name}
-                        </label>
+              {cart.filter(item => item.product.id !== MASTER_VISIT_ID).map((item, index) => (
+                <div key={item.product.id} className="border-b border-gray-200 pb-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-gray-400">#{index + 1}</span>
+                        <h4 className="font-semibold text-sm">{item.product.name}</h4>
                       </div>
                       
-                      {option.enabled ? (
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => updateOptionQuantity(containerIndex, option.id, option.quantity - 1)}
-                            className="h-8 w-8 p-0 rounded-full bg-gray-200 hover:bg-gray-300"
-                          >
-                            <Icon name="Minus" size={16} />
-                          </Button>
-                          <span className="font-bold text-lg min-w-[2rem] text-center">{option.quantity}</span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => updateOptionQuantity(containerIndex, option.id, option.quantity + 1)}
-                            className="h-8 w-8 p-0 rounded-full bg-orange-500 hover:bg-orange-600 text-white"
-                          >
-                            <Icon name="Plus" size={16} />
-                          </Button>
+                      {editMode ? (
+                        <div className="mt-2 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                              className="h-7 w-7 p-0"
+                            >
+                              <Icon name="Minus" size={12} />
+                            </Button>
+                            <span className="text-sm font-semibold px-2">{item.quantity} шт</span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                              className="h-7 w-7 p-0"
+                            >
+                              <Icon name="Plus" size={12} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => removeFromCart(item.product.id)}
+                              className="h-7 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Icon name="Trash2" size={14} />
+                            </Button>
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id={`${item.product.id}-install`}
+                                checked={item.additionalOptions?.includes('install')}
+                                onCheckedChange={() => toggleAdditionalOption(item.product.id, 'install')}
+                              />
+                              <label htmlFor={`${item.product.id}-install`} className="text-xs cursor-pointer">
+                                +{item.product.priceInstallOnly} ₽ Установить {item.product.name.toLowerCase()}
+                              </label>
+                            </div>
+                            
+                            {item.product.category !== 'chandelier' && (
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  id={`${item.product.id}-wiring`}
+                                  checked={item.additionalOptions?.includes('wiring')}
+                                  onCheckedChange={() => toggleAdditionalOption(item.product.id, 'wiring')}
+                                />
+                                <label htmlFor={`${item.product.id}-wiring`} className="text-xs cursor-pointer">
+                                  +{item.product.priceWithWiring} ₽ Добавить/перенести
+                                </label>
+                              </div>
+                            )}
+
+                            {item.product.options?.map(option => (
+                              <div key={option.id} className="flex items-center gap-2">
+                                <Checkbox
+                                  id={`${item.product.id}-${option.id}`}
+                                  checked={item.additionalOptions?.includes(option.id)}
+                                  onCheckedChange={() => toggleAdditionalOption(item.product.id, option.id)}
+                                />
+                                <label htmlFor={`${item.product.id}-${option.id}`} className="text-xs cursor-pointer">
+                                  +{option.price} ₽ {option.name}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       ) : (
-                        <span className="text-green-600 font-bold text-sm">+{option.price} ₽</span>
+                        <div className="mt-1">
+                          <p className="text-xs text-gray-600">
+                            {item.quantity} шт
+                            {item.additionalOptions?.includes('install') && `, Установить`}
+                            {item.product.category !== 'chandelier' && item.additionalOptions?.includes('wiring') && `, Добавить/перенести`}
+                            {item.additionalOptions && item.product.options && item.additionalOptions.filter(id => id !== 'install' && id !== 'wiring').length > 0 && `, + ${item.product.options.filter(o => item.additionalOptions?.includes(o.id)).map(o => o.name).join(', ')}`}
+                          </p>
+                        </div>
                       )}
                     </div>
-                  ))}
+                    
+                    <div className="text-right">
+                      <div className="font-bold text-primary">{calculateItemPrice(item).toLocaleString('ru-RU')} ₽</div>
+                      {getDiscount(item.quantity) > 0 && (
+                        <div className="text-xs text-green-600 font-semibold">
+                          Скидка {getDiscount(item.quantity)}%
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
+              ))}
 
-                <div className="mt-4 pt-4 border-t border-gray-200">
+              {masterVisit && (
+                <div className="border-b border-gray-200 pb-4 bg-orange-50 -mx-6 px-6 py-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Icon name="Truck" size={18} className="text-orange-600" />
+                      <span className="font-semibold text-sm">{masterVisit.product.name}</span>
+                    </div>
+                    <span className="font-bold text-primary">{masterVisit.product.priceInstallOnly} ₽</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2 pt-2">
+                {totalDiscount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Экономия</span>
+                    <span className="text-green-600 font-semibold">-{totalDiscount.toLocaleString('ru-RU')} ₽</span>
+                  </div>
+                )}
+                
+                {cableMeters > 0 && (
+                  <>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Примерный метраж кабеля</span>
+                      <span className="font-semibold">{cableMeters} м</span>
+                    </div>
+                    {totalFrames > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Потребуется рамок</span>
+                        <span className="font-semibold">{totalFrames} шт</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Стоимость монтажа кабеля</span>
+                      <span className="font-semibold">{cableCost.toLocaleString('ru-RU')} ₽</span>
+                    </div>
+                  </>
+                )}
+
+                <div className="border-t-2 border-dashed border-gray-300 pt-3 mt-3">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-800">Итого за услугу:</span>
-                    <span className="text-2xl font-bold text-green-600">
-                      {container.options
-                        .filter(opt => opt.enabled)
-                        .reduce((sum, opt) => sum + opt.price * opt.quantity, 0)
-                        .toLocaleString('ru-RU')} ₽
-                    </span>
+                    <span className="text-lg font-bold text-gray-800">ИТОГО</span>
+                    <span className="text-2xl font-bold text-primary">{finalTotal.toLocaleString('ru-RU')} ₽</span>
                   </div>
                 </div>
               </div>
-            </Card>
-          ))}
-
-          {masterVisit && (
-            <Card className="bg-orange-50 border-orange-200">
-              <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Icon name="Truck" size={18} className="text-orange-600" />
-                  <span className="font-semibold text-sm">{masterVisit.product.name}</span>
-                </div>
-                <span className="font-bold text-primary">{masterVisit.product.priceInstallOnly} ₽</span>
-              </div>
-            </Card>
-          )}
-
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-lg font-bold text-gray-800">ИТОГО</span>
-                <span className="text-3xl font-bold text-green-600">
-                  {calculateTotal().toLocaleString('ru-RU')} ₽
-                </span>
-              </div>
-              
-              <Button
-                size="lg"
-                onClick={() => navigate('/checkout')}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                disabled={!hasAnyEnabledOptions}
-              >
-                Оформить заявку
-              </Button>
             </div>
-          </Card>
 
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="bg-gray-50 p-4 text-center border-t space-y-2">
               <p className="text-xs text-gray-500">
                 Welcome to <a href="https://t.me/konigelectric" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Telegram</a> 🚀
@@ -281,6 +250,23 @@ export default function Cart() {
               <p className="text-xs text-gray-500 mt-1">📞 +7 (4012) 52-07-25</p>
             </div>
           </div>
+
+          <Button
+            onClick={() => navigate('/checkout')}
+            size="lg"
+            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl"
+          >
+            Перейти к оформлению
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => setShowServiceModal(true)}
+            className="w-full"
+          >
+            <Icon name="Plus" size={16} className="mr-2" />
+            Добавить еще
+          </Button>
         </div>
       </div>
 

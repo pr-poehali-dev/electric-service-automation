@@ -106,7 +106,7 @@ export const PRODUCTS: Product[] = [
     options: [
       {
         id: 'dismantle',
-        name: 'Демонтаж старой люстры',
+        name: 'Демонтаж люстры',
         price: 500
       },
       {
