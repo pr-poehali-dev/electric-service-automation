@@ -94,7 +94,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'chandelier-1',
     type: 'chandelier',
-    name: 'Установить люстру',
+    name: 'Люстра',
     image: 'https://cdn.poehali.dev/files/chandelier.jpg',
     description: 'Установка люстры',
     category: 'chandelier',
@@ -119,7 +119,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'sw-1',
     type: 'switch-single',
-    name: 'Выключатель',
+    name: 'Установить выключатель',
     image: 'https://cdn.poehali.dev/files/switch-single.jpg',
     description: 'Установка выключателя',
     category: 'switch',
@@ -132,7 +132,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'out-1',
     type: 'outlet-single',
-    name: 'Розетка',
+    name: 'Установить розетку',
     image: 'https://cdn.poehali.dev/files/outlet-single.jpg',
     description: 'Черновые работы со штроблением, сверлением и установкой подрозетника',
     category: 'outlet',

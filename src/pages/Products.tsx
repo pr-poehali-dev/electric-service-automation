@@ -167,7 +167,7 @@ export default function Products() {
                           className="cursor-pointer"
                         />
                         <label htmlFor={`${product.id}-install`} className="text-sm cursor-pointer flex-1 font-medium">
-                          Установить {product.name.toLowerCase()}
+                          {product.category === 'switch' ? 'Установить выключатель' : product.category === 'outlet' ? 'Установить розетку' : `Установить ${product.name.toLowerCase()}`}
                         </label>
                         {product.priceInstallOnly > 0 ? (
                           <span className="text-sm font-bold text-green-600">

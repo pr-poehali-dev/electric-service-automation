@@ -14,7 +14,7 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
 
   return (
     <div className="bg-white shadow-lg p-4 flex items-center justify-between">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1">
         <Button 
           variant="ghost" 
           size="icon" 

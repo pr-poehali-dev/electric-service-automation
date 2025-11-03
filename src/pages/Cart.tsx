@@ -215,7 +215,7 @@ export default function Cart() {
                 {cableMeters > 0 && (
                   <>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Ориентировочно кабеля</span>
+                      <span className="text-gray-600">Примерный метраж кабеля</span>
                       <span className="font-semibold">{cableMeters} м</span>
                     </div>
                     {totalFrames > 0 && (
