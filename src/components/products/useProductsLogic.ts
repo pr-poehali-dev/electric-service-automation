@@ -111,7 +111,14 @@ export function useProductsLogic() {
         name: 'Монтаж кабеля (автоматически)',
         description: `Примерный метраж: ${cableMeters}м`,
         priceInstallOnly: 100,
-        priceWithWiring: 100
+        priceWithWiring: 100,
+        options: [
+          {
+            id: 'cable-extra-10m',
+            name: 'Добавить +10 метров',
+            price: 2000
+          }
+        ]
       };
       addToCart(cableVirtualProduct, cableMeters, 'full-wiring');
     }

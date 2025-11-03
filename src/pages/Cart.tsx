@@ -147,18 +147,20 @@ export default function Cart() {
                           </div>
 
                           <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id={`${item.product.id}-install`}
-                                checked={item.additionalOptions?.includes('install')}
-                                onCheckedChange={() => toggleAdditionalOption(item.product.id, 'install')}
-                              />
-                              <label htmlFor={`${item.product.id}-install`} className="text-xs cursor-pointer">
-                                +{item.product.priceInstallOnly} ₽ Установить {item.product.name.toLowerCase()}
-                              </label>
-                            </div>
+                            {item.product.id !== 'auto-cable-wiring' && (
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  id={`${item.product.id}-install`}
+                                  checked={item.additionalOptions?.includes('install')}
+                                  onCheckedChange={() => toggleAdditionalOption(item.product.id, 'install')}
+                                />
+                                <label htmlFor={`${item.product.id}-install`} className="text-xs cursor-pointer">
+                                  +{item.product.priceInstallOnly} ₽ Установить {item.product.name.toLowerCase()}
+                                </label>
+                              </div>
+                            )}
                             
-                            {item.product.category !== 'chandelier' && (
+                            {item.product.category !== 'chandelier' && item.product.id !== 'auto-cable-wiring' && (
                               <div className="flex items-center gap-2">
                                 <Checkbox
                                   id={`${item.product.id}-wiring`}
@@ -171,7 +173,12 @@ export default function Cart() {
                               </div>
                             )}
 
-                            {item.product.options?.map(option => (
+                            {item.product.options?.filter(option => {
+                              if (item.product.id === 'auto-cable-wiring') {
+                                return option.id !== 'dismantle' && option.id !== 'assemble';
+                              }
+                              return true;
+                            }).map(option => (
                               <div key={option.id} className="flex items-center gap-2">
                                 <Checkbox
                                   id={`${item.product.id}-${option.id}`}

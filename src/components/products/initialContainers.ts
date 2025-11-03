@@ -62,11 +62,7 @@ export function getInitialContainers(): ServiceContainer[] {
         { id: 'breaker-replace', name: 'Замена автомата с учётом материала', price: 3000, quantity: 1, enabled: false, group: 'panel' },
         { id: 'box-surface', name: 'Бокс открытого монтажа', price: 2500, quantity: 1, enabled: false, group: 'panel' },
         { id: 'breaker-install', name: 'Установка автомата защиты', price: 1000, quantity: 1, enabled: false, discount: { minQuantity: 10, percent: 50 }, group: 'panel' },
-        { id: 'input-cable', name: 'Новый вводной кабель', price: 0, quantity: 1, enabled: false, group: 'panel', customPrice: true },
-        { id: 'cable-10m', name: 'Монтаж кабеля 10 метров', price: 2000, quantity: 1, enabled: false, group: 'construction' },
-        { id: 'drilling-porcelain', name: 'Сверление керамогранита', price: 500, quantity: 1, enabled: false, unit: 'лунка', group: 'construction' },
-        { id: 'electrical-install', name: 'Электроустановка', price: 250, quantity: 1, enabled: false, unit: 'изделие', group: 'construction' },
-        { id: 'cable-corrugated', name: 'Монтаж кабеля в трубе', price: 220, quantity: 1, enabled: false, unit: 'п.м.', group: 'construction' },
+        { id: 'input-cable', name: 'Новый вводной кабель', price: 3500, quantity: 1, enabled: false, group: 'panel', customPrice: true },
       ]
     }
   ];

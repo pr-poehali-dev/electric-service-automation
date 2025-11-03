@@ -270,28 +270,6 @@ export default function ServiceContainerCard({
             </div>
           )}
 
-          {constructionOptions.length > 0 && (
-            <div className="bg-gray-50 rounded-xl p-4">
-              <div 
-                className="flex items-center justify-between cursor-pointer"
-                onClick={() => handleSectionToggle('construction')}
-              >
-                <h5 className="text-sm font-bold text-gray-800">Строительные работы</h5>
-                <Icon 
-                  name={expandedSections.construction ? 'ChevronUp' : 'ChevronDown'} 
-                  size={18} 
-                  className="text-gray-500"
-                />
-              </div>
-              
-              {expandedSections.construction && (
-                <div className="space-y-2 mt-3">
-                  {constructionOptions.map(renderOption)}
-                </div>
-              )}
-            </div>
-          )}
-
           {calculateContainerTotal(container) > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="flex justify-between items-center">
