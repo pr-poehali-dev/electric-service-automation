@@ -59,10 +59,14 @@ export function useProductsLogic() {
     containers.forEach(container => {
       container.options.forEach(option => {
         if (option.enabled) {
-          const product = PRODUCTS.find(p => p.id === container.productId);
+          let product = PRODUCTS.find(p => p.id === container.productId);
+          
+          if (!product) {
+            product = PRODUCTS.find(p => p.id === 'chandelier-1');
+          }
           
           if (product) {
-            if (option.id.startsWith('block-')) {
+            if (option.id.startsWith('block-') || option.id === 'add-outlet' || option.id === 'move-switch' || option.id === 'move-switch-alt') {
               const virtualProduct: typeof product = {
                 ...product,
                 id: `${container.productId}-${option.id}`,
@@ -73,9 +77,25 @@ export function useProductsLogic() {
               };
               addToCart(virtualProduct, option.quantity, 'full-wiring');
             } else if (option.id === 'install') {
-              addToCart(product, option.quantity, 'install-only');
-            } else if (option.id === 'wiring') {
-              addToCart(product, option.quantity, 'full-wiring');
+              const virtualProduct: typeof product = {
+                ...product,
+                id: `${container.productId}-install`,
+                name: option.name,
+                description: option.name,
+                priceInstallOnly: option.price,
+                priceWithWiring: option.price
+              };
+              addToCart(virtualProduct, option.quantity, 'install-only');
+            } else if (option.id === 'repair') {
+              const virtualProduct: typeof product = {
+                ...product,
+                id: `${container.productId}-repair`,
+                name: option.name,
+                description: option.name,
+                priceInstallOnly: option.price,
+                priceWithWiring: option.price
+              };
+              addToCart(virtualProduct, option.quantity, 'full-wiring');
             } else if (option.id === 'dismantle' || option.id === 'assemble') {
               addToCart(product, option.quantity, 'install-only', [option.id]);
             } else {

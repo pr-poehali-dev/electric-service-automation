@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import Icon from '@/components/ui/icon';
 import ContactModal from '@/components/ContactModal';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import ServiceContainerCard from '@/components/products/ServiceContainerCard';
+import SurveyDialog from '@/components/products/SurveyDialog';
 import { useProductsLogic } from '@/components/products/useProductsLogic';
 
 export default function Products() {
   const navigate = useNavigate();
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showSurveyDialog, setShowSurveyDialog] = useState(false);
 
   const {
     containers,
@@ -34,22 +35,10 @@ export default function Products() {
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
         <div className="p-6 space-y-6">
-          <h2 className="text-2xl font-bold mb-2">Электромонтажные работы</h2>
-          
-          <Button
-            onClick={() => navigate('/calculator')}
-            variant="outline"
-            className="w-full border-2 border-blue-300 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold"
-          >
-            <Icon name="Calculator" size={18} className="mr-2" />
-            Рассчитать количество точек по типу объекта
-          </Button>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Услуги Электрика</h2>
 
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-bold text-gray-700 mb-4">
-                Услуги электрика
-              </h3>
               <div className="space-y-3">
                 {servicesContainers.map((container) => {
                   const actualIndex = containers.findIndex(c => c.productId === container.productId);
@@ -65,14 +54,7 @@ export default function Products() {
                     />
                   );
                 })}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-bold text-gray-700 mb-4">
-                Электромонтаж проводки
-              </h3>
-              <div className="space-y-3">
+                
                 {wiringContainers.map((container) => {
                   const actualIndex = containers.findIndex(c => c.productId === container.productId);
                   return (
@@ -88,6 +70,14 @@ export default function Products() {
                   );
                 })}
               </div>
+              
+              <Button
+                onClick={() => setShowSurveyDialog(true)}
+                variant="outline"
+                className="w-full mt-4 border-2 border-blue-400 bg-white hover:bg-blue-50 text-blue-700 font-semibold"
+              >
+                Рассчитать количество точек
+              </Button>
             </div>
           </div>
 
@@ -125,6 +115,7 @@ export default function Products() {
       </div>
 
       <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
+      <SurveyDialog open={showSurveyDialog} onClose={() => setShowSurveyDialog(false)} />
     </div>
   );
 }
