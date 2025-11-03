@@ -250,7 +250,7 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
                   </div>
                 </div>
                 <div className="text-sm text-green-700 font-medium bg-green-100 p-3 rounded-lg mt-2">
-                  Базовые материалы для черновых работ: ~{Math.round(cableMeters * 130).toLocaleString('ru-RU')} ₽
+                  Кабель и расходный материал: ~{Math.round(cableMeters * 130).toLocaleString('ru-RU')} ₽
                   <div className="text-xs text-green-600 mt-1">
                     Из расчёта 130₽ на 1 погонный метр кабеля
                   </div>

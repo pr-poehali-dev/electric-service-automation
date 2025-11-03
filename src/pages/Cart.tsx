@@ -143,16 +143,18 @@ export default function Cart() {
                               </label>
                             </div>
                             
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id={`${item.product.id}-wiring`}
-                                checked={item.additionalOptions?.includes('wiring')}
-                                onCheckedChange={() => toggleAdditionalOption(item.product.id, 'wiring')}
-                              />
-                              <label htmlFor={`${item.product.id}-wiring`} className="text-xs cursor-pointer">
-                                +{item.product.priceWithWiring} ₽ Добавить/перенести
-                              </label>
-                            </div>
+                            {item.product.category !== 'chandelier' && (
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  id={`${item.product.id}-wiring`}
+                                  checked={item.additionalOptions?.includes('wiring')}
+                                  onCheckedChange={() => toggleAdditionalOption(item.product.id, 'wiring')}
+                                />
+                                <label htmlFor={`${item.product.id}-wiring`} className="text-xs cursor-pointer">
+                                  +{item.product.priceWithWiring} ₽ Добавить/перенести
+                                </label>
+                              </div>
+                            )}
 
                             {item.product.options?.map(option => (
                               <div key={option.id} className="flex items-center gap-2">
@@ -173,7 +175,7 @@ export default function Cart() {
                           <p className="text-xs text-gray-600">
                             {item.quantity} шт
                             {item.additionalOptions?.includes('install') && `, Установить`}
-                            {item.additionalOptions?.includes('wiring') && `, Добавить/перенести`}
+                            {item.product.category !== 'chandelier' && item.additionalOptions?.includes('wiring') && `, Добавить/перенести`}
                             {item.additionalOptions && item.product.options && item.additionalOptions.filter(id => id !== 'install' && id !== 'wiring').length > 0 && `, + ${item.product.options.filter(o => item.additionalOptions?.includes(o.id)).map(o => o.name).join(', ')}`}
                           </p>
                         </div>

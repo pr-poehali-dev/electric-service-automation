@@ -177,7 +177,7 @@ export default function CheckoutPage() {
                     <span className="font-bold">{cableCost.toLocaleString('ru-RU')} ₽</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>Базовые материалы (ориентировочно):</span>
+                    <span>Кабель и расходный материал:</span>
                     <span className="font-semibold">{materialsCost.toLocaleString('ru-RU')} ₽</span>
                   </div>
                 </>
