@@ -107,7 +107,7 @@ export default function CheckoutPage() {
                 className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
                   errors.phone ? 'border-red-500 animate-shake' : 'border-gray-300'
                 }`}
-                placeholder="+7 (___) ___-__-__"
+                placeholder="8 (___) ___-__-__"
               />
               {errors.phone && (
                 <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
@@ -116,7 +116,7 @@ export default function CheckoutPage() {
 
             <div>
               <label className="block text-sm font-semibold mb-2">
-                Адрес (необязательно)
+                Адрес: (желательно)
               </label>
               <input
                 type="text"
@@ -156,12 +156,12 @@ export default function CheckoutPage() {
 
           <Card className="p-6 bg-blue-50 border-2 border-blue-200">
             <h3 className="font-bold text-lg mb-4">
-              Строительные работы
+              Стоимость работ
             </h3>
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Работы:</span>
+                <span>Строительные работы:</span>
                 <span className="font-bold">{totalPrice.toLocaleString('ru-RU')} ₽</span>
               </div>
 

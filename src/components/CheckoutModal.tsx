@@ -135,10 +135,10 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
                   Номер телефона <span className="text-red-500">*</span>
                 </label>
                 <InputMask
-                  mask="+7 (999) 999-99-99"
+                  mask="8 (999) 999-99-99"
                   value={formData.phone}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+7 (___) ___-__-__"
+                  placeholder="8 (___) ___-__-__"
                   className={`w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
                     errors.phone ? 'border-red-500' : 'border-gray-300'
                   }`}
@@ -153,7 +153,7 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
 
               <div ref={addressRef} className={shakeField === 'address' ? 'shake-animation' : ''}>
                 <label className="text-sm font-medium mb-2 block">
-                  Адрес выполнения работ
+                  Адрес: (желательно)
                 </label>
                 <input
                   type="text"
@@ -231,7 +231,7 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
           <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm text-green-800 font-medium mb-1">Строительные работы</p>
+                <p className="text-sm text-green-800 font-medium mb-1">Стоимость работ</p>
                 <div className="text-3xl font-bold text-green-900">{finalTotal.toLocaleString('ru-RU')} ₽</div>
               </div>
               <Icon name="BadgeCheck" size={48} className="text-green-600" />

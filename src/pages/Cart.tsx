@@ -127,7 +127,7 @@ export default function Cart() {
                             >
                               <Icon name="Minus" size={12} />
                             </Button>
-                            <span className="text-sm font-semibold px-2">{item.quantity} шт</span>
+                            <span className="text-sm font-semibold px-2">{item.quantity} ед</span>
                             <Button
                               size="sm"
                               variant="outline"
@@ -147,7 +147,8 @@ export default function Cart() {
                           </div>
 
                           <div className="space-y-1">
-                            {item.product.options && item.product.options.length > 0 ? (
+                            {/* Опції для монтажу кабеля */}
+                            {item.product.id === 'auto-cable-wiring' && item.product.options && item.product.options.length > 0 && (
                               item.product.options.map(option => (
                                 <div key={option.id} className="flex items-center gap-2">
                                   <Checkbox
@@ -160,7 +161,26 @@ export default function Cart() {
                                   </label>
                                 </div>
                               ))
-                            ) : item.product.id.includes('block-') && item.product.id.startsWith('wiring-complex') ? (
+                            )}
+                            
+                            {/* Опції для світильника */}
+                            {(item.product.id.includes('chandelier-1') || item.product.name.includes('светильник')) && item.product.options && item.product.options.length > 0 && (
+                              item.product.options.map(option => (
+                                <div key={option.id} className="flex items-center gap-2">
+                                  <Checkbox
+                                    id={`${item.product.id}-${option.id}`}
+                                    checked={item.additionalOptions?.includes(option.id)}
+                                    onCheckedChange={() => toggleAdditionalOption(item.product.id, option.id)}
+                                  />
+                                  <label htmlFor={`${item.product.id}-${option.id}`} className="text-xs cursor-pointer">
+                                    +{option.price} ₽ {option.name}
+                                  </label>
+                                </div>
+                              ))
+                            )}
+                            
+                            {/* Опція для блоків розеток */}
+                            {item.product.id.includes('block-') && item.product.id.startsWith('wiring-complex') && (
                               <div className="flex items-center gap-2">
                                 <Checkbox
                                   id={`${item.product.id}-install-blocks`}
@@ -171,7 +191,32 @@ export default function Cart() {
                                   +250 ₽/шт · Установить розетки/выключатели
                                 </label>
                               </div>
-                            ) : null}
+                            )}
+                            
+                            {/* Опції для електролічильника - вибір напруги */}
+                            {item.product.id.includes('meter') && (
+                              <div className="space-y-2">
+                                <p className="text-xs text-gray-600">Напряжение:</p>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => {
+                                      // Logic for 220V will be added
+                                    }}
+                                    className="px-3 py-1 text-xs border rounded bg-blue-500 text-white"
+                                  >
+                                    220V (3500 ₽)
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      // Logic for 380V will be added
+                                    }}
+                                    className="px-3 py-1 text-xs border rounded hover:bg-gray-100"
+                                  >
+                                    380V (5500 ₽)
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ) : (
@@ -187,7 +232,8 @@ export default function Cart() {
                     </div>
                     
                     <div className="text-right">
-                      <div className="font-bold text-primary">{item.quantity} шт · {calculateItemPrice(item).toLocaleString('ru-RU')} ₽</div>
+                      <div className="font-bold text-primary">{calculateItemPrice(item).toLocaleString('ru-RU')} ₽</div>
+                      <div className="text-xs text-gray-500 mt-0.5">{item.quantity} ед</div>
                       {getDiscount(item.quantity) > 0 && (
                         <div className="text-xs text-green-600 font-semibold">
                           Скидка {getDiscount(item.quantity)}%
