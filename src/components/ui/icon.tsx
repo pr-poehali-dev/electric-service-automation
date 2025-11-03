@@ -7,22 +7,24 @@ interface IconProps extends LucideProps {
   fallback?: string;
 }
 
-const Icon: React.FC<IconProps> = ({ name, fallback = 'CircleAlert', ...props }) => {
-  const IconComponent = (LucideIcons as Record<string, React.FC<LucideProps>>)[name];
+const Icon = React.forwardRef<SVGSVGElement, IconProps>(
+  ({ name, fallback = 'CircleAlert', ...props }, ref) => {
+    const IconComponent = (LucideIcons as Record<string, React.FC<LucideProps>>)[name];
 
-  if (!IconComponent) {
-    // Если иконка не найдена, используем fallback иконку
-    const FallbackIcon = (LucideIcons as Record<string, React.FC<LucideProps>>)[fallback];
+    if (!IconComponent) {
+      const FallbackIcon = (LucideIcons as Record<string, React.FC<LucideProps>>)[fallback];
 
-    // Если даже fallback не найден, возвращаем пустой span
-    if (!FallbackIcon) {
-      return <span className="text-xs text-gray-400">[icon]</span>;
+      if (!FallbackIcon) {
+        return <span className="text-xs text-gray-400">[icon]</span>;
+      }
+
+      return <FallbackIcon ref={ref} {...props} />;
     }
 
-    return <FallbackIcon {...props} />;
+    return <IconComponent ref={ref} {...props} />;
   }
+);
 
-  return <IconComponent {...props} />;
-};
+Icon.displayName = 'Icon';
 
 export default Icon;
