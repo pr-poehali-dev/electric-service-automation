@@ -14,6 +14,7 @@ export function getInitialContainers(): ServiceContainer[] {
         { id: 'install', name: 'Установить люстру', price: 1000, quantity: 1, enabled: false },
         { id: 'dismantle', name: 'Демонтаж люстры', price: 500, quantity: 1, enabled: false },
         { id: 'assemble', name: 'Сборка люстры', price: 500, quantity: 1, enabled: false },
+        { id: 'crystal', name: 'Установка хрустальных подвесок', price: 3500, quantity: 1, enabled: false },
       ]
     },
     {
@@ -37,23 +38,33 @@ export function getInitialContainers(): ServiceContainer[] {
       expanded: false,
       options: [
         { id: 'install', name: 'Установить розетку', price: 250, quantity: 1, enabled: false },
-        { id: 'repair', name: 'Ремонт с учётом материалов', price: 850, quantity: 1, enabled: false },
+        { id: 'repair', name: 'Ремонт с учётом материалов', price: 1500, quantity: 1, enabled: false, discount: { minQuantity: 5, percent: 10 } },
+        { id: 'surface-outlet', name: 'Накладная розетка', price: 500, quantity: 1, enabled: false },
+        { id: 'gas-sensor', name: 'Перенос датчиков загазованости', price: 3500, quantity: 1, enabled: false },
       ]
     },
     {
       productId: 'wiring-complex',
       productName: 'Электромонтажные работы',
-      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, замена проводки',
+      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, замена проводки в квартире',
       category: 'outlet',
       sectionCategory: 'wiring',
-      expanded: false,
+      expanded: true,
       options: [
         { id: 'add-outlet', name: 'Добавить розетку', price: 850, quantity: 1, enabled: false },
         { id: 'move-switch', name: 'Перенести выключатель', price: 1500, quantity: 1, enabled: false },
         { id: 'block-2', name: 'Блок из 2-х розеток', price: 1200, quantity: 1, enabled: false },
         { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
         { id: 'block-4', name: 'Блок из 4-х розеток', price: 3000, quantity: 1, enabled: false },
-        { id: 'move-switch-alt', name: 'Перенести выключатель', price: 3500, quantity: 1, enabled: false },
+        { id: 'cable-10m', name: 'Монтаж кабеля 10 метров', price: 2000, quantity: 1, enabled: false, group: 'construction' },
+        { id: 'cable-corrugated', name: 'Монтаж кабеля в гофротрубе', price: 220, quantity: 1, enabled: false, unit: 'п.м.', group: 'construction' },
+        { id: 'breaker-install', name: 'Установка автомата защиты', price: 1000, quantity: 1, enabled: false, discount: { minQuantity: 10, percent: 50 }, group: 'panel' },
+        { id: 'breaker-replace', name: 'Замена автомата с учётом материала', price: 3500, quantity: 1, enabled: false, group: 'panel' },
+        { id: 'meter-230v', name: 'Установка электросчётчика 230V', price: 3500, quantity: 1, enabled: false, group: 'panel' },
+        { id: 'meter-380v', name: 'Установка электросчётчика 380V', price: 5500, quantity: 1, enabled: false, group: 'panel' },
+        { id: 'box-surface', name: 'Бокс открытого монтажа', price: 2500, quantity: 1, enabled: false, group: 'panel' },
+        { id: 'box-flush', name: 'Бокс скрытого монтажа', price: 8500, quantity: 1, enabled: false, group: 'panel' },
+        { id: 'input-cable', name: 'Новый вводной кабель', price: 0, quantity: 1, enabled: false, group: 'panel', customPrice: true },
       ]
     }
   ];

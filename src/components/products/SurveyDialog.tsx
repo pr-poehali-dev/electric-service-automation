@@ -43,7 +43,7 @@ export default function SurveyDialog({ open, onClose }: SurveyDialogProps) {
               <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
                 <div className="space-y-2">
                   <p className="text-sm font-semibold text-blue-900">
-                    📊 Среднее количество для {ROOM_LABELS[selectedRoom as RoomType].toLowerCase()}:
+                    Среднее количество для {ROOM_LABELS[selectedRoom as RoomType].toLowerCase()}:
                   </p>
                   <div className="grid grid-cols-2 gap-4 mt-3">
                     <div className="bg-white p-3 rounded-lg shadow-sm">
@@ -65,7 +65,7 @@ export default function SurveyDialog({ open, onClose }: SurveyDialogProps) {
                 onClick={onClose}
                 className="w-full"
               >
-                Применить
+                Понятно 👌🏻
               </Button>
             </>
           )}

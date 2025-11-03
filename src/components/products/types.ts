@@ -5,6 +5,13 @@ export interface ServiceOption {
   quantity: number;
   enabled: boolean;
   description?: string;
+  unit?: string;
+  group?: 'construction' | 'panel';
+  discount?: {
+    minQuantity: number;
+    percent: number;
+  };
+  customPrice?: boolean;
 }
 
 export interface ServiceContainer {

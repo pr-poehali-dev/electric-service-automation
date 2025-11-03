@@ -76,7 +76,7 @@ export default function Products() {
                 variant="outline"
                 className="w-full mt-4 border-2 border-blue-400 bg-white hover:bg-blue-50 text-blue-700 font-semibold"
               >
-                Рассчитать количество точек
+                Рассчитать стоимость
               </Button>
             </div>
           </div>

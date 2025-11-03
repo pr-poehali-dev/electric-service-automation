@@ -47,8 +47,16 @@ export function useProductsLogic() {
 
   const calculateContainerTotal = (container: ServiceContainer) => {
     return container.options
-      .filter(opt => opt.enabled)
-      .reduce((sum, opt) => sum + opt.price * opt.quantity, 0);
+      .filter(opt => opt.enabled && !opt.customPrice)
+      .reduce((sum, opt) => {
+        let price = opt.price * opt.quantity;
+        
+        if (opt.discount && opt.quantity >= opt.discount.minQuantity) {
+          price = price * (1 - opt.discount.percent / 100);
+        }
+        
+        return sum + price;
+      }, 0);
   };
 
   const calculateGrandTotal = () => {
@@ -58,7 +66,7 @@ export function useProductsLogic() {
   const handleAddToCart = () => {
     containers.forEach(container => {
       container.options.forEach(option => {
-        if (option.enabled) {
+        if (option.enabled && !option.customPrice) {
           let product = PRODUCTS.find(p => p.id === container.productId);
           
           if (!product) {
@@ -66,34 +74,43 @@ export function useProductsLogic() {
           }
           
           if (product) {
-            if (option.id.startsWith('block-') || option.id === 'add-outlet' || option.id === 'move-switch' || option.id === 'move-switch-alt') {
+            let finalPrice = option.price;
+            
+            if (option.discount && option.quantity >= option.discount.minQuantity) {
+              finalPrice = finalPrice * (1 - option.discount.percent / 100);
+            }
+            
+            if (option.id.startsWith('block-') || option.id === 'add-outlet' || option.id === 'move-switch' || option.id === 'move-switch-alt' || 
+                option.id === 'cable-10m' || option.id === 'cable-corrugated' || option.id === 'breaker-install' || 
+                option.id === 'breaker-replace' || option.id === 'meter-230v' || option.id === 'meter-380v' || 
+                option.id === 'box-surface' || option.id === 'box-flush') {
               const virtualProduct: typeof product = {
                 ...product,
                 id: `${container.productId}-${option.id}`,
                 name: option.name,
                 description: option.name,
-                priceInstallOnly: option.price,
-                priceWithWiring: option.price
+                priceInstallOnly: finalPrice,
+                priceWithWiring: finalPrice
               };
               addToCart(virtualProduct, option.quantity, 'full-wiring');
-            } else if (option.id === 'install') {
+            } else if (option.id === 'install' || option.id === 'crystal') {
               const virtualProduct: typeof product = {
                 ...product,
-                id: `${container.productId}-install`,
+                id: `${container.productId}-${option.id}`,
                 name: option.name,
                 description: option.name,
-                priceInstallOnly: option.price,
-                priceWithWiring: option.price
+                priceInstallOnly: finalPrice,
+                priceWithWiring: finalPrice
               };
               addToCart(virtualProduct, option.quantity, 'install-only');
-            } else if (option.id === 'repair') {
+            } else if (option.id === 'repair' || option.id === 'surface-outlet' || option.id === 'gas-sensor') {
               const virtualProduct: typeof product = {
                 ...product,
-                id: `${container.productId}-repair`,
+                id: `${container.productId}-${option.id}`,
                 name: option.name,
                 description: option.name,
-                priceInstallOnly: option.price,
-                priceWithWiring: option.price
+                priceInstallOnly: finalPrice,
+                priceWithWiring: finalPrice
               };
               addToCart(virtualProduct, option.quantity, 'full-wiring');
             } else if (option.id === 'dismantle' || option.id === 'assemble') {
