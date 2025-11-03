@@ -161,7 +161,7 @@ export default function CheckoutPage() {
           </Card>
 
           <Card className="p-6 bg-blue-50 border-2 border-blue-200">
-            <h3 className="font-bold text-lg mb-4 whitespace-nowrap">
+            <h3 className="font-bold text-base sm:text-lg mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
               Стоимость работ в Калининграде
             </h3>
 

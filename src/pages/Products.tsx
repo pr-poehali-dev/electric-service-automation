@@ -34,15 +34,19 @@ export default function Products() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
       <PageHeader />
 
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto">
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
         <div className="p-6 space-y-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Услуги электрика ³⁹ ⚡️</h2>
+          <div className="text-center md:text-left">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Услуги электрика ³⁹ ⚡️</h2>
+            <p className="text-gray-600 md:text-lg">Выберите необходимые услуги и добавьте их в список задач</p>
+          </div>
 
           <div className="space-y-8">
-            <div>
+            <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">Быстрые услуги</h3>
                 {servicesContainers.map((container) => {
                   const actualIndex = containers.findIndex(c => c.productId === container.productId);
                   return (
@@ -58,7 +62,10 @@ export default function Products() {
                     />
                   );
                 })}
+              </div>
                 
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">Электромонтажные работы</h3>
                 {wiringContainers.map((container) => {
                   const actualIndex = containers.findIndex(c => c.productId === container.productId);
                   return (

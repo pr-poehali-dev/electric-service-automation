@@ -20,7 +20,7 @@ export default function Landing() {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center gap-2">
               <Icon name="Zap" size={32} className="text-orange-500" />
-              <span className="text-2xl font-bold text-gray-900">БАЛТСЕТЬ ⚡</span>
+              <span className="text-xl font-bold text-gray-900">Балтсеть | Услуги электрика ³⁹</span>
             </div>
             
             <nav className="hidden md:flex items-center gap-8">
@@ -58,7 +58,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Электромонтажные работы в Калининграде
               </h1>
               <p className="text-xl text-gray-600 mb-8">
@@ -74,8 +74,12 @@ export default function Landing() {
               </div>
             </div>
             <div className="hidden md:flex items-center justify-center">
-              <div className="relative w-full h-96 bg-gradient-to-br from-orange-200 to-yellow-200 rounded-3xl flex items-center justify-center">
-                <Icon name="Zap" size={200} className="text-orange-500 opacity-20" />
+              <div className="relative w-full h-96 rounded-3xl overflow-hidden shadow-2xl">
+                <img 
+                  src="https://cdn.poehali.dev/files/612d720b-8d12-4203-80db-20bcf3522f82.jpg" 
+                  alt="Калининград" 
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>

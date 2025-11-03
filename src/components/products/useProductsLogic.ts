@@ -141,7 +141,7 @@ export function useProductsLogic() {
             
             if (option.id.startsWith('block-') || option.id === 'add-outlet' || option.id === 'move-switch' || option.id === 'move-switch-alt' || 
                 option.id === 'cable-10m' || option.id === 'cable-corrugated' || option.id === 'breaker-install' || 
-                option.id === 'breaker-replace' || option.id === 'meter' || 
+                option.id === 'breaker-replace' || option.id === 'meter' || option.id === 'input-cable' ||
                 option.id === 'box-surface' || option.id === 'box-flush' || option.id === 'drilling-porcelain' || 
                 option.id === 'electrical-install' || option.id === 'gas-sensor') {
               const virtualProduct: typeof product = {

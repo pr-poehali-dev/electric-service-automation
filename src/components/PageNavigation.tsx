@@ -41,9 +41,9 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold"
             onClick={() => navigate('/checkout')}
-            title="Оформить заявку"
+            title="Продолжить"
           >
-            Оформить заявку
+            Продолжить
           </Button>
         )}
       </div>
