@@ -233,7 +233,16 @@ export default function Cart() {
                     
                     <div className="text-right">
                       <div className="font-bold text-primary">{calculateItemPrice(item).toLocaleString('ru-RU')} ₽</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{item.quantity} ед</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {item.quantity} {
+                          item.product.id === 'auto-cable-wiring' ? 'м' :
+                          item.product.name.includes('светильник') || 
+                          item.product.name.includes('розет') || 
+                          item.product.name.includes('выключатель') ||
+                          item.product.name.includes('Добавить розетку') ||
+                          item.product.name.includes('Выключатель перенести') ? 'шт' : 'ед'
+                        }
+                      </div>
                       {getDiscount(item.quantity) > 0 && (
                         <div className="text-xs text-green-600 font-semibold">
                           Скидка {getDiscount(item.quantity)}%
