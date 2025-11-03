@@ -30,9 +30,6 @@ export default function Products() {
     calculateEstimatedCableMeters
   } = useProductsLogic();
 
-  const wiringContainer = wiringContainers[0];
-  const wiringExpanded = wiringContainer?.expanded || false;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
       <PageHeader />
@@ -41,46 +38,42 @@ export default function Products() {
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
         <div className="p-6 space-y-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Услуги Электрика ⚡️</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">БАЛТСЕТЬ | Электрика  ³⁹ ⚡️</h2>
 
           <div className="space-y-8">
             <div>
-              <div className="space-y-3 relative">
-                <div className={`space-y-3 transition-all duration-300 ${wiringExpanded ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
-                  {servicesContainers.map((container) => {
-                    const actualIndex = containers.findIndex(c => c.productId === container.productId);
-                    return (
-                      <ServiceContainerCard
-                        key={container.productId}
-                        container={container}
-                        actualIndex={actualIndex}
-                        toggleContainer={toggleContainer}
-                        toggleOption={toggleOption}
-                        updateOptionQuantity={updateOptionQuantity}
-                        updateVoltage={updateVoltage}
-                        calculateContainerTotal={calculateContainerTotal}
-                      />
-                    );
-                  })}
-                </div>
+              <div className="space-y-3">
+                {servicesContainers.map((container) => {
+                  const actualIndex = containers.findIndex(c => c.productId === container.productId);
+                  return (
+                    <ServiceContainerCard
+                      key={container.productId}
+                      container={container}
+                      actualIndex={actualIndex}
+                      toggleContainer={toggleContainer}
+                      toggleOption={toggleOption}
+                      updateOptionQuantity={updateOptionQuantity}
+                      updateVoltage={updateVoltage}
+                      calculateContainerTotal={calculateContainerTotal}
+                    />
+                  );
+                })}
                 
-                <div className={`transition-all duration-300 ${wiringExpanded ? 'relative z-10' : ''}`}>
-                  {wiringContainers.map((container) => {
-                    const actualIndex = containers.findIndex(c => c.productId === container.productId);
-                    return (
-                      <ServiceContainerCard
-                        key={container.productId}
-                        container={container}
-                        actualIndex={actualIndex}
-                        toggleContainer={toggleContainer}
-                        toggleOption={toggleOption}
-                        updateOptionQuantity={updateOptionQuantity}
-                        updateVoltage={updateVoltage}
-                        calculateContainerTotal={calculateContainerTotal}
-                      />
-                    );
-                  })}
-                </div>
+                {wiringContainers.map((container) => {
+                  const actualIndex = containers.findIndex(c => c.productId === container.productId);
+                  return (
+                    <ServiceContainerCard
+                      key={container.productId}
+                      container={container}
+                      actualIndex={actualIndex}
+                      toggleContainer={toggleContainer}
+                      toggleOption={toggleOption}
+                      updateOptionQuantity={updateOptionQuantity}
+                      updateVoltage={updateVoltage}
+                      calculateContainerTotal={calculateContainerTotal}
+                    />
+                  );
+                })}
               </div>
               
               {!hasAnyEnabledOptions && (

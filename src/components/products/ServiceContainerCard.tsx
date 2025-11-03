@@ -37,11 +37,10 @@ export default function ServiceContainerCard({
   });
 
   const handleSectionToggle = (section: string) => {
-    setExpandedSections({
-      main: section === 'main',
-      construction: section === 'construction',
-      panel: section === 'panel'
-    });
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
   };
 
   const isSingleOption = container.options.length === 1;
@@ -175,19 +174,7 @@ export default function ServiceContainerCard({
       <Card key={container.productId} className="overflow-hidden">
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex-1 flex items-center gap-2">
-              <h4 className="font-semibold text-base">{container.productName}</h4>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Icon name="Info" size={14} className="text-gray-400 cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">Цены для высоты потолков до 3.5м. Выше — +50%</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <h4 className="font-semibold text-base">{container.productName}</h4>
           </div>
           
           {renderOption(singleOption)}
@@ -217,18 +204,8 @@ export default function ServiceContainerCard({
         className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={() => toggleContainer(actualIndex)}
       >
-        <div className="flex-1 flex items-center gap-2">
+        <div className="flex-1">
           <h4 className="font-semibold text-base">{container.productName}</h4>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Icon name="Info" size={14} className="text-gray-400 cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">Цены для высоты потолков до 3.5м. Выше — +50%</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </div>
         <Icon 
           name={container.expanded ? 'ChevronUp' : 'ChevronDown'} 
