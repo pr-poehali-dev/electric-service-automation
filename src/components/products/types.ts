@@ -12,6 +12,11 @@ export interface ServiceOption {
     percent: number;
   };
   customPrice?: boolean;
+  voltageOptions?: {
+    '220V': number;
+    '380V': number;
+  };
+  selectedVoltage?: '220V' | '380V';
 }
 
 export interface ServiceContainer {

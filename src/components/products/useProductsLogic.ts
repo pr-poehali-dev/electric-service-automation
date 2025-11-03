@@ -45,6 +45,27 @@ export function useProductsLogic() {
     }));
   };
 
+  const updateVoltage = (containerIndex: number, optionId: string, voltage: '220V' | '380V') => {
+    setContainers(prev => prev.map((container, idx) => {
+      if (idx === containerIndex) {
+        return {
+          ...container,
+          options: container.options.map(opt => {
+            if (opt.id === optionId && opt.voltageOptions) {
+              return { 
+                ...opt, 
+                selectedVoltage: voltage,
+                price: opt.voltageOptions[voltage]
+              };
+            }
+            return opt;
+          })
+        };
+      }
+      return container;
+    }));
+  };
+
   const calculateContainerTotal = (container: ServiceContainer) => {
     return container.options
       .filter(opt => opt.enabled && !opt.customPrice)
@@ -104,7 +125,7 @@ export function useProductsLogic() {
             
             if (option.id.startsWith('block-') || option.id === 'add-outlet' || option.id === 'move-switch' || option.id === 'move-switch-alt' || 
                 option.id === 'cable-10m' || option.id === 'cable-corrugated' || option.id === 'breaker-install' || 
-                option.id === 'breaker-replace' || option.id === 'meter-230v' || option.id === 'meter-380v' || 
+                option.id === 'breaker-replace' || option.id === 'meter' || 
                 option.id === 'box-surface' || option.id === 'box-flush' || option.id === 'drilling-porcelain' || 
                 option.id === 'electrical-install' || option.id === 'gas-sensor') {
               const virtualProduct: typeof product = {
@@ -178,6 +199,7 @@ export function useProductsLogic() {
     toggleContainer,
     toggleOption,
     updateOptionQuantity,
+    updateVoltage,
     calculateContainerTotal,
     calculateGrandTotal,
     handleAddToCart,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -6,10 +6,27 @@ import Icon from '@/components/ui/icon';
 import ContactModal from '@/components/ContactModal';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
+import Landing from '@/components/Landing';
 
 export default function Services() {
   const navigate = useNavigate();
   const [showContactModal, setShowContactModal] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  if (isDesktop) {
+    return <Landing />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">

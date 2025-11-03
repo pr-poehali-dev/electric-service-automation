@@ -21,6 +21,7 @@ export default function Products() {
     toggleContainer,
     toggleOption,
     updateOptionQuantity,
+    updateVoltage,
     calculateContainerTotal,
     calculateGrandTotal,
     handleAddToCart,
@@ -28,6 +29,9 @@ export default function Products() {
     hasWiringOptions,
     calculateEstimatedCableMeters
   } = useProductsLogic();
+
+  const wiringContainer = wiringContainers[0];
+  const wiringExpanded = wiringContainer?.expanded || false;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
@@ -41,36 +45,42 @@ export default function Products() {
 
           <div className="space-y-8">
             <div>
-              <div className="space-y-3">
-                {servicesContainers.map((container) => {
-                  const actualIndex = containers.findIndex(c => c.productId === container.productId);
-                  return (
-                    <ServiceContainerCard
-                      key={container.productId}
-                      container={container}
-                      actualIndex={actualIndex}
-                      toggleContainer={toggleContainer}
-                      toggleOption={toggleOption}
-                      updateOptionQuantity={updateOptionQuantity}
-                      calculateContainerTotal={calculateContainerTotal}
-                    />
-                  );
-                })}
+              <div className="space-y-3 relative">
+                <div className={`space-y-3 transition-all duration-300 ${wiringExpanded ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+                  {servicesContainers.map((container) => {
+                    const actualIndex = containers.findIndex(c => c.productId === container.productId);
+                    return (
+                      <ServiceContainerCard
+                        key={container.productId}
+                        container={container}
+                        actualIndex={actualIndex}
+                        toggleContainer={toggleContainer}
+                        toggleOption={toggleOption}
+                        updateOptionQuantity={updateOptionQuantity}
+                        updateVoltage={updateVoltage}
+                        calculateContainerTotal={calculateContainerTotal}
+                      />
+                    );
+                  })}
+                </div>
                 
-                {wiringContainers.map((container) => {
-                  const actualIndex = containers.findIndex(c => c.productId === container.productId);
-                  return (
-                    <ServiceContainerCard
-                      key={container.productId}
-                      container={container}
-                      actualIndex={actualIndex}
-                      toggleContainer={toggleContainer}
-                      toggleOption={toggleOption}
-                      updateOptionQuantity={updateOptionQuantity}
-                      calculateContainerTotal={calculateContainerTotal}
-                    />
-                  );
-                })}
+                <div className={`transition-all duration-300 ${wiringExpanded ? 'relative z-10' : ''}`}>
+                  {wiringContainers.map((container) => {
+                    const actualIndex = containers.findIndex(c => c.productId === container.productId);
+                    return (
+                      <ServiceContainerCard
+                        key={container.productId}
+                        container={container}
+                        actualIndex={actualIndex}
+                        toggleContainer={toggleContainer}
+                        toggleOption={toggleOption}
+                        updateOptionQuantity={updateOptionQuantity}
+                        updateVoltage={updateVoltage}
+                        calculateContainerTotal={calculateContainerTotal}
+                      />
+                    );
+                  })}
+                </div>
               </div>
               
               {!hasAnyEnabledOptions && (

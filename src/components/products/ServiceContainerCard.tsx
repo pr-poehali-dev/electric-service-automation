@@ -17,6 +17,7 @@ interface ServiceContainerCardProps {
   toggleContainer: (index: number) => void;
   toggleOption: (containerIndex: number, optionId: string) => void;
   updateOptionQuantity: (containerIndex: number, optionId: string, newQuantity: number) => void;
+  updateVoltage: (containerIndex: number, optionId: string, voltage: '220V' | '380V') => void;
   calculateContainerTotal: (container: ServiceContainer) => number;
 }
 
@@ -26,6 +27,7 @@ export default function ServiceContainerCard({
   toggleContainer,
   toggleOption,
   updateOptionQuantity,
+  updateVoltage,
   calculateContainerTotal
 }: ServiceContainerCardProps) {
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({
@@ -130,6 +132,33 @@ export default function ServiceContainerCard({
             </span>
           )}
         </div>
+        
+        {option.enabled && option.voltageOptions && (
+          <div className="mt-3 ml-8 flex gap-2">
+            <Button
+              size="sm"
+              variant={option.selectedVoltage === '220V' ? 'default' : 'outline'}
+              onClick={(e) => {
+                e.stopPropagation();
+                updateVoltage(actualIndex, option.id, '220V');
+              }}
+              className="h-7 text-xs"
+            >
+              220V ({option.voltageOptions['220V']} ₽)
+            </Button>
+            <Button
+              size="sm"
+              variant={option.selectedVoltage === '380V' ? 'default' : 'outline'}
+              onClick={(e) => {
+                e.stopPropagation();
+                updateVoltage(actualIndex, option.id, '380V');
+              }}
+              className="h-7 text-xs"
+            >
+              380V ({option.voltageOptions['380V']} ₽)
+            </Button>
+          </div>
+        )}
         
         {option.enabled && option.discount && (
           <div className={`text-xs mt-2 ml-8 ${hasDiscount ? 'text-green-700 font-semibold' : 'text-gray-500'}`}>

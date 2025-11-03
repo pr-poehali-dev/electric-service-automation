@@ -5,14 +5,14 @@ export function getInitialContainers(): ServiceContainer[] {
   return [
     {
       productId: 'chandelier-1',
-      productName: 'Установить люстру',
-      productDescription: 'Установка люстры, заменить светильник',
+      productName: 'Установить светильник',
+      productDescription: 'Установка светильника, заменить люстру',
       category: 'chandelier',
       sectionCategory: 'services',
       expanded: false,
       options: [
         { id: 'crystal', name: 'Установка хрустальных подвесок', price: 3500, quantity: 1, enabled: false },
-        { id: 'install', name: 'Установить люстру', price: 1000, quantity: 1, enabled: false },
+        { id: 'install', name: 'Установить светильник', price: 1000, quantity: 1, enabled: false },
         { id: 'dismantle', name: 'Демонтаж светильника', price: 500, quantity: 1, enabled: false },
         { id: 'assemble', name: 'Сборка люстры', price: 500, quantity: 1, enabled: false },
       ]
@@ -57,10 +57,9 @@ export function getInitialContainers(): ServiceContainer[] {
         { id: 'move-switch', name: 'Перенести выключатель', price: 1500, quantity: 1, enabled: false },
         { id: 'block-2', name: 'Блок из 2-х розеток', price: 1200, quantity: 1, enabled: false },
         { id: 'add-outlet', name: 'Добавить розетку', price: 850, quantity: 1, enabled: false },
-        { id: 'box-flush', name: 'Бокс скрытого монтажа', price: 8500, quantity: 1, enabled: false, group: 'panel' },
-        { id: 'meter-380v', name: 'Установка электросчётчика 380V', price: 5500, quantity: 1, enabled: false, group: 'panel' },
-        { id: 'meter-230v', name: 'Установка электросчётчика 230V', price: 3500, quantity: 1, enabled: false, group: 'panel' },
-        { id: 'breaker-replace', name: 'Замена автомата с учётом материала', price: 3500, quantity: 1, enabled: false, group: 'panel' },
+        { id: 'box-flush', name: 'Бокс скрытого монтажа', price: 8000, quantity: 1, enabled: false, group: 'panel' },
+        { id: 'meter', name: 'Установка электросчётчика', price: 3500, quantity: 1, enabled: false, group: 'panel', voltageOptions: { '220V': 3500, '380V': 5500 } },
+        { id: 'breaker-replace', name: 'Замена автомата с учётом материала', price: 3000, quantity: 1, enabled: false, group: 'panel' },
         { id: 'box-surface', name: 'Бокс открытого монтажа', price: 2500, quantity: 1, enabled: false, group: 'panel' },
         { id: 'breaker-install', name: 'Установка автомата защиты', price: 1000, quantity: 1, enabled: false, discount: { minQuantity: 10, percent: 50 }, group: 'panel' },
         { id: 'input-cable', name: 'Новый вводной кабель', price: 0, quantity: 1, enabled: false, group: 'panel', customPrice: true },
