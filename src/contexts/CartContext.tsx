@@ -3,7 +3,7 @@ import { CartItem, Product, Order, calculateTotals, ServiceOption, MASTER_VISIT_
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product, quantity?: number, option?: ServiceOption) => void;
+  addToCart: (product: Product, quantity?: number, option?: ServiceOption, additionalOptions?: string[]) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   updateOption: (productId: string, option: ServiceOption) => void;
@@ -35,7 +35,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('electrical-orders', JSON.stringify(orders));
   }, [orders]);
 
-  const addToCart = (product: Product, quantity = 1, option: ServiceOption = 'install-only') => {
+  const addToCart = (product: Product, quantity = 1, option: ServiceOption = 'install-only', additionalOptions?: string[]) => {
     setCart(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       
@@ -44,14 +44,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (existing) {
         updatedCart = prev.map(item =>
           item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { 
+                ...item, 
+                quantity: item.quantity + quantity,
+                additionalOptions: additionalOptions || item.additionalOptions
+              }
             : item
         );
       } else {
-        const initialOptions: string[] = [];
-        if (product.category === 'switch' || product.category === 'outlet') {
-          initialOptions.push('install');
-        }
+        const initialOptions: string[] = additionalOptions || [];
         updatedCart = [...prev, { product, quantity, selectedOption: option, additionalOptions: initialOptions }];
       }
       

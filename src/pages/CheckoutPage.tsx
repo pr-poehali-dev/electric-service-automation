@@ -155,8 +155,7 @@ export default function CheckoutPage() {
           </Card>
 
           <Card className="p-6 bg-blue-50 border-2 border-blue-200">
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <Icon name="DollarSign" size={20} className="text-blue-600" />
+            <h3 className="font-bold text-lg mb-4">
               Стоимость работ
             </h3>
 
@@ -169,11 +168,11 @@ export default function CheckoutPage() {
               {cableMeters > 0 && (
                 <>
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>Ориентировочный метраж кабеля:</span>
+                    <span>~ метраж кабеля:</span>
                     <span className="font-semibold">{cableMeters} м</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Монтаж кабеля:</span>
+                    <span>Стоимость монтажа кабеля:</span>
                     <span className="font-bold">{cableCost.toLocaleString('ru-RU')} ₽</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">

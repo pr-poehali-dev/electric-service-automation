@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCart } from '@/contexts/CartContext';
-import { PRODUCTS } from '@/types/electrical';
+import { PRODUCTS, CartItem } from '@/types/electrical';
 import ContactModal from '@/components/ContactModal';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
@@ -108,7 +108,7 @@ export default function Products() {
         { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
         { id: 'block-4', name: 'Блок из 4-х розеток', price: 3000, quantity: 1, enabled: false },
         { id: 'block-5', name: 'Блок из 5 розеток', price: 3500, quantity: 1, enabled: false },
-      ]
+      ].sort((a, b) => a.price - b.price)
     }
   ]);
 
@@ -162,9 +162,24 @@ export default function Products() {
       container.options.forEach(option => {
         if (option.enabled) {
           const product = PRODUCTS.find(p => p.id === container.productId);
+          
           if (product) {
-            for (let i = 0; i < option.quantity; i++) {
-              addToCart(product, 1);
+            if (option.id === 'install') {
+              addToCart(product, option.quantity, 'install-only');
+            } else if (option.id === 'wiring') {
+              addToCart(product, option.quantity, 'full-wiring');
+            } else if (option.id === 'dismantle' || option.id === 'assemble') {
+              const cartItem: CartItem = {
+                product: product,
+                quantity: option.quantity,
+                selectedOption: 'install-only',
+                additionalOptions: [option.id]
+              };
+              addToCart(product, option.quantity, 'install-only', [option.id]);
+            } else if (option.id.startsWith('block-')) {
+              addToCart(product, option.quantity, 'full-wiring', [option.id]);
+            } else {
+              addToCart(product, option.quantity);
             }
           }
         }
@@ -201,13 +216,89 @@ export default function Products() {
 
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2">
-                <Icon name="Wrench" size={20} className="text-blue-600" />
+              <h3 className="text-lg font-bold text-gray-700 mb-4">
                 Услуги электрика
               </h3>
               <div className="space-y-3">
                 {servicesContainers.map((container, containerIndex) => {
                   const actualIndex = containers.findIndex(c => c.productId === container.productId);
+                  const isSingleOption = container.options.length === 1;
+                  const singleOption = isSingleOption ? container.options[0] : null;
+                  
+                  if (isSingleOption && singleOption) {
+                    return (
+                      <Card key={container.productId} className="overflow-hidden">
+                        <div className="p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-base">{container.productName}</h4>
+                              <p className="text-xs text-gray-600 mt-1">{container.productDescription}</p>
+                            </div>
+                          </div>
+                          
+                          <div className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                            singleOption.enabled ? 'bg-green-100' : 'bg-gray-50'
+                          }`}>
+                            <div className="flex items-center gap-3 flex-1">
+                              <Checkbox
+                                id={`${container.productId}-${singleOption.id}`}
+                                checked={singleOption.enabled}
+                                onCheckedChange={() => toggleOption(actualIndex, singleOption.id)}
+                              />
+                              <label 
+                                htmlFor={`${container.productId}-${singleOption.id}`}
+                                className="text-sm font-medium cursor-pointer flex-1"
+                              >
+                                {singleOption.name}
+                              </label>
+                            </div>
+                            
+                            {singleOption.enabled ? (
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateOptionQuantity(actualIndex, singleOption.id, singleOption.quantity - 1);
+                                  }}
+                                  className="h-8 w-8 p-0 rounded-full bg-gray-200 hover:bg-gray-300"
+                                >
+                                  <Icon name="Minus" size={16} />
+                                </Button>
+                                <span className="font-bold text-lg min-w-[2rem] text-center">{singleOption.quantity}</span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateOptionQuantity(actualIndex, singleOption.id, singleOption.quantity + 1);
+                                  }}
+                                  className="h-8 w-8 p-0 rounded-full bg-orange-500 hover:bg-orange-600 text-white"
+                                >
+                                  <Icon name="Plus" size={16} />
+                                </Button>
+                              </div>
+                            ) : (
+                              <span className="text-green-600 font-bold text-sm">+{singleOption.price} ₽</span>
+                            )}
+                          </div>
+                          
+                          {calculateContainerTotal(container) > 0 && (
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <div className="flex justify-between items-center">
+                                <span className="font-semibold text-gray-800">Итого за услугу:</span>
+                                <span className="text-2xl font-bold text-green-600">
+                                  {calculateContainerTotal(container).toLocaleString('ru-RU')} ₽
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    );
+                  }
+                  
                   return (
                     <Card key={container.productId} className="overflow-hidden">
                       <div 
@@ -303,13 +394,89 @@ export default function Products() {
             </div>
 
             <div>
-              <h3 className="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2">
-                <Icon name="Cable" size={20} className="text-orange-600" />
-                Черновой монтаж проводки
+              <h3 className="text-lg font-bold text-gray-700 mb-4">
+                Электромонтаж проводки
               </h3>
               <div className="space-y-3">
                 {wiringContainers.map((container, containerIndex) => {
                   const actualIndex = containers.findIndex(c => c.productId === container.productId);
+                  const isSingleOption = container.options.length === 1;
+                  const singleOption = isSingleOption ? container.options[0] : null;
+                  
+                  if (isSingleOption && singleOption) {
+                    return (
+                      <Card key={container.productId} className="overflow-hidden">
+                        <div className="p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-base">{container.productName}</h4>
+                              <p className="text-xs text-gray-600 mt-1">{container.productDescription}</p>
+                            </div>
+                          </div>
+                          
+                          <div className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                            singleOption.enabled ? 'bg-green-100' : 'bg-gray-50'
+                          }`}>
+                            <div className="flex items-center gap-3 flex-1">
+                              <Checkbox
+                                id={`${container.productId}-${singleOption.id}`}
+                                checked={singleOption.enabled}
+                                onCheckedChange={() => toggleOption(actualIndex, singleOption.id)}
+                              />
+                              <label 
+                                htmlFor={`${container.productId}-${singleOption.id}`}
+                                className="text-sm font-medium cursor-pointer flex-1"
+                              >
+                                {singleOption.name}
+                              </label>
+                            </div>
+                            
+                            {singleOption.enabled ? (
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateOptionQuantity(actualIndex, singleOption.id, singleOption.quantity - 1);
+                                  }}
+                                  className="h-8 w-8 p-0 rounded-full bg-gray-200 hover:bg-gray-300"
+                                >
+                                  <Icon name="Minus" size={16} />
+                                </Button>
+                                <span className="font-bold text-lg min-w-[2rem] text-center">{singleOption.quantity}</span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateOptionQuantity(actualIndex, singleOption.id, singleOption.quantity + 1);
+                                  }}
+                                  className="h-8 w-8 p-0 rounded-full bg-orange-500 hover:bg-orange-600 text-white"
+                                >
+                                  <Icon name="Plus" size={16} />
+                                </Button>
+                              </div>
+                            ) : (
+                              <span className="text-green-600 font-bold text-sm">+{singleOption.price} ₽</span>
+                            )}
+                          </div>
+                          
+                          {calculateContainerTotal(container) > 0 && (
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <div className="flex justify-between items-center">
+                                <span className="font-semibold text-gray-800">Итого за услугу:</span>
+                                <span className="text-2xl font-bold text-green-600">
+                                  {calculateContainerTotal(container).toLocaleString('ru-RU')} ₽
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    );
+                  }
+                  
                   return (
                     <Card key={container.productId} className="overflow-hidden">
                       <div 
