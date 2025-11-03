@@ -11,9 +11,18 @@ export function useProductsLogic() {
   const [containers, setContainers] = useState<ServiceContainer[]>(getInitialContainers());
 
   const toggleContainer = (containerIndex: number) => {
-    setContainers(prev => prev.map((container, idx) => 
-      idx === containerIndex ? { ...container, expanded: !container.expanded } : container
-    ));
+    setContainers(prev => prev.map((container, idx) => {
+      if (idx === containerIndex) {
+        return { ...container, expanded: !container.expanded };
+      }
+      if (container.sectionCategory === 'wiring' && prev[containerIndex].sectionCategory === 'wiring') {
+        return container;
+      }
+      if (prev[containerIndex].sectionCategory === 'wiring' && prev[containerIndex].expanded === false) {
+        return { ...container, expanded: false };
+      }
+      return container;
+    }));
   };
 
   const toggleOption = (containerIndex: number, optionId: string) => {

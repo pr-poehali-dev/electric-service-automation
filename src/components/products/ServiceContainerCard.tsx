@@ -284,9 +284,9 @@ export default function ServiceContainerCard({
                 />
               </div>
               
-              {expandedSections.panel && (
+              {expandedSections.construction && (
                 <div className="space-y-2 mt-3">
-                  {panelOptions.map(renderOption)}
+                  {constructionOptions.map(renderOption)}
                 </div>
               )}
             </div>
