@@ -150,11 +150,38 @@ export default function Profile() {
           <Card className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 animate-fadeIn">
             <div className="flex items-start gap-3">
               <Icon name="Info" size={24} className="text-amber-600 flex-shrink-0" />
-              <div>
+              <div className="flex-1">
                 <h3 className="font-bold text-lg mb-2 text-gray-800">О нас</h3>
-                <p className="text-sm text-gray-700 mb-2">
+                <p className="text-sm text-gray-700 mb-3">
                   ООО "Кёниг Электрик" — профессиональные электромонтажные работы в Калининграде и области
                 </p>
+                <div className="flex items-center gap-3 mb-3">
+                  <a
+                    href="https://t.me/konigelectric"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-600 transition-colors"
+                    title="Telegram"
+                  >
+                    <Icon name="Send" size={20} />
+                  </a>
+                  <a
+                    href="https://vk.com/im?sel=-23524557"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-700 transition-colors"
+                    title="ВКонтакте"
+                  >
+                    <Icon name="MessageCircle" size={20} />
+                  </a>
+                  <a
+                    href="tel:+74012520725"
+                    className="text-green-600 hover:text-green-700 transition-colors"
+                    title="Позвонить"
+                  >
+                    <Icon name="Phone" size={20} />
+                  </a>
+                </div>
                 <p className="text-sm text-gray-700">
                   ⏰ Работаем: Пн-Вс, 8:00 - 20:00
                 </p>

@@ -163,7 +163,16 @@ const Tasks = () => {
                           >
                             <Icon name="Minus" size={16} />
                           </Button>
-                          <span className="w-8 text-center font-bold">{item.quantity}</span>
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) || 1;
+                              updateQuantity(item.service.id, val);
+                            }}
+                            className="w-12 text-center font-bold bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-primary rounded"
+                          />
                           <Button
                             size="icon"
                             variant="ghost"

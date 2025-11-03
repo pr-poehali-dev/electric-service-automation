@@ -141,7 +141,14 @@ export default function Checkout() {
                 <InputMask
                   mask="8 (999) 999-99-99"
                   value={formData.phone}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    let value = e.target.value;
+                    const digitsOnly = value.replace(/\D/g, '');
+                    if (digitsOnly.startsWith('9') && digitsOnly.length === 10) {
+                      value = '8 (' + digitsOnly.slice(0, 3) + ') ' + digitsOnly.slice(3, 6) + '-' + digitsOnly.slice(6, 8) + '-' + digitsOnly.slice(8, 10);
+                    }
+                    setFormData({ ...formData, phone: value });
+                  }}
                   placeholder="8 (___) ___-__-__"
                   className={`w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
                     errors.phone ? 'border-red-500' : 'border-gray-300'

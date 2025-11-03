@@ -103,7 +103,13 @@ export default function CheckoutPage() {
               <input
                 type="tel"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/\D/g, '');
+                  if (value.startsWith('9') && value.length === 10) {
+                    value = '8' + value;
+                  }
+                  setFormData({ ...formData, phone: value });
+                }}
                 className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
                   errors.phone ? 'border-red-500 animate-shake' : 'border-gray-300'
                 }`}
@@ -155,8 +161,8 @@ export default function CheckoutPage() {
           </Card>
 
           <Card className="p-6 bg-blue-50 border-2 border-blue-200">
-            <h3 className="font-bold text-lg mb-4">
-              Стоимость работ
+            <h3 className="font-bold text-lg mb-4 whitespace-nowrap">
+              Стоимость работ в Калининграде
             </h3>
 
             <div className="space-y-2">
