@@ -156,7 +156,7 @@ export default function CheckoutPage() {
 
           <Card className="p-6 bg-blue-50 border-2 border-blue-200">
             <h3 className="font-bold text-lg mb-4">
-              Стоимость работ
+              Строительные работы
             </h3>
 
             <div className="space-y-2">

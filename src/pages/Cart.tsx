@@ -147,65 +147,38 @@ export default function Cart() {
                           </div>
 
                           <div className="space-y-1">
-                            {item.product.id !== 'auto-cable-wiring' && (
-                              <div className="flex items-center gap-2">
-                                <Checkbox
-                                  id={`${item.product.id}-install`}
-                                  checked={item.additionalOptions?.includes('install')}
-                                  onCheckedChange={() => toggleAdditionalOption(item.product.id, 'install')}
-                                />
-                                <label htmlFor={`${item.product.id}-install`} className="text-xs cursor-pointer">
-                                  +{item.product.priceInstallOnly} ₽ Установить {item.product.name.toLowerCase()}
-                                </label>
-                              </div>
+                            {item.product.options && item.product.options.length > 0 ? (
+                              item.product.options.map(option => (
+                                <div key={option.id} className="flex items-center gap-2">
+                                  <Checkbox
+                                    id={`${item.product.id}-${option.id}`}
+                                    checked={item.additionalOptions?.includes(option.id)}
+                                    onCheckedChange={() => toggleAdditionalOption(item.product.id, option.id)}
+                                  />
+                                  <label htmlFor={`${item.product.id}-${option.id}`} className="text-xs cursor-pointer">
+                                    +{option.price} ₽ {option.name}
+                                  </label>
+                                </div>
+                              ))
+                            ) : (
+                              <p className="text-xs text-gray-500 italic">Нет доступных опций для редактирования</p>
                             )}
-                            
-                            {item.product.category !== 'chandelier' && item.product.id !== 'auto-cable-wiring' && (
-                              <div className="flex items-center gap-2">
-                                <Checkbox
-                                  id={`${item.product.id}-wiring`}
-                                  checked={item.additionalOptions?.includes('wiring')}
-                                  onCheckedChange={() => toggleAdditionalOption(item.product.id, 'wiring')}
-                                />
-                                <label htmlFor={`${item.product.id}-wiring`} className="text-xs cursor-pointer">
-                                  +{item.product.priceWithWiring} ₽ Добавить/перенести
-                                </label>
-                              </div>
-                            )}
-
-                            {item.product.options?.filter(option => {
-                              if (item.product.id === 'auto-cable-wiring') {
-                                return option.id !== 'dismantle' && option.id !== 'assemble';
-                              }
-                              return true;
-                            }).map(option => (
-                              <div key={option.id} className="flex items-center gap-2">
-                                <Checkbox
-                                  id={`${item.product.id}-${option.id}`}
-                                  checked={item.additionalOptions?.includes(option.id)}
-                                  onCheckedChange={() => toggleAdditionalOption(item.product.id, option.id)}
-                                />
-                                <label htmlFor={`${item.product.id}-${option.id}`} className="text-xs cursor-pointer">
-                                  +{option.price} ₽ {option.name}
-                                </label>
-                              </div>
-                            ))}
                           </div>
                         </div>
                       ) : (
                         <div className="mt-1">
                           <p className="text-xs text-gray-600">
-                            {item.quantity} шт
-                            {item.additionalOptions?.includes('install') && `, Установить`}
-                            {item.product.category !== 'chandelier' && item.additionalOptions?.includes('wiring') && `, Добавить/перенести`}
-                            {item.additionalOptions && item.product.options && item.additionalOptions.filter(id => id !== 'install' && id !== 'wiring').length > 0 && `, + ${item.product.options.filter(o => item.additionalOptions?.includes(o.id)).map(o => o.name).join(', ')}`}
+                            {item.additionalOptions?.includes('install') && `Установить`}
+                            {item.product.category !== 'chandelier' && item.additionalOptions?.includes('wiring') && item.additionalOptions?.includes('install') && `, Добавить/перенести`}
+                            {item.product.category !== 'chandelier' && item.additionalOptions?.includes('wiring') && !item.additionalOptions?.includes('install') && `Добавить/перенести`}
+                            {item.additionalOptions && item.product.options && item.additionalOptions.filter(id => id !== 'install' && id !== 'wiring').length > 0 && `${item.additionalOptions?.includes('install') || item.additionalOptions?.includes('wiring') ? ', + ' : ''}${item.product.options.filter(o => item.additionalOptions?.includes(o.id)).map(o => o.name).join(', ')}`}
                           </p>
                         </div>
                       )}
                     </div>
                     
                     <div className="text-right">
-                      <div className="font-bold text-primary">{calculateItemPrice(item).toLocaleString('ru-RU')} ₽</div>
+                      <div className="font-bold text-primary">{item.quantity} шт · {calculateItemPrice(item).toLocaleString('ru-RU')} ₽</div>
                       {getDiscount(item.quantity) > 0 && (
                         <div className="text-xs text-green-600 font-semibold">
                           Скидка {getDiscount(item.quantity)}%

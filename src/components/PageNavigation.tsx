@@ -36,6 +36,16 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
             </span>
           )}
         </Button>
+        {cartCount > 0 && (
+          <Button 
+            variant="ghost"
+            className="h-10 text-sm px-3 text-blue-600 font-semibold"
+            onClick={() => navigate('/checkout')}
+            title="Оформить заявку"
+          >
+            Оформить заявку
+          </Button>
+        )}
       </div>
       <div className="flex items-center gap-3">
         <Button 

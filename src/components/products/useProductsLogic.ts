@@ -174,7 +174,16 @@ export function useProductsLogic() {
               };
               addToCart(virtualProduct, option.quantity, 'full-wiring');
             } else if (option.id === 'dismantle' || option.id === 'assemble') {
-              addToCart(product, option.quantity, 'install-only', [option.id]);
+              const virtualProduct: typeof product = {
+                ...product,
+                id: `${container.productId}-${option.id}`,
+                name: option.name,
+                description: option.name,
+                priceInstallOnly: finalPrice,
+                priceWithWiring: finalPrice,
+                options: []
+              };
+              addToCart(virtualProduct, option.quantity, 'install-only');
             } else {
               addToCart(product, option.quantity);
             }
