@@ -34,6 +34,14 @@ export default function ServiceContainerCard({
     panel: false
   });
 
+  const handleSectionToggle = (section: string) => {
+    setExpandedSections({
+      main: section === 'main',
+      construction: section === 'construction',
+      panel: section === 'panel'
+    });
+  };
+
   const isSingleOption = container.options.length === 1;
   const singleOption = isSingleOption ? container.options[0] : null;
 
@@ -80,6 +88,11 @@ export default function ServiceContainerCard({
               {option.customPrice && (
                 <p className="text-xs text-blue-600 mt-1">
                   Полная замена старого вводного кабеля, либо наращивание существующего
+                </p>
+              )}
+              {option.id === 'gas-sensor' && (
+                <p className="text-xs text-blue-600 mt-1">
+                  Перенос газоанализаторов в квартире с перекладкой проводки
                 </p>
               )}
             </label>
@@ -200,9 +213,21 @@ export default function ServiceContainerCard({
           <div className="bg-gray-50 rounded-xl p-4">
             <div 
               className="flex items-center justify-between cursor-pointer"
-              onClick={() => setExpandedSections(prev => ({ ...prev, main: !prev.main }))}
+              onClick={() => handleSectionToggle('main')}
             >
-              <p className="text-sm font-semibold text-gray-700">Уточните задачу:</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-semibold text-gray-700">Уточните задачу:</p>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Icon name="Info" size={14} className="text-gray-400 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Цены для высоты потолков до 3.5м. Выше — +50%</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <Icon 
                 name={expandedSections.main ? 'ChevronUp' : 'ChevronDown'} 
                 size={18} 
@@ -217,37 +242,37 @@ export default function ServiceContainerCard({
             )}
           </div>
 
-          {constructionOptions.length > 0 && (
+          {panelOptions.length > 0 && (
             <div className="bg-gray-50 rounded-xl p-4">
               <div 
                 className="flex items-center justify-between cursor-pointer"
-                onClick={() => setExpandedSections(prev => ({ ...prev, construction: !prev.construction }))}
+                onClick={() => handleSectionToggle('panel')}
               >
-                <h5 className="text-sm font-bold text-gray-800">Строительные работы</h5>
+                <h5 className="text-sm font-bold text-gray-800">Монтаж и сборка электрощитов</h5>
                 <Icon 
-                  name={expandedSections.construction ? 'ChevronUp' : 'ChevronDown'} 
+                  name={expandedSections.panel ? 'ChevronUp' : 'ChevronDown'} 
                   size={18} 
                   className="text-gray-500"
                 />
               </div>
               
-              {expandedSections.construction && (
+              {expandedSections.panel && (
                 <div className="space-y-2 mt-3">
-                  {constructionOptions.map(renderOption)}
+                  {panelOptions.map(renderOption)}
                 </div>
               )}
             </div>
           )}
 
-          {panelOptions.length > 0 && (
+          {constructionOptions.length > 0 && (
             <div className="bg-gray-50 rounded-xl p-4">
               <div 
                 className="flex items-center justify-between cursor-pointer"
-                onClick={() => setExpandedSections(prev => ({ ...prev, panel: !prev.panel }))}
+                onClick={() => handleSectionToggle('construction')}
               >
-                <h5 className="text-sm font-bold text-gray-800">Монтаж и сборка электрощитов</h5>
+                <h5 className="text-sm font-bold text-gray-800">Строительные работы</h5>
                 <Icon 
-                  name={expandedSections.panel ? 'ChevronUp' : 'ChevronDown'} 
+                  name={expandedSections.construction ? 'ChevronUp' : 'ChevronDown'} 
                   size={18} 
                   className="text-gray-500"
                 />

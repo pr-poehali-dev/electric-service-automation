@@ -14,7 +14,7 @@ import PageNavigation from '@/components/PageNavigation';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { cart, updateQuantity, removeFromCart, updateOption, toggleAdditionalOption } = useCart();
+  const { cart, updateQuantity, removeFromCart, updateOption, toggleAdditionalOption, clearCart } = useCart();
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
 
@@ -30,7 +30,7 @@ export default function Cart() {
 
   const wiringItems = cart.filter(item => item.selectedOption === 'full-wiring');
   const totalFrames = calculateFrames(wiringItems);
-  const cableMeters = totalFrames * 8;
+  const cableMeters = totalFrames * 7;
   
   const cableCost = cableMeters * 100;
   const finalTotal = totalPrice + cableCost;
@@ -81,15 +81,30 @@ export default function Cart() {
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-gray-700">Задачи</h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setEditMode(!editMode)}
-                  className={editMode ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold shadow-lg" : "text-xs"}
-                >
-                  <Icon name={editMode ? 'Check' : 'Edit'} size={14} className="mr-1" />
-                  {editMode ? 'Готово' : 'Редактировать'}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (confirm('Очистить весь список задач?')) {
+                        clearCart();
+                      }
+                    }}
+                    className="text-xs text-gray-500 hover:text-red-600"
+                  >
+                    <Icon name="Trash2" size={14} className="mr-1" />
+                    Очистить
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditMode(!editMode)}
+                    className={editMode ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold shadow-lg" : "text-xs"}
+                  >
+                    <Icon name={editMode ? 'Check' : 'Edit'} size={14} className="mr-1" />
+                    {editMode ? 'Готово' : 'Редактировать'}
+                  </Button>
+                </div>
               </div>
 
               {cart.filter(item => item.product.id !== MASTER_VISIT_ID).map((item, index) => (
@@ -261,7 +276,7 @@ export default function Cart() {
 
           <Button
             variant="outline"
-            onClick={() => setShowServiceModal(true)}
+            onClick={() => navigate('/products')}
             className="w-full"
           >
             <Icon name="Plus" size={16} className="mr-2" />

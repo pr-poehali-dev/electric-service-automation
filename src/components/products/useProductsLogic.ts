@@ -105,7 +105,8 @@ export function useProductsLogic() {
             if (option.id.startsWith('block-') || option.id === 'add-outlet' || option.id === 'move-switch' || option.id === 'move-switch-alt' || 
                 option.id === 'cable-10m' || option.id === 'cable-corrugated' || option.id === 'breaker-install' || 
                 option.id === 'breaker-replace' || option.id === 'meter-230v' || option.id === 'meter-380v' || 
-                option.id === 'box-surface' || option.id === 'box-flush' || option.id === 'drilling-porcelain' || option.id === 'electrical-install') {
+                option.id === 'box-surface' || option.id === 'box-flush' || option.id === 'drilling-porcelain' || 
+                option.id === 'electrical-install' || option.id === 'gas-sensor') {
               const virtualProduct: typeof product = {
                 ...product,
                 id: `${container.productId}-${option.id}`,
@@ -125,7 +126,7 @@ export function useProductsLogic() {
                 priceWithWiring: finalPrice
               };
               addToCart(virtualProduct, option.quantity, 'install-only');
-            } else if (option.id === 'repair' || option.id === 'surface-outlet' || option.id === 'gas-sensor') {
+            } else if (option.id === 'repair' || option.id === 'surface-outlet') {
               const virtualProduct: typeof product = {
                 ...product,
                 id: `${container.productId}-${option.id}`,
@@ -156,7 +157,7 @@ export function useProductsLogic() {
         }
       });
     });
-    return Math.ceil(totalPoints * 3.5);
+    return Math.ceil(totalPoints * 7);
   };
 
   const hasAnyEnabledOptions = containers.some(container => 

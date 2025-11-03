@@ -13,7 +13,7 @@ export function getInitialContainers(): ServiceContainer[] {
       options: [
         { id: 'crystal', name: 'Установка хрустальных подвесок', price: 3500, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить люстру', price: 1000, quantity: 1, enabled: false },
-        { id: 'dismantle', name: 'Демонтаж люстры', price: 500, quantity: 1, enabled: false },
+        { id: 'dismantle', name: 'Демонтаж светильника', price: 500, quantity: 1, enabled: false },
         { id: 'assemble', name: 'Сборка люстры', price: 500, quantity: 1, enabled: false },
       ]
     },
@@ -37,7 +37,6 @@ export function getInitialContainers(): ServiceContainer[] {
       sectionCategory: 'services',
       expanded: false,
       options: [
-        { id: 'gas-sensor', name: 'Перенос газовых детекторов', price: 3500, quantity: 1, enabled: false },
         { id: 'repair', name: 'Ремонт с учётом материалов', price: 1500, quantity: 1, enabled: false, discount: { minQuantity: 5, percent: 10 } },
         { id: 'surface-outlet', name: 'Накладная розетка', price: 500, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить розетку', price: 250, quantity: 1, enabled: false },
@@ -51,6 +50,8 @@ export function getInitialContainers(): ServiceContainer[] {
       sectionCategory: 'wiring',
       expanded: true,
       options: [
+        { id: 'block-5', name: 'Блок из 5 розеток +закладная', price: 8000, quantity: 1, enabled: false },
+        { id: 'gas-sensor', name: 'Перенос газовых детекторов', price: 3500, quantity: 1, enabled: false },
         { id: 'block-4', name: 'Блок из 4-х розеток', price: 3000, quantity: 1, enabled: false },
         { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
         { id: 'move-switch', name: 'Перенести выключатель', price: 1500, quantity: 1, enabled: false },

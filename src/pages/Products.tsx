@@ -37,7 +37,7 @@ export default function Products() {
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
         <div className="p-6 space-y-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Услуги Электрика</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Услуги Электрика ⚡️</h2>
 
           <div className="space-y-8">
             <div>
