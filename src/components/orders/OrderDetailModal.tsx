@@ -8,6 +8,7 @@ import { Order, ElectricalItem } from '@/types/electrical';
 import OrderStatusManager from './OrderStatusManager';
 import AssignExecutorSelector from './AssignExecutorSelector';
 import PaymentManager from '@/components/payments/PaymentManager';
+import GoogleIntegrationPanel from '@/components/google/GoogleIntegrationPanel';
 import ReviewForm from '@/components/reviews/ReviewForm';
 import ReviewList from '@/components/reviews/ReviewList';
 import PhotoReportUpload from '@/components/reviews/PhotoReportUpload';
@@ -154,6 +155,10 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
             onAddPayment={addPayment}
             onUpdatePaymentStatus={updatePaymentStatus}
           />
+
+          {isAuthenticated && permissions.isAdmin && (
+            <GoogleIntegrationPanel order={currentOrder} />
+          )}
           
           <Card className="p-6 animate-fadeIn">
             <h2 className="font-bold text-lg mb-4 flex items-center gap-2">

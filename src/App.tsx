@@ -33,6 +33,7 @@ import AllOrders from "./pages/AllOrders";
 import Portfolio from "./pages/Portfolio";
 import Profile from "./pages/Profile";
 import Services from "./pages/Services";
+import GoogleCallback from "./pages/GoogleCallback";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const AppRoutes = () => {
       <Route path="/profile" element={<Profile />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/all-orders" element={<AllOrders />} />
+      <Route path="/google-callback" element={<GoogleCallback />} />
       <Route path="/old-home" element={<Home />} />
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/schedule" element={<Schedule />} />

@@ -67,6 +67,40 @@ export interface Payment {
   description?: string;
 }
 
+export interface GoogleCalendarEvent {
+  id: string;
+  orderId: string;
+  eventId: string;
+  summary: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  status: 'confirmed' | 'tentative' | 'cancelled';
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface GoogleKeepNote {
+  id: string;
+  orderId: string;
+  noteId: string;
+  title: string;
+  content: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface GoogleIntegrationSettings {
+  calendarEnabled: boolean;
+  keepEnabled: boolean;
+  autoSyncCalendar: boolean;
+  autoSyncKeep: boolean;
+  accessToken?: string;
+  refreshToken?: string;
+  tokenExpiry?: number;
+}
+
 export interface Order {
   id: string;
   date: string;
@@ -87,6 +121,8 @@ export interface Order {
   paymentStatus?: PaymentStatus;
   payments?: Payment[];
   paidAmount?: number;
+  googleCalendarEventId?: string;
+  googleKeepNoteId?: string;
 }
 
 export interface PortfolioItem {
