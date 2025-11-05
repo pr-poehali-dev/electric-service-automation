@@ -1,9 +1,11 @@
 import json
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
+import urllib.request
+import urllib.error
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
@@ -91,13 +93,121 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cur.close()
     conn.close()
     
+    # Интеграция с Планфикс (если настроен)
+    planfix_task_id = None
+    planfix_token = os.environ.get('PLANFIX_API_TOKEN', '')
+    
+    if planfix_token:
+        try:
+            planfix_task_id = create_planfix_task(
+                order_id=order_id,
+                customer_name=client_name or 'Клиент',
+                customer_phone=phone,
+                address=address,
+                services=services,
+                total_price=total_price,
+                notes=client_notes,
+                api_token=planfix_token
+            )
+        except Exception as e:
+            print(f"Планфикс ошибка (не критично): {str(e)}")
+    
+    # Отправка уведомлений (не критично, не блокирует создание заказа)
+    try:
+        send_notifications(
+            order_id=order_id,
+            customer_id=str(telegram_id),
+            executor_id=executor_id,
+            status='new_order'
+        )
+    except Exception as e:
+        print(f"Уведомление ошибка (не критично): {str(e)}")
+    
+    response_data = {
+        'success': True,
+        'order_id': order_id,
+        'message': 'Order created successfully'
+    }
+    
+    if planfix_task_id:
+        response_data['planfix_task_id'] = planfix_task_id
+    
     return {
         'statusCode': 201,
         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
         'isBase64Encoded': False,
-        'body': json.dumps({
-            'success': True,
-            'order_id': order_id,
-            'message': 'Order created successfully'
-        })
+        'body': json.dumps(response_data)
     }
+
+
+def create_planfix_task(
+    order_id: int,
+    customer_name: str,
+    customer_phone: str,
+    address: str,
+    services: list,
+    total_price: float,
+    notes: str,
+    api_token: str
+) -> Optional[int]:
+    """Создание задачи в Планфикс"""
+    
+    services_text = '\n'.join([
+        f"- {svc.get('name', 'Услуга')}: {svc.get('quantity', 1)} шт × {svc.get('price', 0)} ₽"
+        for svc in services
+    ])
+    
+    description = f"""
+Заявка #{order_id}
+
+Клиент: {customer_name}
+Телефон: {customer_phone}
+Адрес: {address}
+
+Услуги:
+{services_text}
+
+Итого: {total_price} ₽
+
+Комментарий: {notes if notes else 'Нет'}
+    """.strip()
+    
+    request_data = {
+        "account": os.environ.get('PLANFIX_ACCOUNT', 'your-account'),
+        "sid": api_token,
+        "action": "task.add",
+        "name": f"Электромонтаж - Заявка #{order_id}",
+        "description": description,
+        "project": os.environ.get('PLANFIX_PROJECT_ID', '1'),
+        "template": os.environ.get('PLANFIX_TEMPLATE_ID', '1')
+    }
+    
+    request = urllib.request.Request(
+        "https://api.planfix.ru/json",
+        data=json.dumps(request_data).encode('utf-8'),
+        headers={'Content-Type': 'application/json'}
+    )
+    
+    with urllib.request.urlopen(request, timeout=10) as response:
+        result = json.loads(response.read().decode('utf-8'))
+        
+    if result.get('task'):
+        return result['task'].get('id')
+    
+    return None
+
+
+def send_notifications(
+    order_id: int,
+    customer_id: str,
+    executor_id: Optional[int],
+    status: str
+) -> None:
+    """Отправка уведомлений клиенту и исполнителю"""
+    
+    # В будущем здесь будет отправка через email/Telegram/push
+    # Пока просто логируем
+    print(f"Уведомление: Заказ {order_id} создан для клиента {customer_id}")
+    
+    if executor_id:
+        print(f"Уведомление исполнителю {executor_id}: новая заявка {order_id}")

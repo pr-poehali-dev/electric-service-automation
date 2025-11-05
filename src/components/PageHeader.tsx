@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginModal from '@/components/auth/LoginModal';
+import NotificationBell from '@/components/NotificationBell';
 
 interface PageHeaderProps {
   imageUrl?: string;
@@ -33,6 +34,7 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
         <div className="absolute top-4 right-4">
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
+              <NotificationBell />
               <div className="flex items-center gap-2">
                 <Icon name="User" size={18} className="text-gray-600" />
                 <div>

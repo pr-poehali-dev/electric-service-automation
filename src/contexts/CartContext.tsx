@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CartItem, Product, Order, calculateTotals, ServiceOption, MASTER_VISIT_ID, PRODUCTS } from '@/types/electrical';
+import { useNotifications } from './NotificationContext';
 
 interface CartContextType {
   cart: CartItem[];
@@ -17,6 +18,8 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const notificationsContext = useNotifications();
+  
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem('electrical-cart');
     return saved ? JSON.parse(saved) : [];
@@ -210,15 +213,43 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setOrders(prev => [newOrder, ...prev]);
     clearCart();
     
+    // Отправка уведомления о новой заявке
+    if (notificationsContext) {
+      notificationsContext.addNotification({
+        type: 'new_order',
+        orderId: newOrder.id,
+        title: 'Заявка создана',
+        message: `Заявка #${newOrder.id.slice(-6)} успешно создана и отправлена на обработку`
+      });
+    }
+    
     return newOrder;
   };
 
   const updateOrderStatus = (orderId: string, status: Order['status']) => {
+    const statusMessages = {
+      'pending': 'ожидает подтверждения',
+      'confirmed': 'подтверждена и принята в работу',
+      'in-progress': 'начата, мастер приступил к работе',
+      'completed': 'завершена'
+    };
+    
     setOrders(prev =>
       prev.map(order =>
         order.id === orderId ? { ...order, status } : order
       )
     );
+    
+    // Отправка уведомления об изменении статуса
+    if (notificationsContext) {
+      notificationsContext.addNotification({
+        type: 'status_change',
+        orderId: orderId,
+        newStatus: status,
+        title: 'Статус заявки изменен',
+        message: `Заявка #${orderId.slice(-6)} ${statusMessages[status] || 'обновлена'}`
+      });
+    }
   };
 
   return (
