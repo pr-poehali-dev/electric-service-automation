@@ -64,7 +64,7 @@ export default function Products() {
               </div>
                 
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-gray-700 mb-3 hidden">Электромонтажные работы</h3>
+                <h3 className="text-lg font-semibold text-gray-700 mb-1">Электромонтажные работы</h3>
                 <p className="text-sm text-gray-600 mb-3">Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки</p>
                 {wiringContainers.map((container) => {
                   const actualIndex = containers.findIndex(c => c.productId === container.productId);
