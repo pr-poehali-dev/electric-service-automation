@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo, useRef, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
@@ -41,6 +42,109 @@ const getServiceTypeLabel = (items: ElectricalItem[]) => {
   return 'Электромонтаж';
 };
 
+const AllOrderCard = memo(({ order, onViewDetails, updateOrderStatus }: { order: Order; onViewDetails: (order: Order) => void; updateOrderStatus: (orderId: string, status: Order['status']) => void }) => {
+  return (
+    <Card 
+      className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
+      onClick={() => onViewDetails(order)}
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <h3 className="text-lg font-bold">Заявка #{order.id.slice(-6)}</h3>
+            <span className={`text-xs px-3 py-1 rounded-full ${STATUS_COLORS[order.status]}`}>
+              {STATUS_LABELS[order.status]}
+            </span>
+          </div>
+          <p className="text-sm text-gray-600 mb-2">{getServiceTypeLabel(order.items)}</p>
+          <p className="text-sm text-gray-500">
+            {new Date(order.createdAt).toLocaleDateString('ru-RU', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </p>
+          {order.assignedToName && (
+            <div className="flex items-center gap-1 mt-2 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-lg w-fit">
+              <Icon name="User" size={12} />
+              <span>Исполнитель: {order.assignedToName}</span>
+            </div>
+          )}
+        </div>
+        <div className="text-right">
+          <p className="text-xl font-bold text-primary">{(order.totalAmount || 0).toLocaleString()} ₽</p>
+          <p className="text-xs text-gray-500">{order.items?.length || 0} услуг</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <Icon name="Phone" size={14} className="inline mr-2 text-gray-500" />
+          <span className="text-gray-700">{order.phone}</span>
+        </div>
+        <div>
+          <Icon name="MapPin" size={14} className="inline mr-2 text-gray-500" />
+          <span className="text-gray-700">{order.address || 'Не указан'}</span>
+        </div>
+        <div>
+          <Icon name="Zap" size={14} className="inline mr-2 text-gray-500" />
+          <span className="text-gray-700">{order.totalPoints} точек</span>
+        </div>
+        <div>
+          <Icon name="Cable" size={14} className="inline mr-2 text-gray-500" />
+          <span className="text-gray-700">~{order.estimatedCable}м кабеля</span>
+        </div>
+      </div>
+
+      <div className="flex gap-2 mt-4">
+        {order.status === 'pending' && (
+          <Button
+            size="sm"
+            className="flex-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              updateOrderStatus(order.id, 'confirmed');
+            }}
+          >
+            <Icon name="CheckCircle" size={14} className="mr-1" />
+            Подтвердить
+          </Button>
+        )}
+        {order.status === 'confirmed' && (
+          <Button
+            size="sm"
+            className="flex-1 bg-orange-600 hover:bg-orange-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              updateOrderStatus(order.id, 'in-progress');
+            }}
+          >
+            <Icon name="Wrench" size={14} className="mr-1" />
+            В работу
+          </Button>
+        )}
+        {order.status === 'in-progress' && (
+          <Button
+            size="sm"
+            className="flex-1 bg-green-600 hover:bg-green-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              updateOrderStatus(order.id, 'completed');
+            }}
+          >
+            <Icon name="CheckCircle2" size={14} className="mr-1" />
+            Завершить
+          </Button>
+        )}
+      </div>
+    </Card>
+  );
+});
+
+AllOrderCard.displayName = 'AllOrderCard';
+
 export default function AllOrders() {
   const navigate = useNavigate();
   const { orders, updateOrderStatus, assignExecutor, addToCart, clearCart } = useCart();
@@ -48,6 +152,7 @@ export default function AllOrders() {
   const [showContactModal, setShowContactModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState<Order['status'] | 'all'>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const parentRef = useRef<HTMLDivElement>(null);
 
   if (!isAuthenticated) {
     return (
@@ -62,9 +167,19 @@ export default function AllOrders() {
     );
   }
 
-  const filteredOrders = filterStatus === 'all' 
-    ? orders 
-    : orders.filter(order => order.status === filterStatus);
+  const filteredOrders = useMemo(() => 
+    filterStatus === 'all' 
+      ? orders 
+      : orders.filter(order => order.status === filterStatus),
+    [orders, filterStatus]
+  );
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredOrders.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 240,
+    overscan: 3,
+  });
 
   return (
     <RoleGate 
@@ -124,106 +239,43 @@ export default function AllOrders() {
                 <p className="text-gray-600 text-lg">Заявок не найдено</p>
               </Card>
             ) : (
-              <div className="space-y-4">
-                {filteredOrders.map((order) => (
-                  <Card 
-                    key={order.id} 
-                    className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
-                    onClick={() => setSelectedOrder(order)}
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-bold">Заявка #{order.id.slice(-6)}</h3>
-                          <span className={`text-xs px-3 py-1 rounded-full ${STATUS_COLORS[order.status]}`}>
-                            {STATUS_LABELS[order.status]}
-                          </span>
+              <div
+                ref={parentRef}
+                className="overflow-auto"
+                style={{ height: 'calc(100vh - 350px)', minHeight: '500px' }}
+              >
+                <div
+                  style={{
+                    height: `${rowVirtualizer.getTotalSize()}px`,
+                    width: '100%',
+                    position: 'relative',
+                  }}
+                >
+                  {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    const order = filteredOrders[virtualRow.index];
+                    return (
+                      <div
+                        key={virtualRow.key}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: `${virtualRow.size}px`,
+                          transform: `translateY(${virtualRow.start}px)`,
+                        }}
+                      >
+                        <div className="pb-4">
+                          <AllOrderCard
+                            order={order}
+                            onViewDetails={setSelectedOrder}
+                            updateOrderStatus={updateOrderStatus}
+                          />
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">{getServiceTypeLabel(order.items)}</p>
-                        <p className="text-sm text-gray-500">
-                          {new Date(order.createdAt).toLocaleDateString('ru-RU', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </p>
-                        {order.assignedToName && (
-                          <div className="flex items-center gap-1 mt-2 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-lg w-fit">
-                            <Icon name="User" size={12} />
-                            <span>Исполнитель: {order.assignedToName}</span>
-                          </div>
-                        )}
                       </div>
-                      <div className="text-right">
-                        <p className="text-xl font-bold text-primary">{(order.totalAmount || 0).toLocaleString()} ₽</p>
-                        <p className="text-xs text-gray-500">{order.items?.length || 0} услуг</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <Icon name="Phone" size={14} className="inline mr-2 text-gray-500" />
-                        <span className="text-gray-700">{order.phone}</span>
-                      </div>
-                      <div>
-                        <Icon name="MapPin" size={14} className="inline mr-2 text-gray-500" />
-                        <span className="text-gray-700">{order.address || 'Не указан'}</span>
-                      </div>
-                      <div>
-                        <Icon name="Zap" size={14} className="inline mr-2 text-gray-500" />
-                        <span className="text-gray-700">{order.totalPoints} точек</span>
-                      </div>
-                      <div>
-                        <Icon name="Cable" size={14} className="inline mr-2 text-gray-500" />
-                        <span className="text-gray-700">~{order.estimatedCable}м кабеля</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 mt-4">
-                      {order.status === 'pending' && (
-                        <Button
-                          size="sm"
-                          className="flex-1"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateOrderStatus(order.id, 'confirmed');
-                          }}
-                        >
-                          <Icon name="CheckCircle" size={14} className="mr-1" />
-                          Подтвердить
-                        </Button>
-                      )}
-                      {order.status === 'confirmed' && (
-                        <Button
-                          size="sm"
-                          className="flex-1 bg-orange-600 hover:bg-orange-700"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateOrderStatus(order.id, 'in-progress');
-                          }}
-                        >
-                          <Icon name="Wrench" size={14} className="mr-1" />
-                          В работу
-                        </Button>
-                      )}
-                      {order.status === 'in-progress' && (
-                        <Button
-                          size="sm"
-                          className="flex-1 bg-green-600 hover:bg-green-700"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateOrderStatus(order.id, 'completed');
-                          }}
-                        >
-                          <Icon name="CheckCircle2" size={14} className="mr-1" />
-                          Завершить
-                        </Button>
-                      )}
-                    </div>
-                  </Card>
-                ))}
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>

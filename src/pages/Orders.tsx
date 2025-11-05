@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -15,8 +15,11 @@ import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import OrderStatusManager from '@/components/orders/OrderStatusManager';
 import OrderDetailModal from '@/components/orders/OrderDetailModal';
+import OrderCard from '@/components/orders/OrderCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 const STATUS_LABELS = {
   'pending': 'Ожидает',
@@ -62,6 +65,8 @@ export default function Orders() {
   const [serviceTypeFilter, setServiceTypeFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const handleNewOrder = () => {
     clearCart();
@@ -86,35 +91,48 @@ export default function Orders() {
     }
   }, [location.state, orders]);
 
-  const filteredOrders = orders.filter(order => {
-    if (!order || !order.items) return false;
-    
-    if (statusFilter !== 'all' && order.status !== statusFilter) return false;
-    
-    if (serviceTypeFilter !== 'all') {
-      const serviceType = getServiceTypeLabel(order.items);
-      if (serviceType !== serviceTypeFilter) return false;
-    }
-    
-    if (dateFilter) {
-      const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
-      if (orderDate !== dateFilter) return false;
-    }
-    
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      const matchesId = order.id?.toLowerCase().includes(query);
-      const matchesAddress = order.address?.toLowerCase().includes(query);
-      const matchesPhone = order.phone?.toLowerCase().includes(query);
-      if (!matchesId && !matchesAddress && !matchesPhone) return false;
-    }
-    
-    return true;
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      if (!order || !order.items) return false;
+      
+      if (statusFilter !== 'all' && order.status !== statusFilter) return false;
+      
+      if (serviceTypeFilter !== 'all') {
+        const serviceType = getServiceTypeLabel(order.items);
+        if (serviceType !== serviceTypeFilter) return false;
+      }
+      
+      if (dateFilter) {
+        const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
+        if (orderDate !== dateFilter) return false;
+      }
+      
+      if (debouncedSearchQuery) {
+        const query = debouncedSearchQuery.toLowerCase();
+        const matchesId = order.id?.toLowerCase().includes(query);
+        const matchesAddress = order.address?.toLowerCase().includes(query);
+        const matchesPhone = order.phone?.toLowerCase().includes(query);
+        if (!matchesId && !matchesAddress && !matchesPhone) return false;
+      }
+      
+      return true;
+    });
+  }, [orders, statusFilter, serviceTypeFilter, dateFilter, debouncedSearchQuery]);
+
+  const serviceTypes = useMemo(() => 
+    Array.from(new Set(orders.map(order => getServiceTypeLabel(order.items)))),
+    [orders]
+  );
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredOrders.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 180,
+    overscan: 5,
   });
 
-  const serviceTypes = Array.from(new Set(orders.map(order => getServiceTypeLabel(order.items))));
-
   const hasActiveFilters = statusFilter !== 'all' || serviceTypeFilter !== 'all' || dateFilter !== '' || searchQuery !== '';
+  const isSearching = searchQuery !== debouncedSearchQuery;
 
   const clearFilters = () => {
     setStatusFilter('all');
@@ -131,8 +149,18 @@ export default function Orders() {
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
         
         <div className="bg-white shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-800">Мои заявки</h1>
-          <p className="text-gray-600 mt-2">История ваших заказов</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">Мои заявки</h1>
+              <p className="text-gray-600 mt-2">История ваших заказов</p>
+            </div>
+            {orders.length > 0 && (
+              <div className="text-right">
+                <div className="text-3xl font-bold text-primary">{orders.length}</div>
+                <div className="text-xs text-gray-500">всего заявок</div>
+              </div>
+            )}
+          </div>
         </div>
 
         {orders.length > 0 && (
@@ -194,14 +222,19 @@ export default function Orders() {
             </div>
 
             {hasActiveFilters && (
-              <p className="text-sm text-gray-600">
-                Найдено: {filteredOrders.length} из {orders.length}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-gray-600">
+                  Найдено: {filteredOrders.length} из {orders.length}
+                </p>
+                {isSearching && (
+                  <Icon name="Loader2" size={16} className="animate-spin text-primary" />
+                )}
+              </div>
             )}
           </div>
         )}
 
-        <div className="p-6 space-y-4">
+        <div className="p-6">
           {filteredOrders.length === 0 && orders.length > 0 && (
             <Card className="p-8 text-center">
               <Icon name="FileX" size={48} className="mx-auto mb-4 text-gray-400" />
@@ -224,60 +257,46 @@ export default function Orders() {
             </Card>
           )}
 
-          {filteredOrders.map((order) => (
-            <Card key={order.id} className="p-5 hover:shadow-lg transition-all cursor-pointer animate-fadeIn">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-bold text-lg">#{order.id.slice(-6)}</h3>
-                    <span className={`text-xs font-semibold py-1 px-3 rounded-full border ${STATUS_COLORS[order.status]}`}>
-                      {STATUS_LABELS[order.status]}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600">{getServiceTypeLabel(order.items)}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(order.createdAt).toLocaleDateString('ru-RU', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    })}
-                  </p>
-                  {order.assignedToName && (
-                    <div className="flex items-center gap-1 mt-2 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-lg w-fit">
-                      <Icon name="User" size={12} />
-                      <span>{order.assignedToName}</span>
+          {filteredOrders.length > 0 && (
+            <div
+              ref={parentRef}
+              className="overflow-auto"
+              style={{ height: 'calc(100vh - 450px)', minHeight: '400px' }}
+            >
+              <div
+                style={{
+                  height: `${rowVirtualizer.getTotalSize()}px`,
+                  width: '100%',
+                  position: 'relative',
+                }}
+              >
+                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                  const order = filteredOrders[virtualRow.index];
+                  return (
+                    <div
+                      key={virtualRow.key}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      <div className="pb-4">
+                        <OrderCard
+                          order={order}
+                          onViewDetails={setSelectedOrder}
+                          onRepeat={handleRepeatOrder}
+                        />
+                      </div>
                     </div>
-                  )}
-                </div>
-                <div className="text-right">
-                  <p className="text-xl font-bold text-primary">{(order.totalAmount || 0).toLocaleString()} ₽</p>
-                  <p className="text-xs text-gray-500">{order.items?.length || 0} услуг</p>
-                </div>
+                  );
+                })}
               </div>
-
-              <div className="flex gap-2 mt-4">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="flex-1"
-                  onClick={() => setSelectedOrder(order)}
-                >
-                  <Icon name="Eye" size={16} className="mr-2" />
-                  Подробнее
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="flex-1"
-                  onClick={() => handleRepeatOrder(order)}
-                  title="Повторить заказ"
-                >
-                  <Icon name="RefreshCw" size={16} className="mr-2" />
-                  Повторить
-                </Button>
-              </div>
-            </Card>
-          ))}
+            </div>
+          )}
         </div>
 
         <div className="px-6 pb-6">

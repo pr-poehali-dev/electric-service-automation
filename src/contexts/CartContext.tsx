@@ -32,11 +32,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    localStorage.setItem('electrical-cart', JSON.stringify(cart));
+    const timeoutId = setTimeout(() => {
+      localStorage.setItem('electrical-cart', JSON.stringify(cart));
+    }, 500);
+    return () => clearTimeout(timeoutId);
   }, [cart]);
 
   useEffect(() => {
-    localStorage.setItem('electrical-orders', JSON.stringify(orders));
+    const timeoutId = setTimeout(() => {
+      localStorage.setItem('electrical-orders', JSON.stringify(orders));
+    }, 500);
+    return () => clearTimeout(timeoutId);
   }, [orders]);
 
   const addToCart = (product: Product, quantity = 1, option: ServiceOption = 'install-only', additionalOptions?: string[]) => {
