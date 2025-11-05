@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
-import { Order } from '@/types/electrical';
+import { Order, ElectricalItem } from '@/types/electrical';
 import ContactModal from '@/components/ContactModal';
 import ProductSelectionModal from '@/components/ProductSelectionModal';
 import CalculatorModal from '@/components/CalculatorModal';
@@ -12,17 +14,12 @@ import BottomMenu from '@/components/BottomMenu';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import OrderStatusManager from '@/components/orders/OrderStatusManager';
+import OrderDetailModal from '@/components/orders/OrderDetailModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 const STATUS_LABELS = {
-  'pending': 'Ожидает подтверждения',
+  'pending': 'Ожидает',
   'confirmed': 'Подтверждена',
   'in-progress': 'В работе',
   'completed': 'Завершена'
@@ -35,20 +32,48 @@ const STATUS_COLORS = {
   'completed': 'bg-green-100 text-green-800 border-green-300'
 };
 
+const getServiceTypeLabel = (items: ElectricalItem[]) => {
+  const hasInstallation = items.some(item => 
+    item.category === 'установка' || 
+    item.category === 'монтаж розеток и выключателей'
+  );
+  const hasWiring = items.some(item => item.category === 'проводка и кабели');
+  const hasLighting = items.some(item => item.category === 'освещение');
+  
+  if (hasInstallation && hasWiring) return 'Комплексная установка';
+  if (hasInstallation) return 'Установка оборудования';
+  if (hasWiring) return 'Прокладка кабелей';
+  if (hasLighting) return 'Освещение';
+  return 'Электромонтаж';
+};
+
 export default function Orders() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { orders, clearCart, updateOrderStatus } = useCart();
+  const { orders, clearCart, updateOrderStatus, addToCart } = useCart();
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [showCalculatorModal, setShowCalculatorModal] = useState(false);
+  
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [serviceTypeFilter, setServiceTypeFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleNewOrder = () => {
     clearCart();
     navigate('/products');
+  };
+
+  const handleRepeatOrder = (order: Order) => {
+    clearCart();
+    order.items.forEach(item => {
+      addToCart(item);
+    });
+    navigate('/cart');
   };
 
   useEffect(() => {
@@ -61,249 +86,40 @@ export default function Orders() {
     }
   }, [location.state, orders]);
 
-  const getProgressPercentage = (status: Order['status']) => {
-    switch (status) {
-      case 'pending': return 25;
-      case 'confirmed': return 50;
-      case 'in-progress': return 75;
-      case 'completed': return 100;
-      default: return 0;
-    }
-  };
-
-  if (selectedOrder) {
-    const progress = getProgressPercentage(selectedOrder.status);
+  const filteredOrders = orders.filter(order => {
+    if (statusFilter !== 'all' && order.status !== statusFilter) return false;
     
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
-        <PageHeader />
+    if (serviceTypeFilter !== 'all') {
+      const serviceType = getServiceTypeLabel(order.items);
+      if (serviceType !== serviceTypeFilter) return false;
+    }
+    
+    if (dateFilter) {
+      const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
+      if (orderDate !== dateFilter) return false;
+    }
+    
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesId = order.id.toLowerCase().includes(query);
+      const matchesAddress = order.address?.toLowerCase().includes(query);
+      const matchesPhone = order.phone?.toLowerCase().includes(query);
+      if (!matchesId && !matchesAddress && !matchesPhone) return false;
+    }
+    
+    return true;
+  });
 
-        <div className="max-w-md mx-auto">
-          <PageNavigation onContactClick={() => setShowContactModal(true)} />
-          
-          <div className="bg-white shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSelectedOrder(null)}
-                >
-                  <Icon name="ArrowLeft" size={24} />
-                </Button>
-                <h1 className="text-2xl font-bold text-gray-800 flex-1">Заявка #{selectedOrder.id.slice(-6)}</h1>
-              </div>
-            </div>
-          </div>
+  const serviceTypes = Array.from(new Set(orders.map(order => getServiceTypeLabel(order.items))));
 
-          <div className="p-6 space-y-6">
-            {isAuthenticated && permissions.canEditOrders && (
-              <OrderStatusManager 
-                order={selectedOrder} 
-                onStatusChange={updateOrderStatus} 
-              />
-            )}
-            
-            <Card className="p-6 animate-fadeIn">
-              <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
-                <Icon name="Activity" size={20} className="text-primary" />
-                Статус выполнения
-              </h2>
-              
-              <div className="relative pt-1 mb-6">
-                <div className="flex mb-2 items-center justify-between">
-                  <div>
-                    <span className={`text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${STATUS_COLORS[selectedOrder.status]}`}>
-                      {STATUS_LABELS[selectedOrder.status]}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-semibold inline-block text-primary">
-                      {progress}%
-                    </span>
-                  </div>
-                </div>
-                <div className="overflow-hidden h-3 mb-4 text-xs flex rounded-full bg-gray-200">
-                  <div 
-                    style={{ width: `${progress}%` }} 
-                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-500 rounded-full"
-                  />
-                </div>
-              </div>
+  const hasActiveFilters = statusFilter !== 'all' || serviceTypeFilter !== 'all' || dateFilter !== '' || searchQuery !== '';
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-sm">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                    progress >= 25 ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg' : 'bg-gray-200 text-gray-400'
-                  }`}>
-                    <Icon name="FileText" size={18} />
-                  </div>
-                  <span className={progress >= 25 ? 'font-semibold text-gray-800' : 'text-muted-foreground'}>
-                    Заявка создана
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3 text-sm">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                    progress >= 50 ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg' : 'bg-gray-200 text-gray-400'
-                  }`}>
-                    <Icon name="CheckCircle" size={18} />
-                  </div>
-                  <span className={progress >= 50 ? 'font-semibold text-gray-800' : 'text-muted-foreground'}>
-                    Подтверждена мастером
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3 text-sm">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                    progress >= 75 ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg' : 'bg-gray-200 text-gray-400'
-                  }`}>
-                    <Icon name="Wrench" size={18} />
-                  </div>
-                  <span className={progress >= 75 ? 'font-semibold text-gray-800' : 'text-muted-foreground'}>
-                    Работы начаты
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3 text-sm">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                    progress >= 100 ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg' : 'bg-gray-200 text-gray-400'
-                  }`}>
-                    <Icon name="CheckCircle2" size={18} />
-                  </div>
-                  <span className={progress >= 100 ? 'font-semibold text-gray-800' : 'text-muted-foreground'}>
-                    Работы завершены
-                  </span>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-4 animate-fadeIn">
-              <a
-                href="https://t.me/konigelectric"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-4 p-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
-              >
-                <Icon name="MessageCircle" size={24} />
-                <div className="flex-1">
-                  <p className="font-bold">Есть вопрос?</p>
-                  <p className="text-sm opacity-90">Напишите в Telegram</p>
-                </div>
-                <Icon name="ArrowRight" size={20} />
-              </a>
-            </Card>
-
-            <Card className="animate-fadeIn">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="details">
-                  <AccordionTrigger className="px-6 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <Icon name="Calendar" size={20} className="text-primary" />
-                      <span className="font-bold">Детали заявки</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6">
-                    <div className="space-y-3 pt-2">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Дата:</span>
-                        <span className="font-semibold">{selectedOrder.date}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Время:</span>
-                        <span className="font-semibold">{selectedOrder.time}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Адрес:</span>
-                        <span className="font-semibold text-right">{selectedOrder.address}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Телефон:</span>
-                        <span className="font-semibold">{selectedOrder.phone}</span>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="calculations">
-                  <AccordionTrigger className="px-6 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <Icon name="Calculator" size={20} className="text-primary" />
-                      <span className="font-bold">Объём работ</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6">
-                    <div className="space-y-2 pt-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Выключателей:</span>
-                        <span className="font-bold">{selectedOrder.totalSwitches}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Розеток:</span>
-                        <span className="font-bold">{selectedOrder.totalOutlets}</span>
-                      </div>
-                      <div className="h-px bg-gray-200 my-2" />
-                      <div className="flex justify-between">
-                        <span>Всего точек:</span>
-                        <span className="font-bold text-lg text-primary">{selectedOrder.totalPoints}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Метраж кабеля:</span>
-                        <span className="font-bold text-lg text-primary">~{selectedOrder.estimatedCable} м</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Рамок:</span>
-                        <span className="font-bold text-lg text-primary">{selectedOrder.estimatedFrames} шт</span>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="items">
-                  <AccordionTrigger className="px-6 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <Icon name="Package" size={20} className="text-primary" />
-                      <span className="font-bold">Список услуг ({selectedOrder.items.length})</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6">
-                    <div className="space-y-2 pt-2">
-                      {selectedOrder.items.map((item, index) => (
-                        <div key={index} className="flex justify-between items-center text-sm py-2 border-b last:border-0">
-                          <span className="font-medium">{item.product.name}</span>
-                          <span className="text-muted-foreground">{item.quantity} шт</span>
-                        </div>
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </Card>
-
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => setSelectedOrder(null)}
-            >
-              Вернуться к списку заявок
-            </Button>
-          </div>
-        </div>
-
-        <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
-
-        <style>{`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fadeIn {
-            animation: fadeIn 0.4s ease-out;
-          }
-        `}</style>
-      </div>
-    );
-  }
+  const clearFilters = () => {
+    setStatusFilter('all');
+    setServiceTypeFilter('all');
+    setDateFilter('');
+    setSearchQuery('');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
@@ -312,97 +128,179 @@ export default function Orders() {
       <div className="max-w-md mx-auto">
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
         
-        <div className="p-6 space-y-4">
-          
-          {orders.length === 0 ? (
-            <Card className="p-12 text-center">
-              <Icon name="ShoppingBag" size={64} className="text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Пока нет заявок</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Создайте первую заявку
+        <div className="bg-white shadow-lg p-6">
+          <h1 className="text-2xl font-bold text-gray-800">Мои заявки</h1>
+          <p className="text-gray-600 mt-2">История ваших заказов</p>
+        </div>
+
+        {orders.length > 0 && (
+          <div className="p-4 space-y-3 bg-white border-b">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Icon name="Search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Поиск по номеру, адресу, телефону"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              {hasActiveFilters && (
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={clearFilters}
+                  title="Сбросить фильтры"
+                >
+                  <Icon name="X" size={18} />
+                </Button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Статус" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Все статусы</SelectItem>
+                  <SelectItem value="pending">Ожидает</SelectItem>
+                  <SelectItem value="confirmed">Подтверждена</SelectItem>
+                  <SelectItem value="in-progress">В работе</SelectItem>
+                  <SelectItem value="completed">Завершена</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={serviceTypeFilter} onValueChange={setServiceTypeFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Тип" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Все типы</SelectItem>
+                  {serviceTypes.map(type => (
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="text-sm"
+              />
+            </div>
+
+            {hasActiveFilters && (
+              <p className="text-sm text-gray-600">
+                Найдено: {filteredOrders.length} из {orders.length}
               </p>
-              <Button
-                onClick={handleNewOrder}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-              >
-+ Добавить заказ
+            )}
+          </div>
+        )}
+
+        <div className="p-6 space-y-4">
+          {filteredOrders.length === 0 && orders.length > 0 && (
+            <Card className="p-8 text-center">
+              <Icon name="FileX" size={48} className="mx-auto mb-4 text-gray-400" />
+              <h3 className="text-lg font-semibold mb-2">Ничего не найдено</h3>
+              <p className="text-gray-600 mb-4">Попробуйте изменить параметры фильтрации</p>
+              <Button onClick={clearFilters} variant="outline">
+                Сбросить фильтры
               </Button>
             </Card>
-          ) : (
-            <>
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-800">Мои заявки</h2>
-                <Button
-                  onClick={handleNewOrder}
-                  size="sm"
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <Icon name="Plus" size={16} />
-                  Добавить задачи
-                </Button>
-              </div>
-              
-              {orders.map(order => (
-                <Card 
-                  key={order.id}
-                  className="p-6 cursor-pointer hover:shadow-lg transition-all animate-fadeIn hover:scale-105"
-                  onClick={() => setSelectedOrder(order)}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-bold text-lg">Заявка #{order.id.slice(-6)}</h3>
-                    <span className={`text-xs font-semibold py-1 px-3 rounded-full ${STATUS_COLORS[order.status]}`}>
+          )}
+
+          {filteredOrders.length === 0 && orders.length === 0 && (
+            <Card className="p-8 text-center animate-fadeIn">
+              <Icon name="Package" size={48} className="mx-auto mb-4 text-gray-400" />
+              <h3 className="text-lg font-semibold mb-2">У вас пока нет заявок</h3>
+              <p className="text-gray-600 mb-4">Создайте первый заказ на электромонтажные работы</p>
+              <Button onClick={handleNewOrder} className="w-full">
+                Создать заявку
+              </Button>
+            </Card>
+          )}
+
+          {filteredOrders.map((order) => (
+            <Card key={order.id} className="p-5 hover:shadow-lg transition-all cursor-pointer animate-fadeIn">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-bold text-lg">#{order.id.slice(-6)}</h3>
+                    <span className={`text-xs font-semibold py-1 px-3 rounded-full border ${STATUS_COLORS[order.status]}`}>
                       {STATUS_LABELS[order.status]}
                     </span>
                   </div>
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    {order.address && (
-                      <div className="flex items-center gap-2">
-                        <Icon name="MapPin" size={16} />
-                        <span className="truncate">{order.address}</span>
-                      </div>
-                    )}
-                    {order.date && (
-                      <div className="flex items-center gap-2">
-                        <Icon name="Calendar" size={16} />
-                        <span>{order.date}{order.time ? ` в ${order.time}` : ''}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <Icon name="Package" size={16} />
-                      <span>{order.items.length} услуг</span>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Нажмите для подробностей</span>
-                    <Icon name="ChevronRight" size={20} className="text-primary" />
-                  </div>
-                </Card>
-              ))}
-            </>
-          )}
+                  <p className="text-sm text-gray-600">{getServiceTypeLabel(order.items)}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {new Date(order.createdAt).toLocaleDateString('ru-RU', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-bold text-primary">{order.totalAmount.toLocaleString()} ₽</p>
+                  <p className="text-xs text-gray-500">{order.items.length} услуг</p>
+                </div>
+              </div>
+
+              <div className="flex gap-2 mt-4">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => setSelectedOrder(order)}
+                >
+                  <Icon name="Eye" size={16} className="mr-2" />
+                  Подробнее
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => handleRepeatOrder(order)}
+                  title="Повторить заказ"
+                >
+                  <Icon name="RefreshCw" size={16} className="mr-2" />
+                  Повторить
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        <div className="px-6 pb-6">
+          <Button 
+            onClick={handleNewOrder}
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-6 rounded-xl shadow-lg"
+          >
+            <Icon name="Plus" size={20} className="mr-2" />
+            Создать новую заявку
+          </Button>
         </div>
       </div>
 
-      <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
-      <ProductSelectionModal 
-        open={showProductModal} 
-        onClose={() => setShowProductModal(false)} 
-      />
-      <CalculatorModal 
-        open={showCalculatorModal} 
-        onClose={() => setShowCalculatorModal(false)} 
+      <BottomMenu 
+        onContactClick={() => setShowContactModal(true)}
+        onProductsClick={() => setShowProductModal(true)}
+        onCalculatorClick={() => setShowCalculatorModal(true)}
       />
 
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.4s ease-out;
-        }
-      `}</style>
+      {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}
+      {showProductModal && <ProductSelectionModal onClose={() => setShowProductModal(false)} />}
+      {showCalculatorModal && <CalculatorModal onClose={() => setShowCalculatorModal(false)} />}
+      
+      {selectedOrder && (
+        <OrderDetailModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onStatusChange={updateOrderStatus}
+          onRepeatOrder={handleRepeatOrder}
+        />
+      )}
     </div>
   );
 }
