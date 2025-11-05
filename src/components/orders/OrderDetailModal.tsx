@@ -6,8 +6,12 @@ import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
 import { Order, ElectricalItem } from '@/types/electrical';
 import OrderStatusManager from './OrderStatusManager';
+import ReviewForm from '@/components/reviews/ReviewForm';
+import ReviewList from '@/components/reviews/ReviewList';
+import PhotoReportUpload from '@/components/reviews/PhotoReportUpload';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useReviews } from '@/contexts/ReviewContext';
 import {
   Accordion,
   AccordionContent,
@@ -39,8 +43,15 @@ const STATUS_COLORS = {
 export default function OrderDetailModal({ order, onClose, onStatusChange, onRepeatOrder }: OrderDetailModalProps) {
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
+  const { getOrderReviews, getOrderPhotoReports } = useReviews();
   const [isEditing, setIsEditing] = useState(false);
   const [editedOrder, setEditedOrder] = useState<Order>(order);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  
+  const orderReviews = getOrderReviews(order.id);
+  const orderPhotoReports = getOrderPhotoReports(order.id);
+  const canLeaveReview = order.status === 'completed' && orderReviews.length === 0;
 
   const getProgressPercentage = (status: Order['status']) => {
     switch (status) {
@@ -372,24 +383,115 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
             </div>
           </Card>
 
-          <div className="flex gap-3">
-            <Button 
-              variant="outline" 
-              className="flex-1"
-              onClick={() => onRepeatOrder(currentOrder)}
-            >
-              <Icon name="RefreshCw" size={18} className="mr-2" />
-              Повторить заказ
-            </Button>
-            <Button 
-              className="flex-1"
-              onClick={onClose}
-            >
-              Закрыть
-            </Button>
+          {orderPhotoReports.length > 0 && (
+            <Card className="animate-fadeIn">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="photos">
+                  <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-gray-50">
+                    <div className="flex items-center gap-3">
+                      <Icon name="Camera" size={20} className="text-primary" />
+                      <span className="font-bold">Фотоотчёты ({orderPhotoReports.length})</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4">
+                    <div className="space-y-4">
+                      {orderPhotoReports.map((report) => (
+                        <div key={report.id}>
+                          <p className="text-sm text-gray-600 mb-2">
+                            {report.uploaderRole === 'electrician' ? 'Мастер' : 'Клиент'} • {' '}
+                            {new Date(report.createdAt).toLocaleDateString('ru-RU')}
+                          </p>
+                          <div className="grid grid-cols-3 gap-2">
+                            {report.photos.map((photo, idx) => (
+                              <div key={idx}>
+                                <img
+                                  src={photo.url}
+                                  alt={photo.caption || `Фото ${idx + 1}`}
+                                  className="w-full h-32 object-cover rounded-lg"
+                                />
+                                {photo.caption && (
+                                  <p className="text-xs text-gray-600 mt-1">{photo.caption}</p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </Card>
+          )}
+
+          {orderReviews.length > 0 && (
+            <Card className="animate-fadeIn">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="reviews">
+                  <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-gray-50">
+                    <div className="flex items-center gap-3">
+                      <Icon name="Star" size={20} className="text-primary" />
+                      <span className="font-bold">Отзывы ({orderReviews.length})</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4">
+                    <ReviewList reviews={orderReviews} />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </Card>
+          )}
+
+          <div className="space-y-3">
+            {canLeaveReview && (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowReviewForm(true)}
+              >
+                <Icon name="Star" size={18} className="mr-2" />
+                Оставить отзыв
+              </Button>
+            )}
+
+            {isAuthenticated && permissions.canEditOrders && (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowPhotoUpload(true)}
+              >
+                <Icon name="Camera" size={18} className="mr-2" />
+                Загрузить фотоотчёт
+              </Button>
+            )}
+
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => onRepeatOrder(currentOrder)}
+              >
+                <Icon name="RefreshCw" size={18} className="mr-2" />
+                Повторить заказ
+              </Button>
+              <Button 
+                className="flex-1"
+                onClick={onClose}
+              >
+                Закрыть
+              </Button>
+            </div>
           </div>
         </div>
       </div>
+
+      {showReviewForm && (
+        <ReviewForm order={currentOrder} onClose={() => setShowReviewForm(false)} />
+      )}
+
+      {showPhotoUpload && (
+        <PhotoReportUpload order={currentOrder} onClose={() => setShowPhotoUpload(false)} />
+      )}
     </div>
   );
 }

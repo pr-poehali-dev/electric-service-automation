@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
+import { ReviewProvider } from "./contexts/ReviewContext";
 import Home from "./pages/Home";
 import Tasks from "./pages/Tasks";
 import Schedule from "./pages/Schedule";
@@ -109,15 +110,17 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <NotificationProvider>
-        <CartProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
-          </TooltipProvider>
-        </CartProvider>
+        <ReviewProvider>
+          <CartProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </TooltipProvider>
+          </CartProvider>
+        </ReviewProvider>
       </NotificationProvider>
     </AuthProvider>
   </QueryClientProvider>

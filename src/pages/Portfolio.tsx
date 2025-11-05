@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { useCart } from '@/contexts/CartContext';
+import { useReviews } from '@/contexts/ReviewContext';
+import ElectricianRatingCard from '@/components/reviews/ElectricianRatingCard';
+import ReviewList from '@/components/reviews/ReviewList';
 
 const PORTFOLIO_ITEMS = [
   {
@@ -58,6 +61,10 @@ const PORTFOLIO_ITEMS = [
 
 export default function Portfolio() {
   const navigate = useNavigate();
+  const { getElectricianRating, reviews } = useReviews();
+  const [selectedTab, setSelectedTab] = useState<'portfolio' | 'reviews'>('portfolio');
+  
+  const electricianRating = getElectricianRating('electrician-1');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-24">
@@ -71,30 +78,61 @@ export default function Portfolio() {
             >
               <Icon name="ArrowLeft" size={24} />
             </Button>
-            <h1 className="text-2xl font-bold flex-1">Портфолио</h1>
+            <h1 className="text-2xl font-bold flex-1">Портфолио и отзывы</h1>
           </div>
         </div>
 
-        <div className="p-6 space-y-4">
-          {PORTFOLIO_ITEMS.map(item => (
-            <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-all">
-              <img 
-                src={item.image}
-                alt={item.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="font-bold text-base mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xl font-bold text-[#FF8C00]">{item.price}</span>
-                  <Button size="sm" onClick={() => navigate('/calculator')}>
-                    Заказать похожее
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
+        <div className="p-6 space-y-6">
+          {electricianRating && (
+            <ElectricianRatingCard rating={electricianRating} />
+          )}
+
+          <div className="flex gap-2 bg-white rounded-lg p-1 shadow-sm">
+            <Button
+              variant={selectedTab === 'portfolio' ? 'default' : 'ghost'}
+              className="flex-1"
+              onClick={() => setSelectedTab('portfolio')}
+            >
+              <Icon name="Image" size={18} className="mr-2" />
+              Работы
+            </Button>
+            <Button
+              variant={selectedTab === 'reviews' ? 'default' : 'ghost'}
+              className="flex-1"
+              onClick={() => setSelectedTab('reviews')}
+            >
+              <Icon name="Star" size={18} className="mr-2" />
+              Отзывы {reviews.length > 0 && `(${reviews.length})`}
+            </Button>
+          </div>
+
+          {selectedTab === 'portfolio' && (
+            <div className="space-y-4">
+              {PORTFOLIO_ITEMS.map(item => (
+                <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-all">
+                  <img 
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-4">
+                    <h3 className="font-bold text-base mb-2">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl font-bold text-[#FF8C00]">{item.price}</span>
+                      <Button size="sm" onClick={() => navigate('/calculator')}>
+                        Заказать похожее
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {selectedTab === 'reviews' && (
+            <ReviewList reviews={reviews} showOrderId={true} />
+          )}
         </div>
       </div>
     </div>
