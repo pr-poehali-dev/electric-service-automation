@@ -51,6 +51,22 @@ export interface CartItem {
 
 export type OrderStatus = 'pending' | 'confirmed' | 'in-progress' | 'completed';
 
+export type PaymentStatus = 'unpaid' | 'partially_paid' | 'paid' | 'refunded' | 'pending';
+
+export type PaymentMethod = 'cash' | 'card' | 'bank_transfer' | 'yookassa' | 'tinkoff' | 'sberbank';
+
+export interface Payment {
+  id: string;
+  amount: number;
+  method: PaymentMethod;
+  status: PaymentStatus;
+  createdAt: number;
+  confirmedAt?: number;
+  externalId?: string;
+  receiptUrl?: string;
+  description?: string;
+}
+
 export interface Order {
   id: string;
   date: string;
@@ -68,6 +84,9 @@ export interface Order {
   assignedTo?: string;
   assignedToName?: string;
   totalAmount?: number;
+  paymentStatus?: PaymentStatus;
+  payments?: Payment[];
+  paidAmount?: number;
 }
 
 export interface PortfolioItem {

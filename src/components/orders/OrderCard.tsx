@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { Order, ElectricalItem } from '@/types/electrical';
+import { Order, ElectricalItem, PaymentStatus } from '@/types/electrical';
 
 interface OrderCardProps {
   order: Order;
@@ -22,6 +22,22 @@ const STATUS_COLORS = {
   'confirmed': 'bg-blue-100 text-blue-800 border-blue-300',
   'in-progress': 'bg-orange-100 text-orange-800 border-orange-300',
   'completed': 'bg-green-100 text-green-800 border-green-300'
+};
+
+const PAYMENT_STATUS_ICONS: Record<PaymentStatus, string> = {
+  'unpaid': 'CircleDollarSign',
+  'partially_paid': 'DollarSign',
+  'paid': 'CheckCircle2',
+  'refunded': 'RotateCcw',
+  'pending': 'Clock'
+};
+
+const PAYMENT_STATUS_COLORS: Record<PaymentStatus, string> = {
+  'unpaid': 'text-red-600',
+  'partially_paid': 'text-yellow-600',
+  'paid': 'text-green-600',
+  'refunded': 'text-gray-600',
+  'pending': 'text-blue-600'
 };
 
 const getServiceTypeLabel = (items: ElectricalItem[]) => {
@@ -68,6 +84,20 @@ const OrderCard = memo(({ order, onViewDetails, onRepeat }: OrderCardProps) => {
         <div className="text-right">
           <p className="text-xl font-bold text-primary">{(order.totalAmount || 0).toLocaleString()} ₽</p>
           <p className="text-xs text-gray-500">{order.items?.length || 0} услуг</p>
+          {order.paymentStatus && (
+            <div className="flex items-center justify-end gap-1 mt-1">
+              <Icon 
+                name={PAYMENT_STATUS_ICONS[order.paymentStatus] as any} 
+                size={12} 
+                className={PAYMENT_STATUS_COLORS[order.paymentStatus]} 
+              />
+              {order.paidAmount !== undefined && order.paidAmount > 0 && (
+                <span className="text-xs text-gray-600">
+                  {order.paidAmount.toLocaleString()} ₽
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

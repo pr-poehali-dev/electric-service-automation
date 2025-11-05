@@ -230,6 +230,13 @@ export default function ServiceContainerCard({
 
       {container.expanded && (
         <div className="px-4 pb-4 space-y-3">
+          {container.productId.includes('wiring-complex') && (
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3">
+              <p className="text-xs text-blue-800">
+                <strong>Электромонтажные работы:</strong> Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки
+              </p>
+            </div>
+          )}
           <div className="bg-gray-50 rounded-xl p-4">
             <div 
               className="flex items-center justify-between cursor-pointer"

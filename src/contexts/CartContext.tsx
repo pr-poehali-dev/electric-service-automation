@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CartItem, Product, Order, calculateTotals, ServiceOption, MASTER_VISIT_ID, PRODUCTS } from '@/types/electrical';
+import { CartItem, Product, Order, calculateTotals, ServiceOption, MASTER_VISIT_ID, PRODUCTS, Payment, PaymentStatus } from '@/types/electrical';
 import { useNotifications } from './NotificationContext';
 
 interface CartContextType {
@@ -14,6 +14,8 @@ interface CartContextType {
   createOrder: (orderData: Omit<Order, 'id' | 'items' | 'createdAt' | 'totalSwitches' | 'totalOutlets' | 'totalPoints' | 'estimatedCable' | 'estimatedFrames'>) => Order;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
   assignExecutor: (orderId: string, electricianId: string, electricianName: string) => void;
+  addPayment: (orderId: string, payment: Omit<Payment, 'id' | 'createdAt'>) => void;
+  updatePaymentStatus: (orderId: string, paymentId: string, status: PaymentStatus) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -279,6 +281,75 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const calculatePaymentStatus = (totalAmount: number, paidAmount: number): PaymentStatus => {
+    if (paidAmount === 0) return 'unpaid';
+    if (paidAmount >= totalAmount) return 'paid';
+    return 'partially_paid';
+  };
+
+  const addPayment = (orderId: string, paymentData: Omit<Payment, 'id' | 'createdAt'>) => {
+    setOrders(prev =>
+      prev.map(order => {
+        if (order.id !== orderId) return order;
+
+        const newPayment: Payment = {
+          ...paymentData,
+          id: `pay-${Date.now()}-${Math.random()}`,
+          createdAt: Date.now(),
+        };
+
+        const payments = [...(order.payments || []), newPayment];
+        const paidAmount = payments
+          .filter(p => p.status === 'paid')
+          .reduce((sum, p) => sum + p.amount, 0);
+        const totalAmount = order.totalAmount || 0;
+        const paymentStatus = calculatePaymentStatus(totalAmount, paidAmount);
+
+        return {
+          ...order,
+          payments,
+          paidAmount,
+          paymentStatus,
+        };
+      })
+    );
+
+    // Отправка уведомления о платеже
+    if (notificationsContext) {
+      notificationsContext.addNotification({
+        type: 'info',
+        orderId: orderId,
+        title: 'Платеж добавлен',
+        message: `Платеж на сумму ${paymentData.amount.toLocaleString()} ₽ добавлен к заявке #${orderId.slice(-6)}`
+      });
+    }
+  };
+
+  const updatePaymentStatus = (orderId: string, paymentId: string, status: PaymentStatus) => {
+    setOrders(prev =>
+      prev.map(order => {
+        if (order.id !== orderId) return order;
+
+        const payments = (order.payments || []).map(p =>
+          p.id === paymentId ? { ...p, status } : p
+        );
+
+        const paidAmount = payments
+          .filter(p => p.status === 'paid')
+          .reduce((sum, p) => sum + p.amount, 0);
+        const totalAmount = order.totalAmount || 0;
+        const paymentStatus = calculatePaymentStatus(totalAmount, paidAmount);
+
+        return {
+          ...order,
+          payments,
+          paidAmount,
+          paymentStatus,
+        };
+      })
+    );
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -292,7 +363,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         orders,
         createOrder,
         updateOrderStatus,
-        assignExecutor
+        assignExecutor,
+        addPayment,
+        updatePaymentStatus
       }}
     >
       {children}

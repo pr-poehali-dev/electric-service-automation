@@ -7,12 +7,14 @@ import Icon from '@/components/ui/icon';
 import { Order, ElectricalItem } from '@/types/electrical';
 import OrderStatusManager from './OrderStatusManager';
 import AssignExecutorSelector from './AssignExecutorSelector';
+import PaymentManager from '@/components/payments/PaymentManager';
 import ReviewForm from '@/components/reviews/ReviewForm';
 import ReviewList from '@/components/reviews/ReviewList';
 import PhotoReportUpload from '@/components/reviews/PhotoReportUpload';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useReviews } from '@/contexts/ReviewContext';
+import { useCart } from '@/contexts/CartContext';
 import {
   Accordion,
   AccordionContent,
@@ -46,6 +48,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
   const { getOrderReviews, getOrderPhotoReports } = useReviews();
+  const { addPayment, updatePaymentStatus } = useCart();
   const [isEditing, setIsEditing] = useState(false);
   const [editedOrder, setEditedOrder] = useState<Order>(order);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -145,6 +148,12 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
               )}
             </Card>
           )}
+
+          <PaymentManager
+            order={currentOrder}
+            onAddPayment={addPayment}
+            onUpdatePaymentStatus={updatePaymentStatus}
+          />
           
           <Card className="p-6 animate-fadeIn">
             <h2 className="font-bold text-lg mb-4 flex items-center gap-2">

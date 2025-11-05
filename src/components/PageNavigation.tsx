@@ -33,9 +33,9 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
           variant="ghost"
           className="h-10 text-sm px-3 relative"
           onClick={() => navigate('/cart')}
-          title="Список задач"
+          title="Услуги электрика"
         >
-          Список задач
+          Услуги электрика
           {cartCount > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {cartCount}
