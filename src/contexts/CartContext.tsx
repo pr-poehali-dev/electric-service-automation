@@ -13,6 +13,7 @@ interface CartContextType {
   orders: Order[];
   createOrder: (orderData: Omit<Order, 'id' | 'items' | 'createdAt' | 'totalSwitches' | 'totalOutlets' | 'totalPoints' | 'estimatedCable' | 'estimatedFrames'>) => Order;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
+  assignExecutor: (orderId: string, electricianId: string, electricianName: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -252,6 +253,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const assignExecutor = (orderId: string, electricianId: string, electricianName: string) => {
+    setOrders(prev =>
+      prev.map(order =>
+        order.id === orderId 
+          ? { ...order, assignedTo: electricianId, assignedToName: electricianName } 
+          : order
+      )
+    );
+    
+    // Отправка уведомления о назначении исполнителя
+    if (notificationsContext && electricianId) {
+      notificationsContext.addNotification({
+        type: 'info',
+        orderId: orderId,
+        title: 'Исполнитель назначен',
+        message: `На заявку #${orderId.slice(-6)} назначен мастер: ${electricianName}`
+      });
+    }
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -264,7 +285,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         orders,
         createOrder,
-        updateOrderStatus
+        updateOrderStatus,
+        assignExecutor
       }}
     >
       {children}

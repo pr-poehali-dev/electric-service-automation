@@ -65,6 +65,9 @@ export interface Order {
   estimatedCable: number;
   estimatedFrames: number;
   createdAt: number;
+  assignedTo?: string;
+  assignedToName?: string;
+  totalAmount?: number;
 }
 
 export interface PortfolioItem {

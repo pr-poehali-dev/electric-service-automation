@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
 import { Order, ElectricalItem } from '@/types/electrical';
 import OrderStatusManager from './OrderStatusManager';
+import AssignExecutorSelector from './AssignExecutorSelector';
 import ReviewForm from '@/components/reviews/ReviewForm';
 import ReviewList from '@/components/reviews/ReviewList';
 import PhotoReportUpload from '@/components/reviews/PhotoReportUpload';
@@ -24,6 +25,7 @@ interface OrderDetailModalProps {
   onClose: () => void;
   onStatusChange: (orderId: string, newStatus: Order['status']) => void;
   onRepeatOrder: (order: Order) => void;
+  onAssignExecutor?: (orderId: string, electricianId: string, electricianName: string) => void;
 }
 
 const STATUS_LABELS = {
@@ -40,7 +42,7 @@ const STATUS_COLORS = {
   'completed': 'bg-green-100 text-green-800 border-green-300'
 };
 
-export default function OrderDetailModal({ order, onClose, onStatusChange, onRepeatOrder }: OrderDetailModalProps) {
+export default function OrderDetailModal({ order, onClose, onStatusChange, onRepeatOrder, onAssignExecutor }: OrderDetailModalProps) {
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
   const { getOrderReviews, getOrderPhotoReports } = useReviews();
@@ -129,10 +131,19 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
 
         <div className="p-6 space-y-6">
           {isAuthenticated && permissions.canEditOrders && (
-            <OrderStatusManager 
-              order={currentOrder} 
-              onStatusChange={onStatusChange} 
-            />
+            <Card className="p-4 space-y-4 animate-fadeIn bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+              <OrderStatusManager 
+                order={currentOrder} 
+                onStatusChange={onStatusChange} 
+              />
+              
+              {onAssignExecutor && (
+                <AssignExecutorSelector
+                  order={currentOrder}
+                  onAssign={onAssignExecutor}
+                />
+              )}
+            </Card>
           )}
           
           <Card className="p-6 animate-fadeIn">

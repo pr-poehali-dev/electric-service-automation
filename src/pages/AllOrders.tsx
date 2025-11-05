@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
-import { Order } from '@/types/electrical';
+import { Order, ElectricalItem } from '@/types/electrical';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import ContactModal from '@/components/ContactModal';
+import OrderDetailModal from '@/components/orders/OrderDetailModal';
 import RoleGate from '@/components/auth/RoleGate';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -25,12 +26,28 @@ const STATUS_COLORS = {
   'completed': 'bg-green-100 text-green-800'
 };
 
+const getServiceTypeLabel = (items: ElectricalItem[]) => {
+  const hasInstallation = items.some(item => 
+    item.category === 'установка' || 
+    item.category === 'монтаж розеток и выключателей'
+  );
+  const hasWiring = items.some(item => item.category === 'проводка и кабели');
+  const hasLighting = items.some(item => item.category === 'освещение');
+  
+  if (hasInstallation && hasWiring) return 'Комплексная установка';
+  if (hasInstallation) return 'Установка оборудования';
+  if (hasWiring) return 'Прокладка кабелей';
+  if (hasLighting) return 'Освещение';
+  return 'Электромонтаж';
+};
+
 export default function AllOrders() {
   const navigate = useNavigate();
-  const { orders, updateOrderStatus } = useCart();
+  const { orders, updateOrderStatus, assignExecutor, addToCart, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
   const [showContactModal, setShowContactModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState<Order['status'] | 'all'>('all');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   if (!isAuthenticated) {
     return (
@@ -109,7 +126,11 @@ export default function AllOrders() {
             ) : (
               <div className="space-y-4">
                 {filteredOrders.map((order) => (
-                  <Card key={order.id} className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                  <Card 
+                    key={order.id} 
+                    className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                    onClick={() => setSelectedOrder(order)}
+                  >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
@@ -118,7 +139,8 @@ export default function AllOrders() {
                             {STATUS_LABELS[order.status]}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 mb-2">{getServiceTypeLabel(order.items)}</p>
+                        <p className="text-sm text-gray-500">
                           {new Date(order.createdAt).toLocaleDateString('ru-RU', {
                             day: 'numeric',
                             month: 'long',
@@ -127,14 +149,17 @@ export default function AllOrders() {
                             minute: '2-digit'
                           })}
                         </p>
+                        {order.assignedToName && (
+                          <div className="flex items-center gap-1 mt-2 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-lg w-fit">
+                            <Icon name="User" size={12} />
+                            <span>Исполнитель: {order.assignedToName}</span>
+                          </div>
+                        )}
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => navigate('/orders', { state: { newOrderId: order.id } })}
-                      >
-                        Подробнее
-                      </Button>
+                      <div className="text-right">
+                        <p className="text-xl font-bold text-primary">{(order.totalAmount || 0).toLocaleString()} ₽</p>
+                        <p className="text-xs text-gray-500">{order.items?.length || 0} услуг</p>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
@@ -205,6 +230,20 @@ export default function AllOrders() {
         </div>
 
         <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
+        
+        {selectedOrder && (
+          <OrderDetailModal
+            order={selectedOrder}
+            onClose={() => setSelectedOrder(null)}
+            onStatusChange={updateOrderStatus}
+            onRepeatOrder={(order) => {
+              clearCart();
+              order.items.forEach(item => addToCart(item.product, item.quantity));
+              navigate('/cart');
+            }}
+            onAssignExecutor={assignExecutor}
+          />
+        )}
       </div>
     </RoleGate>
   );

@@ -50,7 +50,7 @@ const getServiceTypeLabel = (items: ElectricalItem[]) => {
 export default function Orders() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { orders, clearCart, updateOrderStatus, addToCart } = useCart();
+  const { orders, clearCart, updateOrderStatus, addToCart, assignExecutor } = useCart();
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -242,6 +242,12 @@ export default function Orders() {
                       year: 'numeric'
                     })}
                   </p>
+                  {order.assignedToName && (
+                    <div className="flex items-center gap-1 mt-2 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-lg w-fit">
+                      <Icon name="User" size={12} />
+                      <span>{order.assignedToName}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-right">
                   <p className="text-xl font-bold text-primary">{(order.totalAmount || 0).toLocaleString()} ₽</p>
@@ -301,6 +307,7 @@ export default function Orders() {
           onClose={() => setSelectedOrder(null)}
           onStatusChange={updateOrderStatus}
           onRepeatOrder={handleRepeatOrder}
+          onAssignExecutor={assignExecutor}
         />
       )}
     </div>
