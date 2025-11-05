@@ -344,14 +344,14 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
                             <>
                               <p className="font-medium text-gray-900">{item.name}</p>
                               <p className="text-sm text-gray-600">
-                                {item.quantity} {item.unit} × {item.price.toLocaleString()} ₽
+                                {item.quantity} {item.unit} × {(item.price || 0).toLocaleString()} ₽
                               </p>
                             </>
                           )}
                         </div>
                         <div className="text-right ml-3">
                           <p className="font-bold text-primary">
-                            {(item.price * item.quantity).toLocaleString()} ₽
+                            {((item.price || 0) * (item.quantity || 0)).toLocaleString()} ₽
                           </p>
                         </div>
                       </div>
@@ -366,7 +366,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Итоговая сумма</p>
-                <p className="text-3xl font-bold text-primary">{currentOrder.totalAmount.toLocaleString()} ₽</p>
+                <p className="text-3xl font-bold text-primary">{(currentOrder.totalAmount || 0).toLocaleString()} ₽</p>
               </div>
               <Icon name="Wallet" size={40} className="text-primary opacity-20" />
             </div>

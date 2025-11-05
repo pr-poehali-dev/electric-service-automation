@@ -87,6 +87,8 @@ export default function Orders() {
   }, [location.state, orders]);
 
   const filteredOrders = orders.filter(order => {
+    if (!order || !order.items) return false;
+    
     if (statusFilter !== 'all' && order.status !== statusFilter) return false;
     
     if (serviceTypeFilter !== 'all') {
@@ -101,7 +103,7 @@ export default function Orders() {
     
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      const matchesId = order.id.toLowerCase().includes(query);
+      const matchesId = order.id?.toLowerCase().includes(query);
       const matchesAddress = order.address?.toLowerCase().includes(query);
       const matchesPhone = order.phone?.toLowerCase().includes(query);
       if (!matchesId && !matchesAddress && !matchesPhone) return false;
@@ -242,8 +244,8 @@ export default function Orders() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-primary">{order.totalAmount.toLocaleString()} ₽</p>
-                  <p className="text-xs text-gray-500">{order.items.length} услуг</p>
+                  <p className="text-xl font-bold text-primary">{(order.totalAmount || 0).toLocaleString()} ₽</p>
+                  <p className="text-xs text-gray-500">{order.items?.length || 0} услуг</p>
                 </div>
               </div>
 
