@@ -1,10 +1,13 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-interface User {
-  id: number;
+export type UserRole = 'client' | 'electrician' | 'admin';
+
+export interface User {
+  id: string;
   phone: string;
   name: string;
-  role: 'client' | 'executor' | 'admin' | 'owner';
+  role: UserRole;
+  createdAt: string;
   avatar?: string;
 }
 
@@ -29,24 +32,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (phone: string, password: string): Promise<boolean> => {
-    const mockUser: User = {
-      id: 1,
-      phone,
-      name: phone === '+79991234567' ? 'Алексей Иванов' : 'Пользователь',
-      role: phone === '+79999999999' ? 'admin' : phone === '+79991234567' ? 'executor' : 'client'
-    };
+    const cleanPhone = phone.replace(/\D/g, '');
     
-    setUser(mockUser);
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    return true;
+    const mockUsers = [
+      { phone: '89000000001', name: 'Иван Иванов', role: 'client' as UserRole, password: '1234' },
+      { phone: '89000000002', name: 'Петр Электрик', role: 'electrician' as UserRole, password: '1234' },
+      { phone: '89000000003', name: 'Админ', role: 'admin' as UserRole, password: '1234' }
+    ];
+    
+    const foundUser = mockUsers.find(u => u.phone === cleanPhone && u.password === password);
+    
+    if (foundUser) {
+      const mockUser: User = {
+        id: Date.now().toString(),
+        phone: foundUser.phone,
+        name: foundUser.name,
+        role: foundUser.role,
+        createdAt: new Date().toISOString()
+      };
+      
+      setUser(mockUser);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      return true;
+    }
+    
+    return false;
   };
 
   const register = async (phone: string, password: string, name: string, role: string): Promise<boolean> => {
+    const cleanPhone = phone.replace(/\D/g, '');
+    
     const newUser: User = {
-      id: Date.now(),
-      phone,
+      id: Date.now().toString(),
+      phone: cleanPhone,
       name,
-      role: role as any
+      role: (role as UserRole) || 'client',
+      createdAt: new Date().toISOString()
     };
     
     setUser(newUser);

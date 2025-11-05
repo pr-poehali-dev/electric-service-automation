@@ -38,15 +38,14 @@ export default function Products() {
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
         <div className="p-6 space-y-6">
-          <div className="text-center md:text-left">
+          <div className="text-left">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Услуги электрика ³⁹ ⚡️</h2>
-            <p className="text-gray-600 md:text-lg">Выберите необходимые услуги и добавьте их в список задач</p>
           </div>
 
           <div className="space-y-8">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">Быстрые услуги</h3>
+                <h3 className="text-lg font-semibold text-gray-700 mb-3 hidden">Быстрые услуги</h3>
                 {servicesContainers.map((container) => {
                   const actualIndex = containers.findIndex(c => c.productId === container.productId);
                   return (
@@ -65,7 +64,8 @@ export default function Products() {
               </div>
                 
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">Электромонтажные работы</h3>
+                <h3 className="text-lg font-semibold text-gray-700 mb-3 hidden">Электромонтажные работы</h3>
+                <p className="text-sm text-gray-600 mb-3">Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки</p>
                 {wiringContainers.map((container) => {
                   const actualIndex = containers.findIndex(c => c.productId === container.productId);
                   return (

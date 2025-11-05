@@ -27,6 +27,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import CheckoutPage from "./pages/CheckoutPage";
 import Orders from "./pages/Orders";
+import AllOrders from "./pages/AllOrders";
 import Portfolio from "./pages/Portfolio";
 import Profile from "./pages/Profile";
 import Services from "./pages/Services";
@@ -57,6 +58,7 @@ const AppRoutes = () => {
       <Route path="/portfolio" element={<Portfolio />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/orders" element={<Orders />} />
+      <Route path="/all-orders" element={<AllOrders />} />
       <Route path="/old-home" element={<Home />} />
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/schedule" element={<Schedule />} />

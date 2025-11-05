@@ -1,6 +1,8 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { usePermissions } from '@/hooks/usePermissions';
 import Icon from '@/components/ui/icon';
 
 interface PageNavigationProps {
@@ -9,8 +11,12 @@ interface PageNavigationProps {
 
 export default function PageNavigation({ onContactClick }: PageNavigationProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { cart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const permissions = usePermissions();
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const isCheckoutPage = location.pathname === '/checkout';
 
   return (
     <div className="bg-white shadow-lg p-4 flex items-center justify-between">
@@ -36,7 +42,7 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
             </span>
           )}
         </Button>
-        {cartCount > 0 && (
+        {cartCount > 0 && !isCheckoutPage && (
           <Button 
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold"
@@ -48,6 +54,16 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         )}
       </div>
       <div className="flex items-center gap-3">
+        {isAuthenticated && permissions.canViewAllOrders && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => navigate('/all-orders')}
+            title="Все заявки"
+          >
+            <Icon name="ClipboardList" size={20} />
+          </Button>
+        )}
         <Button 
           variant="ghost" 
           size="icon" 

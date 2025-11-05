@@ -11,6 +11,9 @@ import CalculatorModal from '@/components/CalculatorModal';
 import BottomMenu from '@/components/BottomMenu';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
+import OrderStatusManager from '@/components/orders/OrderStatusManager';
+import { useAuth } from '@/contexts/AuthContext';
+import { usePermissions } from '@/hooks/usePermissions';
 import {
   Accordion,
   AccordionContent,
@@ -35,7 +38,9 @@ const STATUS_COLORS = {
 export default function Orders() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { orders, clearCart } = useCart();
+  const { orders, clearCart, updateOrderStatus } = useCart();
+  const { isAuthenticated } = useAuth();
+  const permissions = usePermissions();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
@@ -92,6 +97,13 @@ export default function Orders() {
           </div>
 
           <div className="p-6 space-y-6">
+            {isAuthenticated && permissions.canEditOrders && (
+              <OrderStatusManager 
+                order={selectedOrder} 
+                onStatusChange={updateOrderStatus} 
+              />
+            )}
+            
             <Card className="p-6 animate-fadeIn">
               <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <Icon name="Activity" size={20} className="text-primary" />

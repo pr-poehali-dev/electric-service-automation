@@ -165,8 +165,8 @@ export default function CheckoutPage() {
               {cableMeters > 0 && (
                 <>
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>~ метраж кабеля:</span>
-                    <span className="font-semibold">{cableMeters} м</span>
+                    <span>Расход силового кабеля:</span>
+                    <span className="font-semibold">~{cableMeters} м</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Стоимость монтажа кабеля:</span>
