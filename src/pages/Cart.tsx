@@ -153,7 +153,7 @@ export default function Cart() {
                                 <div key={option.id} className="flex items-center gap-2">
                                   <Checkbox
                                     id={`${item.product.id}-${option.id}`}
-                                    checked={item.additionalOptions?.includes(option.id)}
+                                    checked={item.additionalOptions?.includes(option.id) || false}
                                     onCheckedChange={() => toggleAdditionalOption(item.product.id, option.id)}
                                   />
                                   <label htmlFor={`${item.product.id}-${option.id}`} className="text-xs cursor-pointer">
@@ -168,7 +168,7 @@ export default function Cart() {
                               <div className="flex items-center gap-2">
                                 <Checkbox
                                   id={`${item.product.id}-install-blocks`}
-                                  checked={item.additionalOptions?.includes('install-blocks')}
+                                  checked={item.additionalOptions?.includes('install-blocks') || false}
                                   onCheckedChange={() => toggleAdditionalOption(item.product.id, 'install-blocks')}
                                 />
                                 <label htmlFor={`${item.product.id}-install-blocks`} className="text-xs cursor-pointer">
