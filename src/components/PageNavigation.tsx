@@ -67,14 +67,6 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => window.open('https://baltset.ru/rating/', '_blank')}
-          title="Отзывы"
-        >
-          <Icon name="Star" size={20} />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
           onClick={onContactClick}
           title="Связаться с нами"
         >
