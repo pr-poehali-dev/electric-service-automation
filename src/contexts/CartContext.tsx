@@ -232,6 +232,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setOrders(prev => [newOrder, ...prev]);
     clearCart();
     
+    fetch('https://functions.poehali.dev/fa59900f-ff39-40ef-99de-7d268159765e', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newOrder)
+    }).catch(err => console.error('Planfix sync failed:', err));
+    
     if (notificationsContext) {
       notificationsContext.addNotification({
         type: 'new_order',

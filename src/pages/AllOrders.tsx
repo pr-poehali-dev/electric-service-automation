@@ -163,21 +163,6 @@ export default function AllOrders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
   
-  useGoogleAutoSync(orders);
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-6">
-        <Card className="p-8 text-center">
-          <Icon name="Lock" size={48} className="mx-auto mb-4 text-gray-400" />
-          <h2 className="text-2xl font-bold mb-2">Доступ ограничен</h2>
-          <p className="text-gray-600 mb-4">Для просмотра всех заказов необходимо войти в систему</p>
-          <Button onClick={() => navigate('/')}>На главную</Button>
-        </Card>
-      </div>
-    );
-  }
-
   const filteredOrders = useMemo(() => {
     let filtered = orders;
     
@@ -200,6 +185,21 @@ export default function AllOrders() {
     estimateSize: () => 240,
     overscan: 3,
   });
+  
+  useGoogleAutoSync(orders);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-6">
+        <Card className="p-8 text-center">
+          <Icon name="Lock" size={48} className="mx-auto mb-4 text-gray-400" />
+          <h2 className="text-2xl font-bold mb-2">Доступ ограничен</h2>
+          <p className="text-gray-600 mb-4">Для просмотра всех заказов необходимо войти в систему</p>
+          <Button onClick={() => navigate('/')}>На главную</Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <RoleGate 
