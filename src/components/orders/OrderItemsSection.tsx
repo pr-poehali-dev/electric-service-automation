@@ -11,6 +11,9 @@ interface OrderItemsSectionProps {
 }
 
 export default function OrderItemsSection({ items, totalAmount, isEditing, onItemEdit }: OrderItemsSectionProps) {
+  const safeItems = items || [];
+  const safeTotalAmount = totalAmount || 0;
+
   return (
     <Card className="p-6 animate-fadeIn">
       <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
@@ -18,7 +21,12 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
         Состав заявки
       </h2>
       <div className="space-y-3">
-        {items.map((item, index) => (
+        {safeItems.map((item, index) => {
+          const itemPrice = item.price || 0;
+          const itemQuantity = item.quantity || 1;
+          const itemTotal = itemPrice * itemQuantity;
+
+          return (
           <div key={index} className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-all">
             <div className="flex justify-between items-start mb-2">
               {isEditing ? (
@@ -38,7 +46,7 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
                   className="w-32 font-medium"
                 />
               ) : (
-                <span className="font-bold text-primary whitespace-nowrap ml-2">{item.price.toLocaleString()} ₽</span>
+                <span className="font-bold text-primary whitespace-nowrap ml-2">{itemPrice.toLocaleString()} ₽</span>
               )}
             </div>
             
@@ -70,16 +78,17 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
                 )}
               </div>
               <div className="font-bold text-gray-800 bg-white px-3 py-1 rounded-full shadow-sm">
-                {(item.price * item.quantity).toLocaleString()} ₽
+                {itemTotal.toLocaleString()} ₽
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
         
         <div className="border-t-2 pt-4 mt-4">
           <div className="flex justify-between items-center text-lg">
             <span className="font-bold text-gray-800">Итого:</span>
-            <span className="font-bold text-2xl text-primary">{totalAmount.toLocaleString()} ₽</span>
+            <span className="font-bold text-2xl text-primary">{safeTotalAmount.toLocaleString()} ₽</span>
           </div>
         </div>
       </div>
