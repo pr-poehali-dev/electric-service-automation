@@ -59,7 +59,6 @@ const AllOrderCard = memo(({ order, onViewDetails, updateOrderStatus }: { order:
               {STATUS_LABELS[order.status]}
             </span>
           </div>
-          <p className="text-sm text-gray-600 mb-2 font-medium">{getServiceTypeLabel(order.items)}</p>
           <div className="flex items-center gap-1 text-sm text-gray-500">
             <Icon name="Clock" size={14} />
             <span>
@@ -106,47 +105,7 @@ const AllOrderCard = memo(({ order, onViewDetails, updateOrderStatus }: { order:
         </div>
       </div>
 
-      <div className="flex gap-2">
-        {order.status === 'pending' && (
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              updateOrderStatus(order.id, 'confirmed');
-            }}
-          >
-            <Icon name="CheckCircle" size={18} className="mr-2" />
-            Подтвердить
-          </Button>
-        )}
-        {order.status === 'confirmed' && (
-          <Button
-            size="lg"
-            className="w-full bg-orange-600 hover:bg-orange-700"
-            onClick={(e) => {
-              e.stopPropagation();
-              updateOrderStatus(order.id, 'in-progress');
-            }}
-          >
-            <Icon name="Wrench" size={18} className="mr-2" />
-            В работу
-          </Button>
-        )}
-        {order.status === 'in-progress' && (
-          <Button
-            size="lg"
-            className="w-full bg-green-600 hover:bg-green-700"
-            onClick={(e) => {
-              e.stopPropagation();
-              updateOrderStatus(order.id, 'completed');
-            }}
-          >
-            <Icon name="CheckCircle2" size={18} className="mr-2" />
-            Завершить
-          </Button>
-        )}
-      </div>
+
     </Card>
   );
 });
@@ -224,9 +183,8 @@ export default function AllOrders() {
           <div className="p-6 space-y-6">
             <div className="text-center mb-6">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-2">
-                Все заявки
+                Свободные заявки
               </h1>
-              <p className="text-gray-600">Управление заявками на электромонтажные работы</p>
             </div>
 
             <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as Order['status'] | 'all')} className="w-full">

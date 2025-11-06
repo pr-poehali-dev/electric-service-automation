@@ -44,7 +44,7 @@ export function getInitialContainers(): ServiceContainer[] {
     },
     {
       productId: 'wiring-complex',
-      productName: 'Ремонт квартиры в Калининграде',
+      productName: 'Электрика для квартиры',
       productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, комплексные работы электрика',
       category: 'outlet',
       sectionCategory: 'wiring',
