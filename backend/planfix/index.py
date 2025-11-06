@@ -1,8 +1,12 @@
 '''
-Business: Интеграция с Планфикс для синхронизации заявок
-Args: event - dict с httpMethod, body (JSON с данными заявки)
+Business: Интеграция с Планфикс для двусторонней синхронизации заявок
+Args: event - dict с httpMethod, body, queryStringParameters
       context - object с request_id
-Returns: HTTP response с результатом создания/обновления задачи в Планфикс
+Returns: HTTP response с результатом создания задачи или обработки webhook
+
+Два режима работы:
+1. POST / - создание задачи в Планфиксе из заявки (отправка)
+2. POST /?webhook=true - получение обновлений из Планфикса (webhook)
 
 Требования к настройке:
 1. Создайте API ключ в Планфиксе: Настройки → API → Создать ключ
@@ -10,11 +14,13 @@ Returns: HTTP response с результатом создания/обновле
 3. Добавьте секреты в проекте:
    - PLANFIX_API_KEY: ваш API ключ из Планфикса
    - PLANFIX_ACCOUNT: название аккаунта (например, "konigkomfort" для konigkomfort.planfix.ru)
+   - DATABASE_URL: строка подключения к PostgreSQL
 '''
 
 import json
 import os
 import requests
+import re
 from typing import Dict, Any
 from pydantic import BaseModel, Field
 
@@ -31,6 +37,8 @@ class OrderData(BaseModel):
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
+    query_params = event.get('queryStringParameters', {}) or {}
+    is_webhook = query_params.get('webhook') == 'true'
     
     if method == 'OPTIONS':
         return {
@@ -38,7 +46,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'headers': {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Headers': 'Content-Type, X-Planfix-Signature',
                 'Access-Control-Max-Age': '86400'
             },
             'body': '',
@@ -52,6 +60,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': json.dumps({'error': 'Method not allowed'}),
             'isBase64Encoded': False
         }
+    
+    if is_webhook:
+        return handle_webhook(event, context)
     
     api_key = os.environ.get('PLANFIX_API_KEY')
     account = os.environ.get('PLANFIX_ACCOUNT')
@@ -165,3 +176,57 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': json.dumps({'error': f'Ошибка запроса к Планфикс: {str(e)}'}),
             'isBase64Encoded': False
         }
+
+def handle_webhook(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    try:
+        body_data = json.loads(event.get('body', '{}'))
+        
+        webhook_event = body_data.get('event')
+        task = body_data.get('task', {})
+        task_id = task.get('id')
+        task_status_name = task.get('status', {}).get('name', '')
+        task_title = task.get('title', '')
+        
+        if not webhook_event or not task_id:
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True, 'message': 'Webhook accepted but no action needed'}),
+                'isBase64Encoded': False
+            }
+        
+        order_id = extract_order_id(task_title)
+        if not order_id:
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True, 'message': 'Not an order task, skipped'}),
+                'isBase64Encoded': False
+            }
+        
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({
+                'success': True,
+                'message': 'Webhook received',
+                'order_id': order_id,
+                'task_id': task_id,
+                'planfix_status': task_status_name,
+                'info': 'Database sync не реализована - заявки хранятся в localStorage'
+            }),
+            'isBase64Encoded': False
+        }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'error': f'Error processing webhook: {str(e)}'}),
+            'isBase64Encoded': False
+        }
+
+def extract_order_id(title: str) -> str:
+    match = re.search(r'Заявка #([A-Z]+-\d+)', title)
+    if match:
+        return match.group(1)
+    return ''
