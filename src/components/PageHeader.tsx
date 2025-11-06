@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,6 +11,7 @@ interface PageHeaderProps {
 
 export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4b78877a-e24a-4720-b420-fafa87d6a759.jpg' }: PageHeaderProps) {
   const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const getRoleBadge = (role: string) => {
@@ -19,6 +21,16 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
       admin: { text: 'Администратор', color: 'bg-purple-100 text-purple-700' }
     };
     return badges[role as keyof typeof badges] || badges.client;
+  };
+
+  const handleProfileClick = () => {
+    if (user?.role === 'electrician') {
+      navigate('/executor-profile-settings');
+    } else if (user?.role === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/profile');
+    }
   };
 
   return (
@@ -33,7 +45,11 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
         <div className="absolute top-4 right-4">
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
-              <div className="flex items-center gap-2">
+              <button 
+                onClick={handleProfileClick}
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                title="Перейти в личный кабинет"
+              >
                 <Icon name="User" size={18} className="text-gray-600" />
                 <div>
                   <div className="text-sm font-semibold">{user.name}</div>
@@ -41,7 +57,7 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
                     {getRoleBadge(user.role).text}
                   </div>
                 </div>
-              </div>
+              </button>
               <Button
                 size="sm"
                 variant="ghost"
