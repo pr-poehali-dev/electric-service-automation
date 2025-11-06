@@ -47,12 +47,15 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
             <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
               <button 
                 onClick={handleProfileClick}
-                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                className="flex items-center gap-2 hover:bg-gray-50 rounded-md px-2 py-1 -mx-2 -my-1 transition-colors group"
                 title="Перейти в личный кабинет"
               >
-                <Icon name="User" size={18} className="text-gray-600" />
+                <div className="relative">
+                  <Icon name="User" size={18} className="text-gray-600 group-hover:text-primary transition-colors" />
+                  <Icon name="ChevronRight" size={12} className="absolute -right-1 -bottom-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
                 <div>
-                  <div className="text-sm font-semibold">{user.name}</div>
+                  <div className="text-sm font-semibold group-hover:text-primary transition-colors">{user.name}</div>
                   <div className={`text-xs px-2 py-0.5 rounded ${getRoleBadge(user.role).color}`}>
                     {getRoleBadge(user.role).text}
                   </div>

@@ -70,14 +70,25 @@ export default function ExecutorProfileSettings() {
   const isPro = executorProfile.isPro;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <PageHeader title="Профиль исполнителя" showBackButton />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      <PageHeader />
 
       <div className="max-w-2xl mx-auto p-4 space-y-4">
+        <div className="flex items-center gap-3 mb-4">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate('/orders')}
+            className="-ml-2"
+          >
+            <Icon name="ArrowLeft" className="h-4 w-4 mr-1" />
+            Назад
+          </Button>
+          <h1 className="text-2xl font-bold text-gray-900">Настройки профиля</h1>
+        </div>
         <ExecutorStatsCard profile={executorProfile} />
 
-        {/* Статус "Профи" */}
-        <Card className="p-6">
+        <Card className="p-6 border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-white">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-lg font-bold text-gray-900">Статус "Профи"</h3>
@@ -85,16 +96,23 @@ export default function ExecutorProfileSettings() {
                 Подтвердите документы для получения 50% от электромонтажных работ
               </p>
             </div>
-            {isPro && (
-              <div className="bg-purple-100 border border-purple-300 px-4 py-2 rounded-full">
-                <span className="text-sm font-bold text-purple-700">⭐ ПРОФИ</span>
+            {isPro ? (
+              <div className="bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 rounded-full shadow-lg">
+                <span className="text-sm font-bold text-white flex items-center gap-1">
+                  <Icon name="Award" className="h-4 w-4" />
+                  ПРОФИ
+                </span>
+              </div>
+            ) : (
+              <div className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full">
+                <span className="text-sm font-medium text-gray-600">Стандарт</span>
               </div>
             )}
           </div>
 
           <div className="space-y-4">
             {/* Диплом */}
-            <div className="border border-gray-200 rounded-lg p-4">
+            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-colors bg-white">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Switch checked={hasDiploma} onCheckedChange={setHasDiploma} />
@@ -132,7 +150,7 @@ export default function ExecutorProfileSettings() {
             </div>
 
             {/* Автомобиль */}
-            <div className="border border-gray-200 rounded-lg p-4">
+            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors bg-white">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Switch checked={hasCar} onCheckedChange={setHasCar} />
@@ -170,7 +188,7 @@ export default function ExecutorProfileSettings() {
             </div>
 
             {/* Инструменты */}
-            <div className="border border-gray-200 rounded-lg p-4">
+            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-green-300 transition-colors bg-white">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Switch checked={hasTools} onCheckedChange={setHasTools} />
@@ -208,7 +226,7 @@ export default function ExecutorProfileSettings() {
             </div>
 
             {/* Активность */}
-            <div className="border border-gray-200 rounded-lg p-4">
+            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-amber-300 transition-colors bg-white">
               <div className="flex items-center gap-2">
                 <Switch checked={isActive} onCheckedChange={setIsActive} />
                 <Label className="text-sm font-medium">
@@ -223,7 +241,7 @@ export default function ExecutorProfileSettings() {
         </Card>
 
         {/* Информация о комиссиях */}
-        <Card className="p-6 bg-blue-50 border-blue-200">
+        <Card className="p-6 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
           <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
             <Icon name="Info" className="h-5 w-5" />
             Ваша комиссия
@@ -250,12 +268,22 @@ export default function ExecutorProfileSettings() {
           )}
         </Card>
 
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate('/orders')} className="flex-1">
-            Отмена
+        <div className="space-y-3">
+          <Button 
+            onClick={handleSave} 
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg" 
+            size="lg"
+          >
+            <Icon name="Save" className="mr-2" />
+            Сохранить изменения
           </Button>
-          <Button onClick={handleSave} className="flex-1">
-            Сохранить
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/orders')} 
+            className="w-full border-2 hover:bg-gray-50"
+            size="lg"
+          >
+            Отмена
           </Button>
         </div>
       </div>

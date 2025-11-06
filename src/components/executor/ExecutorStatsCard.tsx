@@ -31,8 +31,11 @@ export default function ExecutorStatsCard({ profile }: ExecutorStatsCardProps) {
             </div>
           </div>
           {profile.isPro && (
-            <div className="bg-purple-100 border border-purple-300 px-3 py-1 rounded-full">
-              <span className="text-xs font-bold text-purple-700">⭐ ПРОФИ</span>
+            <div className="bg-gradient-to-r from-purple-500 to-indigo-500 px-3 py-1.5 rounded-full shadow-md animate-pulse">
+              <span className="text-xs font-bold text-white flex items-center gap-1">
+                <Icon name="Award" className="h-3 w-3" />
+                ПРОФИ
+              </span>
             </div>
           )}
         </div>
