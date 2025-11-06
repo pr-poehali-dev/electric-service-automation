@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
 import { Order, ElectricalItem } from '@/types/electrical';
@@ -47,96 +48,101 @@ const getServiceTypeLabel = (items: ElectricalItem[]) => {
 const AllOrderCard = memo(({ order, onViewDetails, updateOrderStatus }: { order: Order; onViewDetails: (order: Order) => void; updateOrderStatus: (orderId: string, status: Order['status']) => void }) => {
   return (
     <Card 
-      className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
+      className="p-6 hover:shadow-xl transition-all duration-300 cursor-pointer border-l-4 border-l-primary shadow-md"
       onClick={() => onViewDetails(order)}
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-lg font-bold">Заявка #{order.id.slice(-6)}</h3>
-            <span className={`text-xs px-3 py-1 rounded-full ${STATUS_COLORS[order.status]}`}>
+            <h3 className="text-lg font-bold text-gray-800">Заявка #{order.id.slice(-6)}</h3>
+            <span className={`text-xs px-3 py-1 rounded-full font-medium ${STATUS_COLORS[order.status]}`}>
               {STATUS_LABELS[order.status]}
             </span>
           </div>
-          <p className="text-sm text-gray-600 mb-2">{getServiceTypeLabel(order.items)}</p>
-          <p className="text-sm text-gray-500">
-            {new Date(order.createdAt).toLocaleDateString('ru-RU', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
-          </p>
+          <p className="text-sm text-gray-600 mb-2 font-medium">{getServiceTypeLabel(order.items)}</p>
+          <div className="flex items-center gap-1 text-sm text-gray-500">
+            <Icon name="Clock" size={14} />
+            <span>
+              {new Date(order.createdAt).toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </span>
+          </div>
           {order.assignedToName && (
-            <div className="flex items-center gap-1 mt-2 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-lg w-fit">
-              <Icon name="User" size={12} />
-              <span>Исполнитель: {order.assignedToName}</span>
+            <div className="flex items-center gap-2 mt-3 text-xs text-green-700 bg-green-50 px-3 py-1.5 rounded-lg w-fit">
+              <Icon name="User" size={14} />
+              <span className="font-medium">Исполнитель: {order.assignedToName}</span>
             </div>
           )}
         </div>
         <div className="text-right">
-          <p className="text-xl font-bold text-primary">{(order.totalAmount || 0).toLocaleString()} ₽</p>
-          <p className="text-xs text-gray-500">{order.items?.length || 0} услуг</p>
+          <p className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+            {(order.totalAmount || 0).toLocaleString()} ₽
+          </p>
+          <p className="text-xs text-gray-500 mt-1">{order.items?.length || 0} услуг</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div>
-          <Icon name="Phone" size={14} className="inline mr-2 text-gray-500" />
-          <span className="text-gray-700">{order.phone}</span>
+      <div className="grid grid-cols-2 gap-3 text-sm mb-4 p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center gap-2">
+          <Icon name="Phone" size={16} className="text-primary" />
+          <span className="text-gray-700 font-medium">{order.phone}</span>
         </div>
-        <div>
-          <Icon name="MapPin" size={14} className="inline mr-2 text-gray-500" />
+        <div className="flex items-center gap-2">
+          <Icon name="MapPin" size={16} className="text-primary" />
           <span className="text-gray-700">{order.address || 'Не указан'}</span>
         </div>
-        <div>
-          <Icon name="Zap" size={14} className="inline mr-2 text-gray-500" />
+        <div className="flex items-center gap-2">
+          <Icon name="Zap" size={16} className="text-primary" />
           <span className="text-gray-700">{order.totalPoints} точек</span>
         </div>
-        <div>
-          <Icon name="Cable" size={14} className="inline mr-2 text-gray-500" />
+        <div className="flex items-center gap-2">
+          <Icon name="Cable" size={16} className="text-primary" />
           <span className="text-gray-700">~{order.estimatedCable}м кабеля</span>
         </div>
       </div>
 
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2">
         {order.status === 'pending' && (
           <Button
-            size="sm"
-            className="flex-1"
+            size="lg"
+            className="w-full"
             onClick={(e) => {
               e.stopPropagation();
               updateOrderStatus(order.id, 'confirmed');
             }}
           >
-            <Icon name="CheckCircle" size={14} className="mr-1" />
+            <Icon name="CheckCircle" size={18} className="mr-2" />
             Подтвердить
           </Button>
         )}
         {order.status === 'confirmed' && (
           <Button
-            size="sm"
-            className="flex-1 bg-orange-600 hover:bg-orange-700"
+            size="lg"
+            className="w-full bg-orange-600 hover:bg-orange-700"
             onClick={(e) => {
               e.stopPropagation();
               updateOrderStatus(order.id, 'in-progress');
             }}
           >
-            <Icon name="Wrench" size={14} className="mr-1" />
+            <Icon name="Wrench" size={18} className="mr-2" />
             В работу
           </Button>
         )}
         {order.status === 'in-progress' && (
           <Button
-            size="sm"
-            className="flex-1 bg-green-600 hover:bg-green-700"
+            size="lg"
+            className="w-full bg-green-600 hover:bg-green-700"
             onClick={(e) => {
               e.stopPropagation();
               updateOrderStatus(order.id, 'completed');
             }}
           >
-            <Icon name="CheckCircle2" size={14} className="mr-1" />
+            <Icon name="CheckCircle2" size={18} className="mr-2" />
             Завершить
           </Button>
         )}
@@ -216,41 +222,49 @@ export default function AllOrders() {
           <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
           <div className="p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-gray-800">Все заявки</h1>
-              <div className="flex items-center gap-2">
-                <Icon name="ClipboardList" size={24} className="text-primary" />
-                <span className="text-lg font-semibold text-gray-600">{filteredOrders.length}</span>
-              </div>
+            <div className="text-center mb-6">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-2">
+                Все заявки
+              </h1>
+              <p className="text-gray-600">Управление заявками на электромонтажные работы</p>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              <Button
-                size="sm"
-                variant={filterStatus === 'all' ? 'default' : 'outline'}
-                onClick={() => setFilterStatus('all')}
-              >
-                Все ({orders.length})
-              </Button>
-              {Object.entries(STATUS_LABELS).map(([status, label]) => {
-                const count = orders.filter(o => o.status === status).length;
-                return (
-                  <Button
-                    key={status}
-                    size="sm"
-                    variant={filterStatus === status ? 'default' : 'outline'}
-                    onClick={() => setFilterStatus(status as Order['status'])}
-                  >
-                    {label} ({count})
-                  </Button>
-                );
-              })}
-            </div>
+            <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as Order['status'] | 'all')} className="w-full">
+              <TabsList className="w-full grid grid-cols-5 h-auto">
+                <TabsTrigger value="all" className="flex-col py-2 px-1">
+                  <span className="text-lg font-bold">{orders.length}</span>
+                  <span className="text-xs">Все</span>
+                </TabsTrigger>
+                <TabsTrigger value="pending" className="flex-col py-2 px-1">
+                  <span className="text-lg font-bold">{orders.filter(o => o.status === 'pending').length}</span>
+                  <span className="text-xs">Новые</span>
+                </TabsTrigger>
+                <TabsTrigger value="confirmed" className="flex-col py-2 px-1">
+                  <span className="text-lg font-bold">{orders.filter(o => o.status === 'confirmed').length}</span>
+                  <span className="text-xs">Принято</span>
+                </TabsTrigger>
+                <TabsTrigger value="in-progress" className="flex-col py-2 px-1">
+                  <span className="text-lg font-bold">{orders.filter(o => o.status === 'in-progress').length}</span>
+                  <span className="text-xs">В работе</span>
+                </TabsTrigger>
+                <TabsTrigger value="completed" className="flex-col py-2 px-1">
+                  <span className="text-lg font-bold">{orders.filter(o => o.status === 'completed').length}</span>
+                  <span className="text-xs">Готово</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
             {filteredOrders.length === 0 ? (
-              <Card className="p-12 text-center">
-                <Icon name="Inbox" size={48} className="mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600 text-lg">Заявок не найдено</p>
+              <Card className="p-12 text-center shadow-md">
+                <div className="mb-4">
+                  <div className="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center">
+                    <Icon name="ClipboardList" size={40} className="text-primary" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Заявок не найдено</h3>
+                <p className="text-gray-600">
+                  {filterStatus === 'all' ? 'Здесь появятся заявки на электромонтажные работы' : `В статусе "${STATUS_LABELS[filterStatus as Order['status']]}" нет заявок`}
+                </p>
               </Card>
             ) : (
               <div
