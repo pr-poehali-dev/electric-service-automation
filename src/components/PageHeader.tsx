@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginModal from '@/components/auth/LoginModal';
@@ -10,9 +11,13 @@ interface PageHeaderProps {
 }
 
 export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4b78877a-e24a-4720-b420-fafa87d6a759.jpg' }: PageHeaderProps) {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  
+  const handleActiveToggle = (checked: boolean) => {
+    updateUser({ isActive: checked });
+  };
 
   const getRoleBadge = (role: string) => {
     const badges = {
@@ -44,31 +49,57 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
         
         <div className="absolute top-4 right-4">
           {isAuthenticated && user ? (
-            <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
-              <button 
-                onClick={handleProfileClick}
-                className="flex items-center gap-2 hover:bg-gray-50 rounded-md px-2 py-1 -mx-2 -my-1 transition-colors group"
-                title="Перейти в личный кабинет"
-              >
-                <div className="relative">
-                  <Icon name="User" size={18} className="text-gray-600 group-hover:text-primary transition-colors" />
-                  <Icon name="ChevronRight" size={12} className="absolute -right-1 -bottom-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold group-hover:text-primary transition-colors">{user.name}</div>
-                  <div className={`text-xs px-2 py-0.5 rounded ${getRoleBadge(user.role).color}`}>
-                    {getRoleBadge(user.role).text}
+            <div className="flex items-center gap-2">
+              {user.role === 'electrician' && (
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg px-4 py-3 shadow-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Switch 
+                        checked={user.isActive || false}
+                        onCheckedChange={handleActiveToggle}
+                        className="data-[state=checked]:bg-green-500"
+                      />
+                      <div className="flex items-center gap-1">
+                        <Icon 
+                          name={user.isActive ? "CheckCircle2" : "CircleDashed"} 
+                          size={16} 
+                          className={user.isActive ? "text-green-600" : "text-gray-400"}
+                        />
+                        <span className={`text-sm font-medium ${user.isActive ? 'text-green-700' : 'text-gray-600'}`}>
+                          {user.isActive ? 'Принимаю заказы' : 'Не принимаю'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={logout}
-                title="Выйти"
-              >
-                <Icon name="LogOut" size={16} />
-              </Button>
+              )}
+              
+              <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
+                <button 
+                  onClick={handleProfileClick}
+                  className="flex items-center gap-2 hover:bg-gray-50 rounded-md px-2 py-1 -mx-2 -my-1 transition-colors group"
+                  title="Перейти в личный кабинет"
+                >
+                  <div className="relative">
+                    <Icon name="User" size={18} className="text-gray-600 group-hover:text-primary transition-colors" />
+                    <Icon name="ChevronRight" size={12} className="absolute -right-1 -bottom-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold group-hover:text-primary transition-colors">{user.name}</div>
+                    <div className={`text-xs px-2 py-0.5 rounded ${getRoleBadge(user.role).color}`}>
+                      {getRoleBadge(user.role).text}
+                    </div>
+                  </div>
+                </button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={logout}
+                  title="Выйти"
+                >
+                  <Icon name="LogOut" size={16} />
+                </Button>
+              </div>
             </div>
           ) : (
             <Button

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { CartItem, Product, Order, ServiceOption, Payment, PaymentStatus, calculateExecutorEarnings, updateExecutorProfileAfterOrder } from '@/types/electrical';
 import { useNotifications } from './NotificationContext';
 import { useAuth } from './AuthContext';
+import { sendOrderNotification, sendStatusUpdateNotification } from '@/lib/emailNotifications';
 import {
   addItemToCart,
   removeItemFromCart,
@@ -135,6 +136,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       console.error('Planfix sync failed:', err)
     );
     
+    sendOrderNotification(newOrder).catch(err =>
+      console.error('Email notification failed:', err)
+    );
+    
     if (notificationsContext) {
       notificationsContext.addNotification({
         type: 'new_order',
@@ -155,11 +160,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       'completed': 'завершена'
     };
     
+    const order = orders.find(o => o.id === orderId);
+    const oldStatus = order?.status || 'pending';
+    
     setOrders(prev => updateOrderInList(prev, orderId, { status }));
     
     updateOrderStatusInApi(orderId, status).catch(err => 
       console.error('Failed to update order status in DB:', err)
     );
+    
+    if (order) {
+      sendStatusUpdateNotification({ ...order, status }, oldStatus).catch(err =>
+        console.error('Email notification failed:', err)
+      );
+    }
     
     if (status === 'completed') {
       const order = orders.find(o => o.id === orderId);
