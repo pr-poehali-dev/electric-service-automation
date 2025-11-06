@@ -13,6 +13,7 @@ import OrderItemsSection from './OrderItemsSection';
 import OrderContactSection from './OrderContactSection';
 import OrderReviewSection from './OrderReviewSection';
 import OrderEarningsCard from '@/components/executor/OrderEarningsCard';
+import OrderCompletionModal from './OrderCompletionModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useReviews } from '@/contexts/ReviewContext';
@@ -49,6 +50,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
   const earnings = executorProfile ? calcEarnings(order, executorProfile) : null;
   const [isEditing, setIsEditing] = useState(false);
   const [editedOrder, setEditedOrder] = useState<Order>(order);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     info: false,
     items: false,
@@ -108,7 +110,17 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
   };
 
   const handleStatusChange = (newStatus: Order['status']) => {
-    onStatusChange(order.id, newStatus);
+    if (newStatus === 'completed' && permissions.isAdmin && order.assignedTo && executorProfile) {
+      setShowCompletionModal(true);
+    } else {
+      onStatusChange(order.id, newStatus);
+    }
+  };
+
+  const handleConfirmCompletion = (notes?: string) => {
+    console.log('Admin confirmed completion with notes:', notes);
+    onStatusChange(order.id, 'completed');
+    setShowCompletionModal(false);
   };
 
   const getNextStatus = (): Order['status'] | null => {
@@ -355,6 +367,16 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
           </div>
         </div>
       </div>
+
+      {/* Модальное окно подтверждения завершения */}
+      {showCompletionModal && executorProfile && (
+        <OrderCompletionModal
+          order={order}
+          executorProfile={executorProfile}
+          onConfirm={handleConfirmCompletion}
+          onCancel={() => setShowCompletionModal(false)}
+        />
+      )}
     </div>
   );
 }

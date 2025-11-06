@@ -37,6 +37,7 @@ import Services from "./pages/Services";
 import GoogleCallback from "./pages/GoogleCallback";
 import Notifications from "./pages/Notifications";
 import ExecutorProfileSettings from "./pages/ExecutorProfileSettings";
+import AdminExecutors from "./pages/AdminExecutors";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +106,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={['admin', 'owner']}>
             <AdminUsers />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin-executors" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'owner']}>
+            <AdminExecutors />
           </ProtectedRoute>
         } 
       />
