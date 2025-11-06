@@ -1,6 +1,29 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CartItem, Product, Order, calculateTotals, ServiceOption, MASTER_VISIT_ID, PRODUCTS, Payment, PaymentStatus } from '@/types/electrical';
+import { CartItem, Product, Order, ServiceOption, Payment, PaymentStatus } from '@/types/electrical';
 import { useNotifications } from './NotificationContext';
+import {
+  addItemToCart,
+  removeItemFromCart,
+  updateItemQuantity,
+  updateItemOption,
+  toggleItemAdditionalOption
+} from './cart/cartOperations';
+import {
+  createOrderFromCart,
+  updateOrderInList,
+  addPaymentToOrder,
+  updatePaymentInOrder,
+  formatOrderForDatabase,
+  formatOrderForPlanfix,
+  parseOrderFromDatabase
+} from './cart/orderOperations';
+import {
+  loadOrdersFromApi,
+  saveOrderToApi,
+  syncOrderToPlanfix,
+  updateOrderStatusInApi,
+  assignExecutorInApi
+} from './cart/apiService';
 
 interface CartContextType {
   cart: CartItem[];
@@ -34,43 +57,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadOrders = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/011a42c8-fcaa-413f-b611-d66cb669ba4e');
-        if (response.ok) {
-          const dbOrders = await response.json();
-          
-          const formattedOrders: Order[] = dbOrders.map((dbOrder: any) => ({
-            id: dbOrder.order_uid || `ORD-${dbOrder.id}`,
-            customerName: dbOrder.customer_name || 'Не указано',
-            customerPhone: dbOrder.customer_phone || dbOrder.phone || '',
-            customerEmail: dbOrder.customer_email || '',
-            date: dbOrder.scheduled_date || '',
-            time: dbOrder.scheduled_time || '',
-            address: dbOrder.address || '',
-            phone: dbOrder.customer_phone || '',
-            items: dbOrder.items || [],
-            status: dbOrder.status || 'pending',
-            totalSwitches: dbOrder.total_switches || 0,
-            totalOutlets: dbOrder.total_outlets || 0,
-            totalPoints: dbOrder.total_points || 0,
-            estimatedCable: dbOrder.estimated_cable || 0,
-            estimatedFrames: dbOrder.estimated_frames || 0,
-            createdAt: new Date(dbOrder.created_at).getTime(),
-            totalAmount: parseFloat(dbOrder.total_price || '0'),
-            assignedTo: dbOrder.assigned_to,
-            assignedToName: dbOrder.assigned_to_name,
-            notes: dbOrder.client_notes,
-            paymentStatus: dbOrder.payment_status,
-            paidAmount: parseFloat(dbOrder.paid_amount || '0'),
-            payments: dbOrder.payments
-          }));
-          
-          setOrders(formattedOrders);
-        } else {
-          const saved = localStorage.getItem('electrical-orders');
-          if (saved) {
-            setOrders(JSON.parse(saved));
-          }
-        }
+        const dbOrders = await loadOrdersFromApi();
+        const formattedOrders: Order[] = dbOrders.map(parseOrderFromDatabase);
+        setOrders(formattedOrders);
       } catch (err) {
         console.error('Failed to load orders from DB:', err);
         const saved = localStorage.getItem('electrical-orders');
@@ -101,49 +90,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [orders, ordersLoaded]);
 
   const addToCart = (product: Product, quantity = 1, option: ServiceOption = 'install-only', additionalOptions?: string[]) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.product.id === product.id);
-      
-      let updatedCart = prev;
-      
-      if (existing) {
-        updatedCart = prev.map(item =>
-          item.product.id === product.id
-            ? { 
-                ...item, 
-                quantity: item.quantity + quantity,
-                additionalOptions: additionalOptions || item.additionalOptions
-              }
-            : item
-        );
-      } else {
-        const initialOptions: string[] = additionalOptions || [];
-        updatedCart = [...prev, { product, quantity, selectedOption: option, additionalOptions: initialOptions }];
-      }
-      
-      // Автоматически добавляем выезд мастера, если его нет и это не сам выезд мастера
-      if (product.id !== MASTER_VISIT_ID && !updatedCart.find(item => item.product.id === MASTER_VISIT_ID)) {
-        const masterVisitProduct = PRODUCTS.find(p => p.id === MASTER_VISIT_ID);
-        if (masterVisitProduct) {
-          updatedCart = [...updatedCart, { product: masterVisitProduct, quantity: 1, selectedOption: 'install-only', additionalOptions: [] }];
-        }
-      }
-      
-      return updatedCart;
-    });
+    setCart(prev => addItemToCart(prev, product, quantity, option, additionalOptions));
   };
 
   const removeFromCart = (productId: string) => {
-    setCart(prev => {
-      // Если удаляется блок розеток с опцией install-blocks, удаляем и Электроустановку
-      const item = prev.find(i => i.product.id === productId);
-      if (item && item.product.id.includes('block-') && item.additionalOptions?.includes('install-blocks')) {
-        const electricalInstallId = `${productId}-electrical-install`;
-        return prev.filter(i => i.product.id !== productId && i.product.id !== electricalInstallId);
-      }
-      
-      return prev.filter(item => item.product.id !== productId);
-    });
+    setCart(prev => removeItemFromCart(prev, productId));
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
@@ -151,110 +102,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeFromCart(productId);
       return;
     }
-    setCart(prev => {
-      let updatedCart = prev.map(item =>
-        item.product.id === productId ? { ...item, quantity } : item
-      );
-
-      // Если это блок розеток с опцией install-blocks, обновляем количество Электроустановки
-      const item = updatedCart.find(i => i.product.id === productId);
-      if (item && item.product.id.includes('block-') && item.additionalOptions?.includes('install-blocks')) {
-        let outletsCount = 1;
-        if (item.product.id.includes('block-2')) outletsCount = 2;
-        else if (item.product.id.includes('block-3')) outletsCount = 3;
-        else if (item.product.id.includes('block-4')) outletsCount = 4;
-        else if (item.product.id.includes('block-5')) outletsCount = 5;
-
-        const totalOutlets = outletsCount * quantity;
-        const electricalInstallId = `${productId}-electrical-install`;
-
-        updatedCart = updatedCart.map(i => 
-          i.product.id === electricalInstallId 
-            ? { ...i, quantity: totalOutlets }
-            : i
-        );
-      }
-
-      return updatedCart;
-    });
+    setCart(prev => updateItemQuantity(prev, productId, quantity));
   };
 
   const updateOption = (productId: string, option: ServiceOption) => {
-    setCart(prev =>
-      prev.map(item =>
-        item.product.id === productId ? { ...item, selectedOption: option } : item
-      )
-    );
+    setCart(prev => updateItemOption(prev, productId, option));
   };
 
   const toggleAdditionalOption = (productId: string, optionId: string) => {
-    setCart(prev => {
-      let updatedCart = prev.map(item => {
-        if (item.product.id === productId) {
-          const options = item.additionalOptions || [];
-          if (options.includes(optionId)) {
-            return { ...item, additionalOptions: options.filter(id => id !== optionId) };
-          } else {
-            return { ...item, additionalOptions: [...options, optionId] };
-          }
-        }
-        return item;
-      });
-
-      // Если включается опция "install-blocks" для блока розеток
-      if (optionId === 'install-blocks' && !prev.find(i => i.product.id === productId)?.additionalOptions?.includes(optionId)) {
-        const item = updatedCart.find(i => i.product.id === productId);
-        if (item && item.product.id.includes('block-')) {
-          // Подсчитываем количество розеток в блоке
-          let outletsCount = 1;
-          if (item.product.id.includes('block-2')) outletsCount = 2;
-          else if (item.product.id.includes('block-3')) outletsCount = 3;
-          else if (item.product.id.includes('block-4')) outletsCount = 4;
-          else if (item.product.id.includes('block-5')) outletsCount = 5;
-
-          const totalOutlets = outletsCount * item.quantity;
-
-          // Создаем или обновляем Электроустановку
-          const electricalInstallId = `${productId}-electrical-install`;
-          const existingInstall = updatedCart.find(i => i.product.id === electricalInstallId);
-          
-          if (existingInstall) {
-            updatedCart = updatedCart.map(i => 
-              i.product.id === electricalInstallId 
-                ? { ...i, quantity: totalOutlets }
-                : i
-            );
-          } else {
-            const baseProduct = PRODUCTS.find(p => p.id === 'chandelier-1');
-            if (baseProduct) {
-              const virtualProduct: Product = {
-                ...baseProduct,
-                id: electricalInstallId,
-                name: 'Электроустановка',
-                description: 'Установка розеток/выключателей',
-                priceInstallOnly: 250,
-                priceWithWiring: 250,
-                options: []
-              };
-              updatedCart = [...updatedCart, { 
-                product: virtualProduct, 
-                quantity: totalOutlets, 
-                selectedOption: 'install-only',
-                additionalOptions: []
-              }];
-            }
-          }
-        }
-      }
-
-      // Если отключается опция "install-blocks", удаляем Электроустановку
-      if (optionId === 'install-blocks' && prev.find(i => i.product.id === productId)?.additionalOptions?.includes(optionId)) {
-        const electricalInstallId = `${productId}-electrical-install`;
-        updatedCart = updatedCart.filter(i => i.product.id !== electricalInstallId);
-      }
-
-      return updatedCart;
-    });
+    setCart(prev => toggleItemAdditionalOption(prev, productId, optionId));
   };
 
   const clearCart = () => {
@@ -262,80 +118,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const createOrder = (orderData: Omit<Order, 'id' | 'items' | 'createdAt' | 'totalSwitches' | 'totalOutlets' | 'totalPoints' | 'estimatedCable' | 'estimatedFrames'>) => {
-    const totals = calculateTotals(cart);
-    
-    const electricalItems = cart.map(cartItem => ({
-      name: cartItem.product.name,
-      price: cartItem.selectedOption === 'install-only' 
-        ? cartItem.product.priceInstallOnly 
-        : cartItem.product.priceWithWiring,
-      quantity: cartItem.quantity,
-      category: cartItem.product.category,
-      description: cartItem.product.description
-    }));
-    
-    const totalAmount = electricalItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
-    const newOrder: Order = {
-      ...orderData,
-      id: `ORD-${Date.now()}`,
-      items: electricalItems,
-      createdAt: Date.now(),
-      totalAmount,
-      ...totals
-    };
+    const newOrder = createOrderFromCart(cart, orderData);
 
     setOrders(prev => [newOrder, ...prev]);
     clearCart();
     
-    const dbOrderData = {
-      order_uid: newOrder.id,
-      customer_name: newOrder.customerName || 'Не указано',
-      customer_phone: newOrder.phone,
-      customer_email: newOrder.customerEmail || '',
-      address: newOrder.address,
-      scheduled_date: newOrder.date,
-      scheduled_time: newOrder.time,
-      items: electricalItems,
-      total_price: totalAmount,
-      total_switches: totals.totalSwitches,
-      total_outlets: totals.totalOutlets,
-      total_points: totals.totalPoints,
-      estimated_cable: totals.estimatedCable,
-      estimated_frames: totals.estimatedFrames,
-      status: newOrder.status,
-      assigned_to: newOrder.assignedTo || null,
-      assigned_to_name: newOrder.assignedToName || null,
-      client_notes: newOrder.notes || ''
-    };
+    const dbOrderData = formatOrderForDatabase(newOrder);
+    saveOrderToApi(dbOrderData).catch(err => 
+      console.error('DB save failed:', err)
+    );
     
-    fetch('https://functions.poehali.dev/011a42c8-fcaa-413f-b611-d66cb669ba4e', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dbOrderData)
-    }).then(response => {
-      if (!response.ok) {
-        console.error('Failed to save order to DB:', response.statusText);
-      }
-    }).catch(err => console.error('DB save failed:', err));
-    
-    const planfixData = {
-      order_id: newOrder.id,
-      customer_name: newOrder.customerName || 'Не указано',
-      customer_phone: newOrder.phone,
-      address: newOrder.address,
-      date: newOrder.date,
-      time: newOrder.time,
-      total_amount: totalAmount,
-      items: newOrder.items,
-      status: newOrder.status
-    };
-    
-    fetch('https://functions.poehali.dev/fa59900f-ff39-40ef-99de-7d268159765e', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(planfixData)
-    }).catch(err => console.error('Planfix sync failed:', err));
+    const planfixData = formatOrderForPlanfix(newOrder);
+    syncOrderToPlanfix(planfixData).catch(err => 
+      console.error('Planfix sync failed:', err)
+    );
     
     if (notificationsContext) {
       notificationsContext.addNotification({
@@ -357,17 +153,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       'completed': 'завершена'
     };
     
-    setOrders(prev =>
-      prev.map(order =>
-        order.id === orderId ? { ...order, status } : order
-      )
-    );
+    setOrders(prev => updateOrderInList(prev, orderId, { status }));
     
-    fetch(`https://functions.poehali.dev/011a42c8-fcaa-413f-b611-d66cb669ba4e?id=${orderId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status })
-    }).catch(err => console.error('Failed to update order status in DB:', err));
+    updateOrderStatusInApi(orderId, status).catch(err => 
+      console.error('Failed to update order status in DB:', err)
+    );
     
     if (notificationsContext) {
       notificationsContext.addNotification({
@@ -381,19 +171,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const assignExecutor = (orderId: string, electricianId: string, electricianName: string) => {
-    setOrders(prev =>
-      prev.map(order =>
-        order.id === orderId 
-          ? { ...order, assignedTo: electricianId, assignedToName: electricianName } 
-          : order
-      )
+    setOrders(prev => 
+      updateOrderInList(prev, orderId, { 
+        assignedTo: electricianId, 
+        assignedToName: electricianName 
+      })
     );
     
-    fetch(`https://functions.poehali.dev/011a42c8-fcaa-413f-b611-d66cb669ba4e?id=${orderId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ assigned_to: electricianId, assigned_to_name: electricianName })
-    }).catch(err => console.error('Failed to assign executor in DB:', err));
+    assignExecutorInApi(orderId, electricianId, electricianName).catch(err => 
+      console.error('Failed to assign executor in DB:', err)
+    );
     
     if (notificationsContext && electricianId) {
       notificationsContext.addNotification({
@@ -405,40 +192,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const calculatePaymentStatus = (totalAmount: number, paidAmount: number): PaymentStatus => {
-    if (paidAmount === 0) return 'unpaid';
-    if (paidAmount >= totalAmount) return 'paid';
-    return 'partially_paid';
-  };
-
   const addPayment = (orderId: string, paymentData: Omit<Payment, 'id' | 'createdAt'>) => {
     setOrders(prev =>
       prev.map(order => {
         if (order.id !== orderId) return order;
-
-        const newPayment: Payment = {
-          ...paymentData,
-          id: `pay-${Date.now()}-${Math.random()}`,
-          createdAt: Date.now(),
-        };
-
-        const payments = [...(order.payments || []), newPayment];
-        const paidAmount = payments
-          .filter(p => p.status === 'paid')
-          .reduce((sum, p) => sum + p.amount, 0);
-        const totalAmount = order.totalAmount || 0;
-        const paymentStatus = calculatePaymentStatus(totalAmount, paidAmount);
-
-        return {
-          ...order,
-          payments,
-          paidAmount,
-          paymentStatus,
-        };
+        return addPaymentToOrder(order, paymentData);
       })
     );
 
-    // Отправка уведомления о платеже
     if (notificationsContext) {
       notificationsContext.addNotification({
         type: 'info',
@@ -453,23 +214,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setOrders(prev =>
       prev.map(order => {
         if (order.id !== orderId) return order;
-
-        const payments = (order.payments || []).map(p =>
-          p.id === paymentId ? { ...p, status } : p
-        );
-
-        const paidAmount = payments
-          .filter(p => p.status === 'paid')
-          .reduce((sum, p) => sum + p.amount, 0);
-        const totalAmount = order.totalAmount || 0;
-        const paymentStatus = calculatePaymentStatus(totalAmount, paidAmount);
-
-        return {
-          ...order,
-          payments,
-          paidAmount,
-          paymentStatus,
-        };
+        return updatePaymentInOrder(order, paymentId, status);
       })
     );
   };
