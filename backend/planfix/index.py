@@ -204,16 +204,25 @@ def handle_webhook(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        new_status = map_planfix_status_to_order(task_status_name)
+        
+        update_response = requests.put(
+            f'https://functions.poehali.dev/011a42c8-fcaa-413f-b611-d66cb669ba4e?id={order_id}',
+            json={'status': new_status, 'planfix_task_id': str(task_id)},
+            timeout=10
+        )
+        
         return {
             'statusCode': 200,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
             'body': json.dumps({
                 'success': True,
-                'message': 'Webhook received',
+                'message': 'Webhook processed and DB updated',
                 'order_id': order_id,
                 'task_id': task_id,
                 'planfix_status': task_status_name,
-                'info': 'Database sync не реализована - заявки хранятся в localStorage'
+                'new_status': new_status,
+                'db_update_status': update_response.status_code
             }),
             'isBase64Encoded': False
         }
@@ -230,3 +239,22 @@ def extract_order_id(title: str) -> str:
     if match:
         return match.group(1)
     return ''
+
+def map_planfix_status_to_order(planfix_status: str) -> str:
+    status_mapping = {
+        'новая': 'new',
+        'новое': 'new',
+        'в работе': 'in_progress',
+        'выполняется': 'in_progress',
+        'принято': 'confirmed',
+        'подтверждено': 'confirmed',
+        'завершена': 'completed',
+        'завершено': 'completed',
+        'выполнена': 'completed',
+        'закрыта': 'completed',
+        'отменена': 'cancelled',
+        'отменено': 'cancelled'
+    }
+    
+    status_lower = planfix_status.lower()
+    return status_mapping.get(status_lower, 'new')

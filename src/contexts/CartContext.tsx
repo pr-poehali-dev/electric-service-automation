@@ -28,10 +28,61 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [orders, setOrders] = useState<Order[]>(() => {
-    const saved = localStorage.getItem('electrical-orders');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoaded, setOrdersLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/011a42c8-fcaa-413f-b611-d66cb669ba4e');
+        if (response.ok) {
+          const dbOrders = await response.json();
+          
+          const formattedOrders: Order[] = dbOrders.map((dbOrder: any) => ({
+            id: dbOrder.order_uid || `ORD-${dbOrder.id}`,
+            customerName: dbOrder.customer_name || 'Не указано',
+            customerPhone: dbOrder.customer_phone || dbOrder.phone || '',
+            customerEmail: dbOrder.customer_email || '',
+            date: dbOrder.scheduled_date || '',
+            time: dbOrder.scheduled_time || '',
+            address: dbOrder.address || '',
+            phone: dbOrder.customer_phone || '',
+            items: dbOrder.items || [],
+            status: dbOrder.status || 'pending',
+            totalSwitches: dbOrder.total_switches || 0,
+            totalOutlets: dbOrder.total_outlets || 0,
+            totalPoints: dbOrder.total_points || 0,
+            estimatedCable: dbOrder.estimated_cable || 0,
+            estimatedFrames: dbOrder.estimated_frames || 0,
+            createdAt: new Date(dbOrder.created_at).getTime(),
+            totalAmount: parseFloat(dbOrder.total_price || '0'),
+            assignedTo: dbOrder.assigned_to,
+            assignedToName: dbOrder.assigned_to_name,
+            notes: dbOrder.client_notes,
+            paymentStatus: dbOrder.payment_status,
+            paidAmount: parseFloat(dbOrder.paid_amount || '0'),
+            payments: dbOrder.payments
+          }));
+          
+          setOrders(formattedOrders);
+        } else {
+          const saved = localStorage.getItem('electrical-orders');
+          if (saved) {
+            setOrders(JSON.parse(saved));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load orders from DB:', err);
+        const saved = localStorage.getItem('electrical-orders');
+        if (saved) {
+          setOrders(JSON.parse(saved));
+        }
+      }
+      setOrdersLoaded(true);
+    };
+
+    loadOrders();
+  }, []);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -41,11 +92,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [cart]);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      localStorage.setItem('electrical-orders', JSON.stringify(orders));
-    }, 500);
-    return () => clearTimeout(timeoutId);
-  }, [orders]);
+    if (ordersLoaded) {
+      const timeoutId = setTimeout(() => {
+        localStorage.setItem('electrical-orders', JSON.stringify(orders));
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [orders, ordersLoaded]);
 
   const addToCart = (product: Product, quantity = 1, option: ServiceOption = 'install-only', additionalOptions?: string[]) => {
     setCart(prev => {
@@ -235,6 +288,37 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setOrders(prev => [newOrder, ...prev]);
     clearCart();
     
+    const dbOrderData = {
+      order_uid: newOrder.id,
+      customer_name: newOrder.customerName || 'Не указано',
+      customer_phone: newOrder.phone,
+      customer_email: newOrder.customerEmail || '',
+      address: newOrder.address,
+      scheduled_date: newOrder.date,
+      scheduled_time: newOrder.time,
+      items: electricalItems,
+      total_price: totalAmount,
+      total_switches: totals.totalSwitches,
+      total_outlets: totals.totalOutlets,
+      total_points: totals.totalPoints,
+      estimated_cable: totals.estimatedCable,
+      estimated_frames: totals.estimatedFrames,
+      status: newOrder.status,
+      assigned_to: newOrder.assignedTo || null,
+      assigned_to_name: newOrder.assignedToName || null,
+      client_notes: newOrder.notes || ''
+    };
+    
+    fetch('https://functions.poehali.dev/011a42c8-fcaa-413f-b611-d66cb669ba4e', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dbOrderData)
+    }).then(response => {
+      if (!response.ok) {
+        console.error('Failed to save order to DB:', response.statusText);
+      }
+    }).catch(err => console.error('DB save failed:', err));
+    
     const planfixData = {
       order_id: newOrder.id,
       customer_name: newOrder.customerName || 'Не указано',
@@ -279,7 +363,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       )
     );
     
-    // Отправка уведомления об изменении статуса
+    fetch(`https://functions.poehali.dev/011a42c8-fcaa-413f-b611-d66cb669ba4e?id=${orderId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    }).catch(err => console.error('Failed to update order status in DB:', err));
+    
     if (notificationsContext) {
       notificationsContext.addNotification({
         type: 'status_change',
@@ -300,7 +389,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       )
     );
     
-    // Отправка уведомления о назначении исполнителя
+    fetch(`https://functions.poehali.dev/011a42c8-fcaa-413f-b611-d66cb669ba4e?id=${orderId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ assigned_to: electricianId, assigned_to_name: electricianName })
+    }).catch(err => console.error('Failed to assign executor in DB:', err));
+    
     if (notificationsContext && electricianId) {
       notificationsContext.addNotification({
         type: 'info',
