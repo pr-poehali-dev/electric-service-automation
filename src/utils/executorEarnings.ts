@@ -1,51 +1,58 @@
 import { Order, ExecutorEarnings, ElectricalItem } from '@/types/electrical';
 
-const INSTALLATION_CATEGORIES = [
-  'электромонтажные работы',
-  'монтаж',
-  'установка',
-  'прокладка кабеля',
-  'штробление',
-  'сборка щита',
-  'электрика под ключ'
+const WIRING_COMPLEX_SERVICES = [
+  'блок из 5 розеток',
+  'перенос газовых детекторов',
+  'блок из 4-х розеток',
+  'блок из 3-х розеток',
+  'выключатель перенести',
+  'блок из 2-х розеток',
+  'добавить розетку',
+  'бокс скрытого монтажа',
+  'установка электросчётчика',
+  'замена автомата',
+  'бокс открытого монтажа',
+  'установка автомата защиты',
+  'новый вводной кабель',
+  'монтаж кабеля',
+  'электрика для квартиры'
 ];
 
-export function isInstallationWork(item: ElectricalItem): boolean {
+export function isWiringComplexService(item: ElectricalItem): boolean {
   const itemName = item.name.toLowerCase();
-  const itemCategory = (item.category || '').toLowerCase();
   
-  return INSTALLATION_CATEGORIES.some(category => 
-    itemName.includes(category) || itemCategory.includes(category)
+  return WIRING_COMPLEX_SERVICES.some(service => 
+    itemName.includes(service)
   );
 }
 
 export function calculateExecutorEarnings(order: Order): ExecutorEarnings {
-  let installationWorkAmount = 0;
-  let productAmount = 0;
+  let wiringComplexAmount = 0;
+  let otherServicesAmount = 0;
   
   order.items.forEach(item => {
     const itemTotal = item.price * item.quantity;
     
-    if (isInstallationWork(item)) {
-      installationWorkAmount += itemTotal;
+    if (isWiringComplexService(item)) {
+      wiringComplexAmount += itemTotal;
     } else {
-      productAmount += itemTotal;
+      otherServicesAmount += itemTotal;
     }
   });
   
-  const installationEarnings = installationWorkAmount * 0.3;
-  const productEarnings = productAmount * 0.5;
-  const executorEarnings = installationEarnings + productEarnings;
-  const totalAmount = installationWorkAmount + productAmount;
+  const wiringComplexEarnings = wiringComplexAmount * 0.3;
+  const otherServicesEarnings = otherServicesAmount * 0.5;
+  const executorEarnings = wiringComplexEarnings + otherServicesEarnings;
+  const totalAmount = wiringComplexAmount + otherServicesAmount;
   
   return {
     orderId: order.id,
     totalAmount,
-    installationWorkAmount,
-    productAmount,
+    installationWorkAmount: wiringComplexAmount,
+    productAmount: otherServicesAmount,
     executorEarnings,
-    installationEarnings,
-    productEarnings
+    installationEarnings: wiringComplexEarnings,
+    productEarnings: otherServicesEarnings
   };
 }
 
