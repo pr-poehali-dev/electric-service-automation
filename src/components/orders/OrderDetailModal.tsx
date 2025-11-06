@@ -25,6 +25,20 @@ interface OrderDetailModalProps {
   onAssignExecutor?: (orderId: string, electricianId: string, electricianName: string) => void;
 }
 
+const STATUS_LABELS = {
+  'pending': 'Ожидает',
+  'confirmed': 'Подтверждена',
+  'in-progress': 'В работе',
+  'completed': 'Завершена'
+};
+
+const STATUS_COLORS = {
+  'pending': 'bg-yellow-100 text-yellow-800 border-yellow-300',
+  'confirmed': 'bg-blue-100 text-blue-800 border-blue-300',
+  'in-progress': 'bg-orange-100 text-orange-800 border-orange-300',
+  'completed': 'bg-green-100 text-green-800 border-green-300'
+};
+
 export default function OrderDetailModal({ order, onClose, onStatusChange, onRepeatOrder, onAssignExecutor }: OrderDetailModalProps) {
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
@@ -32,10 +46,21 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
   const { addPayment, updatePaymentStatus } = useCart();
   const [isEditing, setIsEditing] = useState(false);
   const [editedOrder, setEditedOrder] = useState<Order>(order);
+  const [expandedSections, setExpandedSections] = useState({
+    info: false,
+    items: false,
+    contact: false,
+    payment: false,
+    review: false
+  });
   
   const orderReviews = getOrderReviews(order.id);
   const orderPhotoReports = getOrderPhotoReports(order.id);
   const canLeaveReview = order.status === 'completed' && orderReviews.length === 0;
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
 
   const handleSaveEdit = () => {
     console.log('Сохранение изменений:', editedOrder);
@@ -67,6 +92,20 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
     });
   };
 
+  const handleStatusChange = (newStatus: Order['status']) => {
+    onStatusChange(order.id, newStatus);
+  };
+
+  const getNextStatus = (): Order['status'] | null => {
+    switch (order.status) {
+      case 'pending': return 'confirmed';
+      case 'confirmed': return 'in-progress';
+      case 'in-progress': return 'completed';
+      default: return null;
+    }
+  };
+
+  const nextStatus = getNextStatus();
   const currentOrder = isEditing ? editedOrder : order;
 
   return (
@@ -106,64 +145,162 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
           </div>
         </div>
 
-        <div className="p-6 space-y-6">
-          {isAuthenticated && permissions.canEditOrders && (
-            <Card className="p-4 space-y-4 animate-fadeIn bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-              <OrderStatusManager 
-                order={currentOrder} 
-                onStatusChange={onStatusChange} 
-              />
-              
-              {onAssignExecutor && (
-                <AssignExecutorSelector
-                  order={currentOrder}
-                  onAssign={onAssignExecutor}
-                />
-              )}
+        <div className="p-6 space-y-4">
+          <OrderProgressSection order={currentOrder} />
+
+          {isAuthenticated && permissions.canEditOrders && nextStatus && (
+            <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`px-3 py-1 rounded-full border ${STATUS_COLORS[order.status]}`}>
+                    {STATUS_LABELS[order.status]}
+                  </div>
+                  <Icon name="ArrowRight" size={20} className="text-gray-400" />
+                  <div className={`px-3 py-1 rounded-full border ${STATUS_COLORS[nextStatus]}`}>
+                    {STATUS_LABELS[nextStatus]}
+                  </div>
+                </div>
+                <Button 
+                  size="sm"
+                  onClick={() => handleStatusChange(nextStatus)}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600"
+                >
+                  Перевести
+                </Button>
+              </div>
             </Card>
           )}
 
-          <PaymentManager
-            order={currentOrder}
-            onAddPayment={addPayment}
-            onUpdatePaymentStatus={updatePaymentStatus}
-          />
+          {isAuthenticated && permissions.canEditOrders && onAssignExecutor && (
+            <Card className="p-4">
+              <AssignExecutorSelector
+                order={currentOrder}
+                onAssign={onAssignExecutor}
+              />
+            </Card>
+          )}
+
+          <Card className="p-4">
+            <button
+              onClick={() => toggleSection('payment')}
+              className="w-full flex items-center justify-between"
+            >
+              <h3 className="font-semibold flex items-center gap-2">
+                <Icon name="CreditCard" size={18} />
+                Оплата
+              </h3>
+              <Icon name={expandedSections.payment ? 'ChevronUp' : 'ChevronDown'} size={20} />
+            </button>
+            {expandedSections.payment && (
+              <div className="mt-4">
+                <PaymentManager
+                  order={currentOrder}
+                  onAddPayment={addPayment}
+                  onUpdatePaymentStatus={updatePaymentStatus}
+                />
+              </div>
+            )}
+          </Card>
 
           {isAuthenticated && permissions.isAdmin && (
-            <GoogleIntegrationPanel order={currentOrder} />
+            <Card className="p-4">
+              <GoogleIntegrationPanel order={currentOrder} />
+            </Card>
           )}
-          
-          <OrderProgressSection order={currentOrder} />
-          
-          <OrderInfoSection 
-            order={currentOrder} 
-            isEditing={isEditing}
-            onEdit={handleOrderEdit}
-          />
-          
-          <OrderItemsSection 
-            items={currentOrder.items}
-            totalAmount={currentOrder.totalAmount}
-            isEditing={isEditing}
-            onItemEdit={handleItemEdit}
-          />
-          
-          <OrderContactSection 
-            order={currentOrder}
-            isEditing={isEditing}
-            onEdit={handleOrderEdit}
-          />
-          
-          <OrderReviewSection
-            order={currentOrder}
-            canLeaveReview={canLeaveReview}
-            orderReviews={orderReviews}
-            orderPhotoReports={orderPhotoReports}
-            isAuthenticated={isAuthenticated}
-            canManageReviews={permissions.canManageReviews}
-          />
 
-          <div className="flex gap-3">
+          <Card className="p-4">
+            <button
+              onClick={() => toggleSection('info')}
+              className="w-full flex items-center justify-between"
+            >
+              <h3 className="font-semibold flex items-center gap-2">
+                <Icon name="Info" size={18} />
+                Информация о заявке
+              </h3>
+              <Icon name={expandedSections.info ? 'ChevronUp' : 'ChevronDown'} size={20} />
+            </button>
+            {expandedSections.info && (
+              <div className="mt-4">
+                <OrderInfoSection 
+                  order={currentOrder} 
+                  isEditing={isEditing}
+                  onEdit={handleOrderEdit}
+                />
+              </div>
+            )}
+          </Card>
+
+          <Card className="p-4">
+            <button
+              onClick={() => toggleSection('items')}
+              className="w-full flex items-center justify-between"
+            >
+              <h3 className="font-semibold flex items-center gap-2">
+                <Icon name="ShoppingCart" size={18} />
+                Состав заявки
+              </h3>
+              <Icon name={expandedSections.items ? 'ChevronUp' : 'ChevronDown'} size={20} />
+            </button>
+            {expandedSections.items && (
+              <div className="mt-4">
+                <OrderItemsSection 
+                  items={currentOrder.items}
+                  totalAmount={currentOrder.totalAmount}
+                  isEditing={isEditing}
+                  onItemEdit={handleItemEdit}
+                />
+              </div>
+            )}
+          </Card>
+
+          <Card className="p-4">
+            <button
+              onClick={() => toggleSection('contact')}
+              className="w-full flex items-center justify-between"
+            >
+              <h3 className="font-semibold flex items-center gap-2">
+                <Icon name="Phone" size={18} />
+                Контактные данные
+              </h3>
+              <Icon name={expandedSections.contact ? 'ChevronUp' : 'ChevronDown'} size={20} />
+            </button>
+            {expandedSections.contact && (
+              <div className="mt-4">
+                <OrderContactSection 
+                  order={currentOrder}
+                  isEditing={isEditing}
+                  onEdit={handleOrderEdit}
+                />
+              </div>
+            )}
+          </Card>
+
+          <Card className="p-4">
+            <button
+              onClick={() => toggleSection('review')}
+              className="w-full flex items-center justify-between"
+            >
+              <h3 className="font-semibold flex items-center gap-2">
+                <Icon name="Star" size={18} />
+                Отзывы и фото
+              </h3>
+              <Icon name={expandedSections.review ? 'ChevronUp' : 'ChevronDown'} size={20} />
+            </button>
+            {expandedSections.review && (
+              <div className="mt-4">
+                <OrderReviewSection
+                  order={currentOrder}
+                  canLeaveReview={canLeaveReview}
+                  orderReviews={orderReviews}
+                  orderPhotoReports={orderPhotoReports}
+                  isAuthenticated={isAuthenticated}
+                  canManageReviews={permissions.canManageReviews}
+                />
+              </div>
+            )}
+          </Card>
+
+          <div className="flex gap-3 pt-4">
             <Button 
               variant="outline" 
               className="flex-1"
@@ -180,7 +317,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
                   onClose();
                 }}
               >
-                <Icon name="RefreshCw" size={16} className="mr-2" />
+                <Icon name="Repeat" size={18} className="mr-2" />
                 Повторить заявку
               </Button>
             )}

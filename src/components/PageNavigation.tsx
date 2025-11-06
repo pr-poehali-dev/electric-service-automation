@@ -35,35 +35,36 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         </Button>
         <Button 
           variant="ghost"
-          className="h-10 text-sm px-3 relative"
+          className="h-10 text-sm px-3"
           onClick={() => navigate('/products')}
           title="Услуги электрика"
         >
           Услуги электрика
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {cartCount}
-            </span>
-          )}
         </Button>
         {cartCount > 0 && isCartPage && (
           <Button 
             variant="ghost"
-            className="h-10 text-sm px-3 text-blue-600 font-semibold"
+            className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
             onClick={() => navigate('/checkout')}
             title="Продолжить"
           >
             Продолжить
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {cartCount}
+            </span>
           </Button>
         )}
         {cartCount > 0 && isProductsPage && (
           <Button 
             variant="ghost"
-            className="h-10 text-sm px-3 text-blue-600 font-semibold"
+            className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
             onClick={() => navigate('/cart')}
             title="Продолжить"
           >
             Продолжить
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {cartCount}
+            </span>
           </Button>
         )}
       </div>
