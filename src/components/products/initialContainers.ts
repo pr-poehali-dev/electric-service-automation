@@ -11,7 +11,7 @@ export function getInitialContainers(): ServiceContainer[] {
       sectionCategory: 'services',
       expanded: false,
       options: [
-        { id: 'crystal', name: 'Установка хрустальных подвесок', price: 3500, quantity: 1, enabled: false },
+        { id: 'crystal', name: 'Подвес хрусталя — монтаж', price: 3500, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить светильник', price: 1000, quantity: 1, enabled: false },
         { id: 'dismantle', name: 'Демонтаж светильника', price: 500, quantity: 1, enabled: false },
         { id: 'assemble', name: 'Сборка люстры', price: 500, quantity: 1, enabled: false },

@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import Icon from '@/components/ui/icon';
-import NotificationsModal from '@/components/notifications/NotificationsModal';
 import { useNotifications } from '@/hooks/useNotifications';
 
 interface PageNavigationProps {
@@ -19,7 +17,6 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
   const { unreadCount } = useNotifications();
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const isCheckoutPage = location.pathname === '/checkout';
   const isCartPage = location.pathname === '/cart';
@@ -85,7 +82,7 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={() => setNotificationsOpen(true)}
+            onClick={() => navigate('/notifications')}
             title="Уведомления"
             className="relative"
           >
@@ -107,10 +104,6 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
           </Button>
         )}
       </div>
-      <NotificationsModal 
-        open={notificationsOpen} 
-        onClose={() => setNotificationsOpen(false)} 
-      />
     </div>
   );
 }

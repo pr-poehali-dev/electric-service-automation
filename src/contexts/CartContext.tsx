@@ -211,10 +211,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const createOrder = (orderData: Omit<Order, 'id' | 'items' | 'createdAt' | 'totalSwitches' | 'totalOutlets' | 'totalPoints' | 'estimatedCable' | 'estimatedFrames'>) => {
     const totals = calculateTotals(cart);
     
+    const electricalItems = cart.map(cartItem => ({
+      name: cartItem.product.name,
+      price: cartItem.selectedOption === 'install-only' 
+        ? cartItem.product.priceInstallOnly 
+        : cartItem.product.priceWithWiring,
+      quantity: cartItem.quantity,
+      category: cartItem.product.category,
+      description: cartItem.product.description
+    }));
+    
     const newOrder: Order = {
       ...orderData,
       id: `ORD-${Date.now()}`,
-      items: [...cart],
+      items: electricalItems,
       createdAt: Date.now(),
       ...totals
     };
@@ -222,7 +232,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setOrders(prev => [newOrder, ...prev]);
     clearCart();
     
-    // Отправка уведомления о новой заявке
     if (notificationsContext) {
       notificationsContext.addNotification({
         type: 'new_order',
