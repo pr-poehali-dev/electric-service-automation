@@ -235,21 +235,27 @@ export interface ExecutorEarnings {
   productEarnings: number;
 }
 
-export function calculateExecutorEarnings(order: Order): ExecutorEarnings {
+export function calculateExecutorEarnings(order: Order, executorProfile?: ExecutorProfile): ExecutorEarnings {
   let electricalServicesAmount = 0;
   let otherServicesAmount = 0;
+
+  const electricalServiceCategories = ['switch', 'outlet', 'chandelier'];
 
   order.items.forEach(item => {
     const totalItemPrice = item.price * item.quantity;
     
-    if (item.category === 'switch' || item.category === 'outlet' || item.category === 'chandelier') {
+    if (electricalServiceCategories.includes(item.category || '')) {
       electricalServicesAmount += totalItemPrice;
     } else {
       otherServicesAmount += totalItemPrice;
     }
   });
 
-  const electricalEarnings = electricalServicesAmount * 0.3;
+  const electricalCommission = executorProfile 
+    ? getElectricalServicesCommission(executorProfile)
+    : 0.3;
+  
+  const electricalEarnings = electricalServicesAmount * electricalCommission;
   const otherEarnings = otherServicesAmount * 0.5;
   const executorEarnings = electricalEarnings + otherEarnings;
 
@@ -274,6 +280,12 @@ export interface ExecutorProfile {
   hasCar?: boolean;
   hasTools?: boolean;
   isActive?: boolean;
+  isPro?: boolean;
+  hasDiploma?: boolean;
+  diplomaVerified?: boolean;
+  carVerified?: boolean;
+  toolsVerified?: boolean;
+  proUnlockedAt?: number;
 }
 
 export function calculateRankBonus(profile: ExecutorProfile): number {
@@ -284,6 +296,30 @@ export function calculateRankBonus(profile: ExecutorProfile): number {
   if (profile.isActive) bonus += 5;
   
   return bonus;
+}
+
+export function checkProStatus(profile: ExecutorProfile): boolean {
+  return !!(
+    profile.hasDiploma && 
+    profile.diplomaVerified &&
+    profile.hasCar && 
+    profile.carVerified &&
+    profile.hasTools && 
+    profile.toolsVerified
+  );
+}
+
+export function getElectricalServicesCommission(profile: ExecutorProfile): number {
+  if (profile.isPro) return 0.5;
+  
+  const registrationDate = profile.registrationDate;
+  const threeMonthsAgo = Date.now() - (90 * 24 * 60 * 60 * 1000);
+  
+  if (registrationDate < threeMonthsAgo) {
+    return 0.5;
+  }
+  
+  return 0.3;
 }
 
 export function checkRankUpgrade(profile: ExecutorProfile): ExecutorRank | null {
