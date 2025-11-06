@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCart } from '@/contexts/CartContext';
-import { calculateItemPrice, getDiscount, MASTER_VISIT_ID, calculateFrames } from '@/types/electrical';
+import { calculateItemPrice, getDiscount, getCableDiscount, MASTER_VISIT_ID, calculateFrames } from '@/types/electrical';
 import ServiceModal from '@/components/ServiceModal';
 import ContactModal from '@/components/ContactModal';
 
@@ -32,7 +32,11 @@ export default function Cart() {
   const totalFrames = calculateFrames(wiringItems);
   const cableMeters = totalFrames * 7;
   
-  const cableCost = cableMeters * 100;
+  const cableDiscount = getCableDiscount(cableMeters);
+  const baseCableCost = cableMeters * 100;
+  const cableCost = Math.round(baseCableCost * (1 - cableDiscount / 100));
+  const cableSavings = baseCableCost - cableCost;
+  
   const finalTotal = totalPrice + cableCost;
   
   const masterVisit = cart.find(item => item.product.id === MASTER_VISIT_ID);
@@ -272,6 +276,12 @@ export default function Cart() {
                       <span className="text-gray-600">Стоимость монтажа кабеля</span>
                       <span className="font-semibold">{cableCost.toLocaleString('ru-RU')} ₽</span>
                     </div>
+                    {cableDiscount > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-green-600">Скидка на монтаж кабеля {cableDiscount}%</span>
+                        <span className="text-green-600 font-semibold">-{cableSavings.toLocaleString('ru-RU')} ₽</span>
+                      </div>
+                    )}
                   </>
                 )}
 

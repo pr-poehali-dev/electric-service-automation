@@ -351,3 +351,10 @@ export function getDiscount(quantity: number): number {
   if (quantity >= 5) return 10;
   return 0;
 }
+
+export function getCableDiscount(cableMeters: number): number {
+  if (cableMeters >= 300) return 30;
+  if (cableMeters >= 200) return 20;
+  if (cableMeters >= 100) return 10;
+  return 0;
+}
