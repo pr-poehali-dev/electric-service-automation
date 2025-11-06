@@ -235,6 +235,35 @@ export interface ExecutorEarnings {
   productEarnings: number;
 }
 
+export function calculateExecutorEarnings(order: Order): ExecutorEarnings {
+  let installationWorkAmount = 0;
+  let productAmount = 0;
+
+  order.items.forEach(item => {
+    const totalItemPrice = item.price * item.quantity;
+    
+    if (item.category === 'switch' || item.category === 'outlet' || item.category === 'chandelier') {
+      productAmount += totalItemPrice;
+    } else {
+      installationWorkAmount += totalItemPrice;
+    }
+  });
+
+  const installationEarnings = installationWorkAmount * 0.3;
+  const productEarnings = productAmount * 0.5;
+  const executorEarnings = installationEarnings + productEarnings;
+
+  return {
+    orderId: order.id,
+    totalAmount: order.totalAmount || 0,
+    installationWorkAmount,
+    productAmount,
+    executorEarnings: Math.round(executorEarnings),
+    installationEarnings: Math.round(installationEarnings),
+    productEarnings: Math.round(productEarnings)
+  };
+}
+
 export interface ExecutorProfile {
   userId: string;
   rank: ExecutorRank;
