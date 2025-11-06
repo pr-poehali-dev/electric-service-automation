@@ -49,6 +49,14 @@ export interface CartItem {
   additionalOptions?: string[];
 }
 
+export interface ElectricalItem {
+  name: string;
+  price: number;
+  quantity: number;
+  category?: string;
+  description?: string;
+}
+
 export type OrderStatus = 'pending' | 'confirmed' | 'in-progress' | 'completed';
 
 export type PaymentStatus = 'unpaid' | 'partially_paid' | 'paid' | 'refunded' | 'pending';
@@ -103,11 +111,14 @@ export interface GoogleIntegrationSettings {
 
 export interface Order {
   id: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
   date: string;
   time: string;
   address: string;
   phone: string;
-  items: CartItem[];
+  items: ElectricalItem[];
   status: OrderStatus;
   totalSwitches: number;
   totalOutlets: number;
@@ -115,6 +126,8 @@ export interface Order {
   estimatedCable: number;
   estimatedFrames: number;
   createdAt: number;
+  preferredDate?: string;
+  notes?: string;
   assignedTo?: string;
   assignedToName?: string;
   totalAmount?: number;
@@ -123,6 +136,7 @@ export interface Order {
   paidAmount?: number;
   googleCalendarEventId?: string;
   googleKeepNoteId?: string;
+  googleTaskId?: string;
 }
 
 export interface PortfolioItem {

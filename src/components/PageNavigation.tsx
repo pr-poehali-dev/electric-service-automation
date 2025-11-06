@@ -64,14 +64,25 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
             <Icon name="ClipboardList" size={20} />
           </Button>
         )}
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onContactClick}
-          title="Связаться с нами"
-        >
-          <Icon name="MessageCircle" size={20} />
-        </Button>
+        {isAuthenticated ? (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => {}}
+            title="Уведомления"
+          >
+            <Icon name="Bell" size={20} />
+          </Button>
+        ) : (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onContactClick}
+            title="Связаться с нами"
+          >
+            <Icon name="MessageCircle" size={20} />
+          </Button>
+        )}
       </div>
     </div>
   );

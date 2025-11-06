@@ -95,16 +95,27 @@ export default function CheckoutPage() {
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => {
-                  let value = e.target.value.replace(/\D/g, '');
-                  if (value.startsWith('9') && value.length === 10) {
-                    value = '8' + value;
+                  const input = e.target.value.replace(/\D/g, '');
+                  let value = input;
+                  if (input.startsWith('9') && input.length === 10) {
+                    value = '8' + input;
                   }
-                  setFormData({ ...formData, phone: value });
+                  
+                  let formatted = '';
+                  if (value.length > 0) {
+                    formatted = value[0];
+                    if (value.length > 1) formatted += ' (' + value.substring(1, 4);
+                    if (value.length > 4) formatted += ') ' + value.substring(4, 7);
+                    if (value.length > 7) formatted += '-' + value.substring(7, 9);
+                    if (value.length > 9) formatted += '-' + value.substring(9, 11);
+                  }
+                  
+                  setFormData({ ...formData, phone: formatted });
                 }}
                 className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
                   errors.phone ? 'border-red-500 animate-shake' : 'border-gray-300'
                 }`}
-                placeholder="8 (___) ___-__-__"
+                placeholder="8 (900) 000-00-00"
               />
               {errors.phone && (
                 <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
@@ -158,7 +169,7 @@ export default function CheckoutPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Строительные работы:</span>
+                <span>Работы без учёта кабеля:</span>
                 <span className="font-bold">{totalPrice.toLocaleString('ru-RU')} ₽</span>
               </div>
 

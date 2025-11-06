@@ -45,7 +45,7 @@ export function getInitialContainers(): ServiceContainer[] {
     {
       productId: 'wiring-complex',
       productName: 'Электромонтажные работы',
-      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, замена проводки в квартире',
+      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, комплексные работы электрика',
       category: 'outlet',
       sectionCategory: 'wiring',
       expanded: true,

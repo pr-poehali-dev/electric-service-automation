@@ -12,6 +12,7 @@ import ContactModal from '@/components/ContactModal';
 import OrderDetailModal from '@/components/orders/OrderDetailModal';
 import RoleGate from '@/components/auth/RoleGate';
 import { useAuth } from '@/contexts/AuthContext';
+import { useGoogleAutoSync } from '@/hooks/useGoogleAutoSync';
 
 const STATUS_LABELS = {
   'pending': 'Ожидает',
@@ -153,6 +154,8 @@ export default function AllOrders() {
   const [filterStatus, setFilterStatus] = useState<Order['status'] | 'all'>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
+  
+  useGoogleAutoSync(orders);
 
   if (!isAuthenticated) {
     return (

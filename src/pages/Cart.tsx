@@ -92,8 +92,7 @@ export default function Cart() {
                     }}
                     className="text-xs text-gray-500 hover:text-red-600"
                   >
-                    <Icon name="Trash2" size={14} className="mr-1" />
-                    Очистить
+                    <Icon name="Trash2" size={14} />
                   </Button>
                   <Button
                     variant="outline"
