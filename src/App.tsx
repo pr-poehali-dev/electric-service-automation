@@ -36,6 +36,7 @@ import Profile from "./pages/Profile";
 import Services from "./pages/Services";
 import GoogleCallback from "./pages/GoogleCallback";
 import Notifications from "./pages/Notifications";
+import ExecutorProfileSettings from "./pages/ExecutorProfileSettings";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,7 @@ const AppRoutes = () => {
       <Route path="/confirmation" element={<Confirmation />} />
       <Route path="/order-history" element={<OrderHistory />} />
       <Route path="/executor-profile" element={<ExecutorProfile />} />
+      <Route path="/executor-profile-settings" element={<ExecutorProfileSettings />} />
       <Route path="/executor-public-profile" element={<ExecutorPublicProfile />} />
       <Route 
         path="/executor" 

@@ -196,6 +196,18 @@ export default function Orders() {
         <div className="p-6 space-y-4">
           {permissions.isElectrician && executorProfile && (
             <div className="space-y-4 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-gray-600">Мой профиль</h3>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/executor-profile-settings')}
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  <Icon name="Settings" className="h-4 w-4 mr-1" />
+                  Настроить
+                </Button>
+              </div>
               <ExecutorStatsCard profile={executorProfile} />
               <EarningsWidget orders={orders} executorId={user?.uid || ''} />
             </div>
