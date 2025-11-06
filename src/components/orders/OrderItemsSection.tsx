@@ -15,82 +15,78 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
   const safeTotalAmount = totalAmount || 0;
 
   return (
-    <Card className="p-6 animate-fadeIn">
-      <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
-        <Icon name="ShoppingCart" size={20} className="text-primary" />
-        Состав заявки
-      </h2>
-      <div className="space-y-3">
+    <Card className="p-6 animate-fadeIn bg-white border-2 border-dashed border-gray-300">
+      <div className="border-b-2 border-dashed border-gray-300 pb-4 mb-6">
+        <h2 className="font-bold text-xl text-center flex items-center justify-center gap-2">
+          <Icon name="Receipt" size={24} className="text-primary" />
+          Состав заявки
+        </h2>
+      </div>
+      
+      <div className="space-y-2 font-mono text-sm">
         {safeItems.map((item, index) => {
           const itemPrice = item.price || 0;
           const itemQuantity = item.quantity || 1;
           const itemTotal = itemPrice * itemQuantity;
 
           return (
-          <div key={index} className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-all">
-            <div className="flex justify-between items-start mb-2">
-              {isEditing ? (
-                <Input 
-                  value={item.name}
-                  onChange={(e) => onItemEdit(index, 'name', e.target.value)}
-                  className="flex-1 mr-2 font-medium"
-                />
-              ) : (
-                <span className="font-semibold text-gray-800">{item.name}</span>
-              )}
-              {isEditing ? (
-                <Input 
-                  type="number"
-                  value={item.price}
-                  onChange={(e) => onItemEdit(index, 'price', parseFloat(e.target.value))}
-                  className="w-32 font-medium"
-                />
-              ) : (
-                <span className="font-bold text-primary whitespace-nowrap ml-2">{itemPrice.toLocaleString()} ₽</span>
-              )}
-            </div>
-            
-            {item.category && (
-              <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                <Icon name="Tag" size={12} />
-                {item.category}
-              </div>
-            )}
-            
-            {item.description && (
-              <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
-            )}
-            
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <Icon name="Package" size={14} className="text-gray-500" />
-                <span className="text-muted-foreground">Количество:</span>
+          <div key={index} className="border-b border-dashed border-gray-200 pb-2 mb-2">
+            <div className="flex justify-between items-start gap-4">
+              <div className="flex-1">
                 {isEditing ? (
                   <Input 
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => onItemEdit(index, 'quantity', parseInt(e.target.value))}
-                    className="w-20 h-8 text-sm"
-                    min="1"
+                    value={item.name}
+                    onChange={(e) => onItemEdit(index, 'name', e.target.value)}
+                    className="font-medium mb-1"
                   />
                 ) : (
-                  <span className="font-semibold">{item.quantity} шт</span>
+                  <span className="font-semibold text-gray-900 block">{item.name}</span>
+                )}
+                {item.description && !isEditing && (
+                  <p className="text-xs text-gray-500 mt-1">{item.description}</p>
                 )}
               </div>
-              <div className="font-bold text-gray-800 bg-white px-3 py-1 rounded-full shadow-sm">
-                {itemTotal.toLocaleString()} ₽
+            </div>
+            
+            <div className="flex justify-between items-center mt-2">
+              <div className="flex items-center gap-3 text-xs text-gray-600">
+                {isEditing ? (
+                  <>
+                    <Input 
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) => onItemEdit(index, 'quantity', parseInt(e.target.value))}
+                      className="w-16 h-7 text-xs"
+                      min="1"
+                    />
+                    <span>×</span>
+                    <Input 
+                      type="number"
+                      value={item.price}
+                      onChange={(e) => onItemEdit(index, 'price', parseFloat(e.target.value))}
+                      className="w-24 h-7 text-xs"
+                    />
+                  </>
+                ) : (
+                  <span>{itemQuantity} шт × {itemPrice.toLocaleString()} ₽</span>
+                )}
               </div>
+              <span className="font-bold text-gray-900">{itemTotal.toLocaleString()} ₽</span>
             </div>
           </div>
           );
         })}
         
-        <div className="border-t-2 pt-4 mt-4">
-          <div className="flex justify-between items-center text-lg">
-            <span className="font-bold text-gray-800">Итого:</span>
+        <div className="border-t-2 border-gray-800 pt-4 mt-6">
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-xl text-gray-900">ИТОГО:</span>
             <span className="font-bold text-2xl text-primary">{safeTotalAmount.toLocaleString()} ₽</span>
           </div>
         </div>
+      </div>
+      
+      <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-center text-xs text-gray-500">
+        <p>Спасибо за заказ! 🔌</p>
       </div>
     </Card>
   );

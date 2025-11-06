@@ -66,9 +66,15 @@ export default function Orders() {
     }
   }, [location.state, orders]);
 
+  const { user } = useAuth();
+
   const filteredOrders = useMemo(() => {
     return orders.filter(order => {
       if (!order || !order.items) return false;
+      
+      if (permissions.isElectrician && !permissions.isAdmin && user) {
+        if (order.assignedTo !== user.uid) return false;
+      }
       
       if (statusFilter !== 'all' && order.status !== statusFilter) return false;
       
@@ -82,7 +88,7 @@ export default function Orders() {
       
       return true;
     });
-  }, [orders, statusFilter, debouncedSearchQuery]);
+  }, [orders, statusFilter, debouncedSearchQuery, permissions, user]);
 
   const statusCounts = useMemo(() => {
     const counts = {
@@ -121,13 +127,13 @@ export default function Orders() {
         <div className="bg-white shadow-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Мои заявки</h1>
+              <h1 className="text-2xl font-bold text-gray-800">Мои заказы</h1>
             </div>
             {orders.length > 0 && (
               <div className="flex items-center gap-2">
                 <div className="text-right">
                   <div className="text-3xl font-bold text-primary">{orders.length}</div>
-                  <div className="text-xs text-gray-500">заявок</div>
+                  <div className="text-xs text-gray-500">заказов</div>
                 </div>
               </div>
             )}
@@ -138,7 +144,7 @@ export default function Orders() {
               <div className="relative mb-4">
                 <Icon name="Search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" />
                 <Input
-                  placeholder="Найти заявку..."
+                  placeholder="Найти заказ..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 pr-10"

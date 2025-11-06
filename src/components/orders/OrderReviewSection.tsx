@@ -66,15 +66,35 @@ export default function OrderReviewSection({
         />
       )}
 
-      {orderReviews.length > 0 && (
-        <Card className="p-6 animate-fadeIn">
-          <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
-            <Icon name="MessageSquare" size={20} className="text-primary" />
-            Отзывы ({orderReviews.length})
-          </h2>
+      <Card className="p-6 animate-fadeIn">
+        <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
+          <Icon name="MessageSquare" size={20} className="text-primary" />
+          Отзывы и оценки
+        </h2>
+        {orderReviews.length > 0 ? (
           <ReviewList reviews={orderReviews} />
-        </Card>
-      )}
+        ) : (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+              <Icon name="MessageSquare" size={32} className="text-gray-400" />
+            </div>
+            <p className="text-gray-500 mb-4">Пока нет отзывов</p>
+            {canManageReviews && order.status === 'completed' && (
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  const phone = order.customerPhone || order.phone;
+                  const message = `Здравствуйте! Спасибо за заказ #${order.id.slice(-6)}. Будем рады, если вы оставите отзыв о нашей работе.`;
+                  window.open(`https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+                }}
+              >
+                <Icon name="Send" size={16} className="mr-2" />
+                Запросить отзыв
+              </Button>
+            )}
+          </div>
+        )}
+      </Card>
 
       {isAuthenticated && canManageReviews && (
         <Card className="p-6 animate-fadeIn">
@@ -83,7 +103,7 @@ export default function OrderReviewSection({
               <AccordionTrigger className="text-lg font-bold">
                 <div className="flex items-center gap-2">
                   <Icon name="Camera" size={20} className="text-primary" />
-                  Фотоотчёты ({orderPhotoReports.length})
+                  Фотоотчёты {orderPhotoReports.length > 0 && `(${orderPhotoReports.length})`}
                 </div>
               </AccordionTrigger>
               <AccordionContent>
@@ -97,7 +117,7 @@ export default function OrderReviewSection({
                     Загрузить фотоотчёт
                   </Button>
                   
-                  {orderPhotoReports.length > 0 && (
+                  {orderPhotoReports.length > 0 ? (
                     <div className="grid grid-cols-2 gap-4">
                       {orderPhotoReports.map((report) => (
                         <div key={report.id} className="border rounded-lg overflow-hidden">
@@ -116,6 +136,11 @@ export default function OrderReviewSection({
                           </div>
                         </div>
                       ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Icon name="ImageOff" size={32} className="mx-auto mb-2 text-gray-400" />
+                      <p>Фотоотчёты ещё не загружены</p>
                     </div>
                   )}
                 </div>

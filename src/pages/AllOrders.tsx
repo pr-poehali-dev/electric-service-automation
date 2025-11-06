@@ -45,6 +45,15 @@ const getServiceTypeLabel = (items: ElectricalItem[]) => {
   return 'Электромонтаж';
 };
 
+const pluralize = (count: number, one: string, few: string, many: string): string => {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  
+  if (mod10 === 1 && mod100 !== 11) return one;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
+  return many;
+};
+
 const AllOrderCard = memo(({ order, onViewDetails, updateOrderStatus }: { order: Order; onViewDetails: (order: Order) => void; updateOrderStatus: (orderId: string, status: Order['status']) => void }) => {
   return (
     <Card 
@@ -82,7 +91,9 @@ const AllOrderCard = memo(({ order, onViewDetails, updateOrderStatus }: { order:
           <p className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
             {(order.totalAmount || 0).toLocaleString()} ₽
           </p>
-          <p className="text-xs text-gray-500 mt-1">{order.items?.length || 0} услуг</p>
+          <p className="text-xs text-gray-500 mt-1">
+            {order.items?.length || 0} {pluralize(order.items?.length || 0, 'услуга', 'услуги', 'услуг')}
+          </p>
         </div>
       </div>
 
@@ -183,7 +194,7 @@ export default function AllOrders() {
           <div className="p-6 space-y-6">
             <div className="text-center mb-6">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-2">
-                Свободные заявки
+                Поиск заказов
               </h1>
             </div>
 
@@ -262,6 +273,56 @@ export default function AllOrders() {
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {permissions.isElectrician && (
+              <div className="mt-6">
+                <Button 
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                  size="lg"
+                  onClick={() => navigate('/orders')}
+                >
+                  <Icon name="Briefcase" size={20} className="mr-2" />
+                  Смотреть мои заказы
+                </Button>
+              </div>
+            )}
+
+            {permissions.isAdmin && (
+              <div className="mt-4">
+                <Button 
+                  className="w-full"
+                  variant="outline"
+                  onClick={() => {
+                    const testOrder = {
+                      order_id: `TEST-${Date.now()}`,
+                      customer_name: 'Тестовый клиент',
+                      customer_phone: '+79991234567',
+                      address: 'г. Калининград, ул. Тестовая, д. 1',
+                      date: new Date().toISOString().split('T')[0],
+                      time: '10:00',
+                      total_amount: 5000,
+                      items: [
+                        { name: 'Установка розетки', price: 500, quantity: 2, category: 'outlet' },
+                        { name: 'Установка выключателя', price: 400, quantity: 3, category: 'switch' },
+                        { name: 'Прокладка кабеля', price: 100, quantity: 30, category: 'cable' }
+                      ],
+                      status: 'pending'
+                    };
+                    
+                    fetch('https://functions.poehali.dev/fa59900f-ff39-40ef-99de-7d268159765e', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(testOrder)
+                    })
+                    .then(() => alert('Тестовая заявка отправлена в Планфикс'))
+                    .catch(err => alert('Ошибка: ' + err.message));
+                  }}
+                >
+                  <Icon name="TestTube" size={16} className="mr-2" />
+                  Создать тестовую заявку для Планфикс
+                </Button>
               </div>
             )}
           </div>

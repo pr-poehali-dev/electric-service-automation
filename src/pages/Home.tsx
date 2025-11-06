@@ -6,6 +6,7 @@ import { quickServices, electricalServices, Service } from '@/types/services';
 import ServiceCard from '@/components/ServiceCard';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
+import HeroSlider from '@/components/HeroSlider';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -94,8 +95,10 @@ const Home = () => {
       <main className="container mx-auto px-4 py-8">
         {!selectedCategory ? (
           <div className="max-w-2xl mx-auto space-y-6">
-            <div className="text-center space-y-3 mb-8">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground">
+            <HeroSlider />
+            
+            <div className="text-center space-y-3 mb-8 md:hidden">
+              <h2 className="font-heading text-3xl font-bold text-foreground">
                 Выберите категорию
               </h2>
               <p className="text-muted-foreground text-lg">Нажмите на карточку для продолжения</p>

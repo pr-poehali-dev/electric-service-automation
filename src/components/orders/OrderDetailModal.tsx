@@ -175,8 +175,8 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
                   size="lg"
                   onClick={handleAcceptOrder}
                 >
-                  <Icon name="Check" size={20} className="mr-2" />
-                  Принять заявку
+                  <Icon name="UserPlus" size={20} className="mr-2" />
+                  {permissions.isElectrician && !permissions.isAdmin ? 'Откликнуться' : 'Принять заявку'}
                 </Button>
               )}
               

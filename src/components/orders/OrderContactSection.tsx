@@ -12,28 +12,31 @@ interface OrderContactSectionProps {
 export default function OrderContactSection({ order, isEditing, onEdit }: OrderContactSectionProps) {
   return (
     <Card className="p-6 animate-fadeIn">
-      <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
-        <Icon name="User" size={20} className="text-primary" />
-        Контактная информация
-      </h2>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1 text-muted-foreground">Имя</label>
+          <label className="block text-sm font-medium mb-1 text-muted-foreground flex items-center gap-2">
+            <Icon name="User" size={16} className="text-primary" />
+            Имя клиента
+          </label>
           {isEditing ? (
             <Input 
               value={order.customerName}
               onChange={(e) => onEdit('customerName', e.target.value)}
               className="font-medium"
+              placeholder="Введите имя клиента"
             />
           ) : (
             <div className="text-base font-medium bg-gray-50 p-3 rounded-lg border border-gray-200">
-              {order.customerName}
+              {order.customerName || 'Не указано'}
             </div>
           )}
         </div>
         
         <div>
-          <label className="block text-sm font-medium mb-1 text-muted-foreground">Телефон</label>
+          <label className="block text-sm font-medium mb-1 text-muted-foreground flex items-center gap-2">
+            <Icon name="Phone" size={16} className="text-primary" />
+            Телефон
+          </label>
           {isEditing ? (
             <Input 
               type="tel"
@@ -46,28 +49,30 @@ export default function OrderContactSection({ order, isEditing, onEdit }: OrderC
               href={`tel:${order.customerPhone}`}
               className="text-base font-medium bg-green-50 p-3 rounded-lg border border-green-200 text-green-900 hover:bg-green-100 transition-colors flex items-center gap-2 w-fit"
             >
-              <Icon name="Phone" size={16} />
               {order.customerPhone}
             </a>
           )}
         </div>
         
-        {order.customerEmail && (
+        {(order.customerEmail || isEditing) && (
           <div>
-            <label className="block text-sm font-medium mb-1 text-muted-foreground">Email</label>
+            <label className="block text-sm font-medium mb-1 text-muted-foreground flex items-center gap-2">
+              <Icon name="Mail" size={16} className="text-primary" />
+              Email
+            </label>
             {isEditing ? (
               <Input 
                 type="email"
-                value={order.customerEmail}
+                value={order.customerEmail || ''}
                 onChange={(e) => onEdit('customerEmail', e.target.value)}
                 className="font-medium"
+                placeholder="Введите email (необязательно)"
               />
             ) : (
               <a 
                 href={`mailto:${order.customerEmail}`}
                 className="text-base font-medium bg-blue-50 p-3 rounded-lg border border-blue-200 text-blue-900 hover:bg-blue-100 transition-colors flex items-center gap-2 w-fit"
               >
-                <Icon name="Mail" size={16} />
                 {order.customerEmail}
               </a>
             )}

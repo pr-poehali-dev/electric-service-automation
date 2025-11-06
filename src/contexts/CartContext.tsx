@@ -221,18 +221,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       description: cartItem.product.description
     }));
     
+    const totalAmount = electricalItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
     const newOrder: Order = {
       ...orderData,
       id: `ORD-${Date.now()}`,
       items: electricalItems,
       createdAt: Date.now(),
+      totalAmount,
       ...totals
     };
 
     setOrders(prev => [newOrder, ...prev]);
     clearCart();
-    
-    const totalAmount = newOrder.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
     const planfixData = {
       order_id: newOrder.id,
