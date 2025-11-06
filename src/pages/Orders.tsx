@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
 import { Order, ElectricalItem } from '@/types/electrical';
@@ -13,7 +13,6 @@ import CalculatorModal from '@/components/CalculatorModal';
 import BottomMenu from '@/components/BottomMenu';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
-import OrderStatusManager from '@/components/orders/OrderStatusManager';
 import OrderDetailModal from '@/components/orders/OrderDetailModal';
 import OrderCard from '@/components/orders/OrderCard';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,28 +27,6 @@ const STATUS_LABELS = {
   'completed': 'Завершена'
 };
 
-const STATUS_COLORS = {
-  'pending': 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  'confirmed': 'bg-blue-100 text-blue-800 border-blue-300',
-  'in-progress': 'bg-orange-100 text-orange-800 border-orange-300',
-  'completed': 'bg-green-100 text-green-800 border-green-300'
-};
-
-const getServiceTypeLabel = (items: ElectricalItem[]) => {
-  const hasInstallation = items.some(item => 
-    item.category === 'установка' || 
-    item.category === 'монтаж розеток и выключателей'
-  );
-  const hasWiring = items.some(item => item.category === 'проводка и кабели');
-  const hasLighting = items.some(item => item.category === 'освещение');
-  
-  if (hasInstallation && hasWiring) return 'Комплексная установка';
-  if (hasInstallation) return 'Установка оборудования';
-  if (hasWiring) return 'Прокладка кабелей';
-  if (hasLighting) return 'Освещение';
-  return 'Электромонтаж';
-};
-
 export default function Orders() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,8 +39,6 @@ export default function Orders() {
   const [showCalculatorModal, setShowCalculatorModal] = useState(false);
   
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [serviceTypeFilter, setServiceTypeFilter] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -97,16 +72,6 @@ export default function Orders() {
       
       if (statusFilter !== 'all' && order.status !== statusFilter) return false;
       
-      if (serviceTypeFilter !== 'all') {
-        const serviceType = getServiceTypeLabel(order.items);
-        if (serviceType !== serviceTypeFilter) return false;
-      }
-      
-      if (dateFilter) {
-        const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
-        if (orderDate !== dateFilter) return false;
-      }
-      
       if (debouncedSearchQuery) {
         const query = debouncedSearchQuery.toLowerCase();
         const matchesId = order.id?.toLowerCase().includes(query);
@@ -117,12 +82,25 @@ export default function Orders() {
       
       return true;
     });
-  }, [orders, statusFilter, serviceTypeFilter, dateFilter, debouncedSearchQuery]);
+  }, [orders, statusFilter, debouncedSearchQuery]);
 
-  const serviceTypes = useMemo(() => 
-    Array.from(new Set(orders.map(order => getServiceTypeLabel(order.items)))),
-    [orders]
-  );
+  const statusCounts = useMemo(() => {
+    const counts = {
+      all: orders.length,
+      pending: 0,
+      confirmed: 0,
+      'in-progress': 0,
+      completed: 0
+    };
+    
+    orders.forEach(order => {
+      if (order.status in counts) {
+        counts[order.status as keyof typeof counts]++;
+      }
+    });
+    
+    return counts;
+  }, [orders]);
 
   const rowVirtualizer = useVirtualizer({
     count: filteredOrders.length,
@@ -131,15 +109,7 @@ export default function Orders() {
     overscan: 5,
   });
 
-  const hasActiveFilters = statusFilter !== 'all' || serviceTypeFilter !== 'all' || dateFilter !== '' || searchQuery !== '';
   const isSearching = searchQuery !== debouncedSearchQuery;
-
-  const clearFilters = () => {
-    setStatusFilter('all');
-    setServiceTypeFilter('all');
-    setDateFilter('');
-    setSearchQuery('');
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
@@ -149,109 +119,106 @@ export default function Orders() {
         <PageNavigation onContactClick={() => setShowContactModal(true)} />
         
         <div className="bg-white shadow-lg p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-800">Мои заявки</h1>
-              <p className="text-gray-600 mt-2">История ваших заказов</p>
             </div>
             {orders.length > 0 && (
-              <div className="text-right">
-                <div className="text-3xl font-bold text-primary">{orders.length}</div>
-                <div className="text-xs text-gray-500">всего заявок</div>
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-primary">{orders.length}</div>
+                  <div className="text-xs text-gray-500">заявок</div>
+                </div>
               </div>
             )}
           </div>
-        </div>
 
-        {orders.length > 0 && (
-          <div className="p-4 space-y-3 bg-white border-b">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Icon name="Search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          {orders.length > 0 && (
+            <>
+              <div className="relative mb-4">
+                <Icon name="Search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" />
                 <Input
-                  placeholder="Поиск по номеру, адресу, телефону"
+                  placeholder="Найти заявку..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 pr-10"
                 />
-              </div>
-              {hasActiveFilters && (
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={clearFilters}
-                  title="Сбросить фильтры"
-                >
-                  <Icon name="X" size={18} />
-                </Button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Статус" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Все статусы</SelectItem>
-                  <SelectItem value="pending">Ожидает</SelectItem>
-                  <SelectItem value="confirmed">Подтверждена</SelectItem>
-                  <SelectItem value="in-progress">В работе</SelectItem>
-                  <SelectItem value="completed">Завершена</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={serviceTypeFilter} onValueChange={setServiceTypeFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Тип" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Все типы</SelectItem>
-                  {serviceTypes.map(type => (
-                    <SelectItem key={type} value={type}>{type}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Input
-                type="date"
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
-                className="text-sm"
-              />
-            </div>
-
-            {hasActiveFilters && (
-              <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-600">
-                  Найдено: {filteredOrders.length} из {orders.length}
-                </p>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <Icon name="X" size={16} />
+                  </button>
+                )}
                 {isSearching && (
-                  <Icon name="Loader2" size={16} className="animate-spin text-primary" />
+                  <Icon name="Loader2" size={16} className="absolute right-10 top-1/2 -translate-y-1/2 animate-spin text-primary" />
                 )}
               </div>
-            )}
-          </div>
-        )}
+
+              <Tabs value={statusFilter} onValueChange={setStatusFilter} className="w-full">
+                <TabsList className="w-full grid grid-cols-5 h-auto">
+                  <TabsTrigger value="all" className="flex-col py-2 px-1">
+                    <span className="text-lg font-bold">{statusCounts.all}</span>
+                    <span className="text-xs">Все</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="pending" className="flex-col py-2 px-1">
+                    <span className="text-lg font-bold">{statusCounts.pending}</span>
+                    <span className="text-xs">Новые</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="confirmed" className="flex-col py-2 px-1">
+                    <span className="text-lg font-bold">{statusCounts.confirmed}</span>
+                    <span className="text-xs">Принято</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="in-progress" className="flex-col py-2 px-1">
+                    <span className="text-lg font-bold">{statusCounts['in-progress']}</span>
+                    <span className="text-xs">В работе</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="completed" className="flex-col py-2 px-1">
+                    <span className="text-lg font-bold">{statusCounts.completed}</span>
+                    <span className="text-xs">Готово</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </>
+          )}
+        </div>
 
         <div className="p-6">
           {filteredOrders.length === 0 && orders.length > 0 && (
             <Card className="p-8 text-center">
-              <Icon name="FileX" size={48} className="mx-auto mb-4 text-gray-400" />
+              <Icon name="Search" size={48} className="mx-auto mb-4 text-gray-400" />
               <h3 className="text-lg font-semibold mb-2">Ничего не найдено</h3>
-              <p className="text-gray-600 mb-4">Попробуйте изменить параметры фильтрации</p>
-              <Button onClick={clearFilters} variant="outline">
-                Сбросить фильтры
-              </Button>
+              <p className="text-gray-600 mb-4">
+                {searchQuery ? 'Попробуйте изменить запрос поиска' : 'В этом статусе нет заявок'}
+              </p>
+              {(searchQuery || statusFilter !== 'all') && (
+                <Button 
+                  onClick={() => {
+                    setSearchQuery('');
+                    setStatusFilter('all');
+                  }} 
+                  variant="outline"
+                >
+                  Показать все заявки
+                </Button>
+              )}
             </Card>
           )}
 
           {filteredOrders.length === 0 && orders.length === 0 && (
             <Card className="p-8 text-center animate-fadeIn">
-              <Icon name="Package" size={48} className="mx-auto mb-4 text-gray-400" />
-              <h3 className="text-lg font-semibold mb-2">У вас пока нет заявок</h3>
-              <p className="text-gray-600 mb-4">Создайте первый заказ на электромонтажные работы</p>
-              <Button onClick={handleNewOrder} className="w-full">
+              <div className="mb-4">
+                <div className="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center">
+                  <Icon name="ClipboardList" size={40} className="text-primary" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Здесь будут ваши заявки</h3>
+              <p className="text-gray-600 mb-6">
+                Создайте первую заявку на электромонтажные работы
+              </p>
+              <Button onClick={handleNewOrder} className="w-full" size="lg">
+                <Icon name="Plus" size={20} className="mr-2" />
                 Создать заявку
               </Button>
             </Card>
@@ -261,8 +228,16 @@ export default function Orders() {
             <div
               ref={parentRef}
               className="overflow-auto"
-              style={{ height: 'calc(100vh - 450px)', minHeight: '400px' }}
+              style={{ height: 'calc(100vh - 480px)', minHeight: '300px' }}
             >
+              <div className="mb-3 flex items-center justify-between px-1">
+                <span className="text-sm text-gray-600">
+                  {statusFilter === 'all' ? 'Все заявки' : STATUS_LABELS[statusFilter as keyof typeof STATUS_LABELS]}
+                </span>
+                <span className="text-sm font-medium text-gray-800">
+                  {filteredOrders.length} {filteredOrders.length === 1 ? 'заявка' : filteredOrders.length < 5 ? 'заявки' : 'заявок'}
+                </span>
+              </div>
               <div
                 style={{
                   height: `${rowVirtualizer.getTotalSize()}px`,
@@ -297,16 +272,19 @@ export default function Orders() {
               </div>
             </div>
           )}
-        </div>
 
-        <div className="px-6 pb-6">
-          <Button 
-            onClick={handleNewOrder}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-6 rounded-xl shadow-lg"
-          >
-            <Icon name="Plus" size={20} className="mr-2" />
-            Создать новую заявку
-          </Button>
+          {orders.length > 0 && (
+            <div className="mt-4">
+              <Button 
+                onClick={handleNewOrder}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-6 rounded-xl shadow-lg"
+                size="lg"
+              >
+                <Icon name="Plus" size={20} className="mr-2" />
+                Новая заявка
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import Icon from '@/components/ui/icon';
+import NotificationsModal from '@/components/notifications/NotificationsModal';
+import { useNotifications } from '@/hooks/useNotifications';
 
 interface PageNavigationProps {
   onContactClick?: () => void;
@@ -15,8 +18,12 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
   const { cart } = useCart();
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
+  const { unreadCount } = useNotifications();
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const isCheckoutPage = location.pathname === '/checkout';
+  const isCartPage = location.pathname === '/cart';
+  const isProductsPage = location.pathname === '/products';
 
   return (
     <div className="bg-white shadow-lg p-4 flex items-center justify-between">
@@ -32,7 +39,7 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         <Button 
           variant="ghost"
           className="h-10 text-sm px-3 relative"
-          onClick={() => navigate('/cart')}
+          onClick={() => navigate('/products')}
           title="Услуги электрика"
         >
           Услуги электрика
@@ -42,11 +49,21 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
             </span>
           )}
         </Button>
-        {cartCount > 0 && !isCheckoutPage && (
+        {cartCount > 0 && isCartPage && (
           <Button 
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold"
             onClick={() => navigate('/checkout')}
+            title="Продолжить"
+          >
+            Продолжить
+          </Button>
+        )}
+        {cartCount > 0 && isProductsPage && (
+          <Button 
+            variant="ghost"
+            className="h-10 text-sm px-3 text-blue-600 font-semibold"
+            onClick={() => navigate('/cart')}
             title="Продолжить"
           >
             Продолжить
@@ -68,10 +85,16 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={() => {}}
+            onClick={() => setNotificationsOpen(true)}
             title="Уведомления"
+            className="relative"
           >
             <Icon name="Bell" size={20} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
           </Button>
         ) : (
           <Button 
@@ -84,6 +107,10 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
           </Button>
         )}
       </div>
+      <NotificationsModal 
+        open={notificationsOpen} 
+        onClose={() => setNotificationsOpen(false)} 
+      />
     </div>
   );
 }

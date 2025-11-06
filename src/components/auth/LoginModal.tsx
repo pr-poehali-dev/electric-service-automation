@@ -18,13 +18,25 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const normalizePhone = (phoneValue: string): string => {
+    let normalized = phoneValue.replace(/\D/g, '');
+    if (normalized.startsWith('7')) {
+      normalized = '8' + normalized.slice(1);
+    }
+    if (normalized.startsWith('9') && normalized.length === 10) {
+      normalized = '8' + normalized;
+    }
+    return normalized;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const success = await login(phone, password);
+      const normalizedPhone = normalizePhone(phone);
+      const success = await login(normalizedPhone, password);
       if (success) {
         onSuccess?.();
         onClose();

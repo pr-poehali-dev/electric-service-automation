@@ -40,7 +40,20 @@ export function useProductsLogic() {
   };
 
   const updateOptionQuantity = (containerIndex: number, optionId: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
+    if (newQuantity <= 0) {
+      setContainers(prev => prev.map((container, idx) => {
+        if (idx === containerIndex) {
+          return {
+            ...container,
+            options: container.options.map(opt => 
+              opt.id === optionId ? { ...opt, enabled: false, quantity: 1 } : opt
+            )
+          };
+        }
+        return container;
+      }));
+      return;
+    }
     setContainers(prev => prev.map((container, idx) => {
       if (idx === containerIndex) {
         return {
