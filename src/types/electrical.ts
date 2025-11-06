@@ -55,6 +55,27 @@ export interface ElectricalItem {
   quantity: number;
   category?: string;
   description?: string;
+  isElectricalWork?: boolean;
+}
+
+export const ELECTRICAL_WORK_SERVICES = [
+  'Блок из 5 розеток',
+  'Блок из 4-х розеток',
+  'Блок из 3-х розеток',
+  'Блок из 2-х розеток',
+  'Добавить розетку',
+  'Установить розетку',
+  'Выключатель перенести',
+  'Установить выключатель',
+  'Перенос газовых детекторов',
+  'Перенос газоанализаторов',
+  'монтаж кабеля'
+];
+
+export function isElectricalWorkService(serviceName: string): boolean {
+  return ELECTRICAL_WORK_SERVICES.some(work => 
+    serviceName.toLowerCase().includes(work.toLowerCase())
+  );
 }
 
 export type OrderStatus = 'pending' | 'confirmed' | 'in-progress' | 'completed';
@@ -236,16 +257,14 @@ export interface ExecutorEarnings {
 }
 
 export function calculateExecutorEarnings(order: Order, executorProfile?: ExecutorProfile): ExecutorEarnings {
-  let electricalServicesAmount = 0;
+  let electricalWorkAmount = 0;
   let otherServicesAmount = 0;
-
-  const electricalServiceCategories = ['switch', 'outlet', 'chandelier'];
 
   order.items.forEach(item => {
     const totalItemPrice = item.price * item.quantity;
     
-    if (electricalServiceCategories.includes(item.category || '')) {
-      electricalServicesAmount += totalItemPrice;
+    if (isElectricalWorkService(item.name)) {
+      electricalWorkAmount += totalItemPrice;
     } else {
       otherServicesAmount += totalItemPrice;
     }
@@ -255,14 +274,14 @@ export function calculateExecutorEarnings(order: Order, executorProfile?: Execut
     ? getElectricalServicesCommission(executorProfile)
     : 0.3;
   
-  const electricalEarnings = electricalServicesAmount * electricalCommission;
+  const electricalEarnings = electricalWorkAmount * electricalCommission;
   const otherEarnings = otherServicesAmount * 0.5;
   const executorEarnings = electricalEarnings + otherEarnings;
 
   return {
     orderId: order.id,
     totalAmount: order.totalAmount || 0,
-    installationWorkAmount: electricalServicesAmount,
+    installationWorkAmount: electricalWorkAmount,
     productAmount: otherServicesAmount,
     executorEarnings: Math.round(executorEarnings),
     installationEarnings: Math.round(electricalEarnings),
@@ -338,6 +357,31 @@ export function checkRankUpgrade(profile: ExecutorProfile): ExecutorRank | null 
   }
   
   return null;
+}
+
+export function updateExecutorProfileAfterOrder(
+  profile: ExecutorProfile, 
+  orderEarnings: ExecutorEarnings
+): ExecutorProfile {
+  const updatedProfile: ExecutorProfile = {
+    ...profile,
+    completedOrders: profile.completedOrders + 1,
+    totalRevenue: profile.totalRevenue + orderEarnings.executorEarnings
+  };
+  
+  const newRank = checkRankUpgrade(updatedProfile);
+  if (newRank && newRank !== profile.rank) {
+    updatedProfile.rank = newRank;
+    updatedProfile.lastRankUpdate = Date.now();
+  }
+  
+  const shouldBecomePro = checkProStatus(updatedProfile);
+  if (shouldBecomePro && !updatedProfile.isPro) {
+    updatedProfile.isPro = true;
+    updatedProfile.proUnlockedAt = Date.now();
+  }
+  
+  return updatedProfile;
 }
 
 export interface PortfolioItem {

@@ -1,0 +1,128 @@
+import { Card } from '@/components/ui/card';
+import Icon from '@/components/ui/icon';
+import { ExecutorProfile, RANKS } from '@/types/electrical';
+
+interface ExecutorStatsCardProps {
+  profile: ExecutorProfile;
+}
+
+export default function ExecutorStatsCard({ profile }: ExecutorStatsCardProps) {
+  const currentRank = RANKS[profile.rank];
+  const rankIndex = ['specialist', 'master', 'senior', 'expert', 'legend'].indexOf(profile.rank);
+  const nextRank = rankIndex < 4 ? RANKS[['specialist', 'master', 'senior', 'expert', 'legend'][rankIndex + 1]] : null;
+
+  const ordersProgress = nextRank 
+    ? (profile.completedOrders / nextRank.minCompletedOrders) * 100 
+    : 100;
+  const revenueProgress = nextRank 
+    ? (profile.totalRevenue / nextRank.minRevenue) * 100 
+    : 100;
+
+  return (
+    <Card className="p-4 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+      <div className="space-y-4">
+        {/* Текущее звание */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">{currentRank.badge}</span>
+            <div>
+              <h3 className="text-lg font-bold text-amber-900">{currentRank.name}</h3>
+              <p className="text-xs text-amber-700">{currentRank.description}</p>
+            </div>
+          </div>
+          {profile.isPro && (
+            <div className="bg-purple-100 border border-purple-300 px-3 py-1 rounded-full">
+              <span className="text-xs font-bold text-purple-700">⭐ ПРОФИ</span>
+            </div>
+          )}
+        </div>
+
+        {/* Статистика */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white rounded-lg p-3 border border-amber-200">
+            <div className="flex items-center gap-2 mb-1">
+              <Icon name="CheckCircle" className="h-4 w-4 text-green-600" />
+              <span className="text-xs text-gray-600">Заказов</span>
+            </div>
+            <p className="text-xl font-bold text-gray-900">{profile.completedOrders}</p>
+          </div>
+          
+          <div className="bg-white rounded-lg p-3 border border-amber-200">
+            <div className="flex items-center gap-2 mb-1">
+              <Icon name="TrendingUp" className="h-4 w-4 text-blue-600" />
+              <span className="text-xs text-gray-600">Доход</span>
+            </div>
+            <p className="text-xl font-bold text-gray-900">
+              {profile.totalRevenue.toLocaleString()} ₽
+            </p>
+          </div>
+        </div>
+
+        {/* Прогресс до следующего звания */}
+        {nextRank && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-amber-800">
+                До звания "{nextRank.name}"
+              </span>
+              <span className="text-xs text-amber-600">{nextRank.badge}</span>
+            </div>
+            
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs text-gray-600">
+                <span>Заказы: {profile.completedOrders} / {nextRank.minCompletedOrders}</span>
+                <span>{Math.min(ordersProgress, 100).toFixed(0)}%</span>
+              </div>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-green-500 transition-all duration-300"
+                  style={{ width: `${Math.min(ordersProgress, 100)}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs text-gray-600">
+                <span>Доход: {profile.totalRevenue.toLocaleString()} / {nextRank.minRevenue.toLocaleString()} ₽</span>
+                <span>{Math.min(revenueProgress, 100).toFixed(0)}%</span>
+              </div>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-blue-500 transition-all duration-300"
+                  style={{ width: `${Math.min(revenueProgress, 100)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Бонусы */}
+        {(profile.hasCar || profile.hasTools || profile.isActive) && (
+          <div className="border-t border-amber-200 pt-3">
+            <p className="text-xs font-medium text-amber-800 mb-2">Активные бонусы:</p>
+            <div className="flex flex-wrap gap-2">
+              {profile.hasCar && (
+                <div className="flex items-center gap-1 bg-blue-100 border border-blue-300 px-2 py-1 rounded-full">
+                  <Icon name="Car" className="h-3 w-3 text-blue-600" />
+                  <span className="text-xs font-medium text-blue-700">+10%</span>
+                </div>
+              )}
+              {profile.hasTools && (
+                <div className="flex items-center gap-1 bg-orange-100 border border-orange-300 px-2 py-1 rounded-full">
+                  <Icon name="Wrench" className="h-3 w-3 text-orange-600" />
+                  <span className="text-xs font-medium text-orange-700">+5%</span>
+                </div>
+              )}
+              {profile.isActive && (
+                <div className="flex items-center gap-1 bg-green-100 border border-green-300 px-2 py-1 rounded-full">
+                  <Icon name="Zap" className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-medium text-green-700">+5%</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+}
