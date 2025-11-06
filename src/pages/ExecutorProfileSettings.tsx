@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Icon from '@/components/ui/icon';
 import PageHeader from '@/components/PageHeader';
 import ExecutorStatsCard from '@/components/executor/ExecutorStatsCard';
@@ -70,223 +71,245 @@ export default function ExecutorProfileSettings() {
   const isPro = executorProfile.isPro;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      <PageHeader />
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
+        <PageHeader />
 
-      <div className="max-w-2xl mx-auto p-4 space-y-4">
-        <div className="flex items-center gap-3 mb-4">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate('/orders')}
-            className="-ml-2"
-          >
-            <Icon name="ArrowLeft" className="h-4 w-4 mr-1" />
-            Назад
-          </Button>
-          <h1 className="text-2xl font-bold text-gray-900">Настройки профиля</h1>
-        </div>
-        <ExecutorStatsCard profile={executorProfile} />
-
-        <Card className="p-6 border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-white">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">Статус "Профи"</h3>
-              <p className="text-sm text-gray-600">
-                Подтвердите документы для получения 50% от электромонтажных работ
-              </p>
+        <div className="max-w-md mx-auto">
+          <div className="bg-white shadow-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => navigate('/orders')}
+                  className="-ml-2"
+                >
+                  <Icon name="ArrowLeft" className="h-4 w-4" />
+                </Button>
+                <h1 className="text-2xl font-bold text-gray-800">Профиль</h1>
+              </div>
             </div>
-            {isPro ? (
-              <div className="bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 rounded-full shadow-lg">
-                <span className="text-sm font-bold text-white flex items-center gap-1">
-                  <Icon name="Award" className="h-4 w-4" />
-                  ПРОФИ
-                </span>
-              </div>
-            ) : (
-              <div className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-full">
-                <span className="text-sm font-medium text-gray-600">Стандарт</span>
-              </div>
-            )}
           </div>
+          <div className="p-6 space-y-4">
+            <ExecutorStatsCard profile={executorProfile} />
 
-          <div className="space-y-4">
-            {/* Диплом */}
-            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-purple-300 transition-colors bg-white">
-              <div className="flex items-center justify-between mb-3">
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Switch checked={hasDiploma} onCheckedChange={setHasDiploma} />
-                  <Label className="text-sm font-medium">
-                    Диплом специалиста
-                  </Label>
+                  <h3 className="text-lg font-semibold text-gray-900">Статус "Профи"</h3>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="text-gray-400 hover:text-gray-600">
+                        <Icon name="Info" className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="text-xs">Подтвердите диплом, автомобиль и инструменты для получения 50% от электромонтажных работ сразу</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
-                {user.diplomaVerified && (
-                  <div className="flex items-center gap-1 text-green-600">
-                    <Icon name="CheckCircle" className="h-4 w-4" />
-                    <span className="text-xs">Проверено</span>
+                {isPro ? (
+                  <div className="bg-gradient-to-r from-purple-500 to-indigo-500 px-3 py-1.5 rounded-full shadow-md">
+                    <span className="text-xs font-bold text-white flex items-center gap-1">
+                      <Icon name="Award" className="h-3 w-3" />
+                      ПРОФИ
+                    </span>
+                  </div>
+                ) : (
+                  <div className="bg-gray-100 px-3 py-1.5 rounded-full">
+                    <span className="text-xs font-medium text-gray-600">Стандарт</span>
                   </div>
                 )}
               </div>
-              {hasDiploma && (
-                <div>
-                  <Label htmlFor="diploma-upload" className="text-xs text-gray-600">
-                    Загрузите фото диплома
-                  </Label>
-                  <Input
-                    id="diploma-upload"
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) => handleFileChange('diploma', e.target.files?.[0] || null)}
-                    className="mt-2"
-                  />
-                  {diplomaFile && (
-                    <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                      <Icon name="FileCheck" className="h-3 w-3" />
-                      {diplomaFile.name}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
 
-            {/* Автомобиль */}
-            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors bg-white">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Switch checked={hasCar} onCheckedChange={setHasCar} />
-                  <Label className="text-sm font-medium">
-                    Есть автомобиль (+10% бонус)
-                  </Label>
-                </div>
-                {user.carVerified && (
-                  <div className="flex items-center gap-1 text-green-600">
-                    <Icon name="CheckCircle" className="h-4 w-4" />
-                    <span className="text-xs">Проверено</span>
+              <div className="space-y-3">
+                {/* Диплом */}
+                <div className="border border-gray-200 rounded-lg p-3 hover:border-purple-200 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Switch checked={hasDiploma} onCheckedChange={setHasDiploma} />
+                      <Label className="text-sm font-medium">Диплом специалиста</Label>
+                    </div>
+                    {user.diplomaVerified && (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <Icon name="CheckCircle" className="h-4 w-4" />
+                        <span className="text-xs">Проверено</span>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              {hasCar && (
-                <div>
-                  <Label htmlFor="car-upload" className="text-xs text-gray-600">
-                    Загрузите фото СТС или ПТС
-                  </Label>
-                  <Input
-                    id="car-upload"
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) => handleFileChange('car', e.target.files?.[0] || null)}
-                    className="mt-2"
-                  />
-                  {carFile && (
-                    <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                      <Icon name="FileCheck" className="h-3 w-3" />
-                      {carFile.name}
-                    </p>
+                  {hasDiploma && (
+                    <div>
+                      <Input
+                        id="diploma-upload"
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => handleFileChange('diploma', e.target.files?.[0] || null)}
+                        className="text-xs"
+                      />
+                      {diplomaFile && (
+                        <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                          <Icon name="FileCheck" className="h-3 w-3" />
+                          {diplomaFile.name}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
 
-            {/* Инструменты */}
-            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-green-300 transition-colors bg-white">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Switch checked={hasTools} onCheckedChange={setHasTools} />
-                  <Label className="text-sm font-medium">
-                    Есть инструменты (+5% бонус)
-                  </Label>
-                </div>
-                {user.toolsVerified && (
-                  <div className="flex items-center gap-1 text-green-600">
-                    <Icon name="CheckCircle" className="h-4 w-4" />
-                    <span className="text-xs">Проверено</span>
+                {/* Автомобиль */}
+                <div className="border border-gray-200 rounded-lg p-3 hover:border-blue-200 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Switch checked={hasCar} onCheckedChange={setHasCar} />
+                      <Label className="text-sm font-medium">Автомобиль</Label>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Icon name="Info" className="h-3 w-3" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">+10% к доходу</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    {user.carVerified && (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <Icon name="CheckCircle" className="h-4 w-4" />
+                        <span className="text-xs">Проверено</span>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              {hasTools && (
-                <div>
-                  <Label htmlFor="tools-upload" className="text-xs text-gray-600">
-                    Загрузите фото инструментов
-                  </Label>
-                  <Input
-                    id="tools-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileChange('tools', e.target.files?.[0] || null)}
-                    className="mt-2"
-                  />
-                  {toolsFile && (
-                    <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                      <Icon name="FileCheck" className="h-3 w-3" />
-                      {toolsFile.name}
-                    </p>
+                  {hasCar && (
+                    <div>
+                      <Input
+                        id="car-upload"
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) => handleFileChange('car', e.target.files?.[0] || null)}
+                        className="text-xs"
+                      />
+                      {carFile && (
+                        <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                          <Icon name="FileCheck" className="h-3 w-3" />
+                          {carFile.name}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
 
-            {/* Активность */}
-            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-amber-300 transition-colors bg-white">
-              <div className="flex items-center gap-2">
-                <Switch checked={isActive} onCheckedChange={setIsActive} />
-                <Label className="text-sm font-medium">
-                  Активен (принимаю заказы) (+5% бонус)
-                </Label>
+                {/* Инструменты */}
+                <div className="border border-gray-200 rounded-lg p-3 hover:border-green-200 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Switch checked={hasTools} onCheckedChange={setHasTools} />
+                      <Label className="text-sm font-medium">Инструменты</Label>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Icon name="Info" className="h-3 w-3" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">+5% к доходу</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    {user.toolsVerified && (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <Icon name="CheckCircle" className="h-4 w-4" />
+                        <span className="text-xs">Проверено</span>
+                      </div>
+                    )}
+                  </div>
+                  {hasTools && (
+                    <div>
+                      <Input
+                        id="tools-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange('tools', e.target.files?.[0] || null)}
+                        className="text-xs"
+                      />
+                      {toolsFile && (
+                        <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                          <Icon name="FileCheck" className="h-3 w-3" />
+                          {toolsFile.name}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Активность */}
+                <div className="border border-gray-200 rounded-lg p-3 hover:border-amber-200 transition-colors">
+                  <div className="flex items-center gap-2">
+                    <Switch checked={isActive} onCheckedChange={setIsActive} />
+                    <Label className="text-sm font-medium">Принимаю заказы</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button className="text-gray-400 hover:text-gray-600">
+                          <Icon name="Info" className="h-3 w-3" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">+5% к доходу</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
               </div>
-              <p className="text-xs text-gray-500 mt-2 ml-10">
-                Включите, если готовы принимать новые заказы
-              </p>
+            </Card>
+
+            <Card className="p-4 bg-blue-50">
+              <div className="flex items-center gap-2 mb-3">
+                <Icon name="DollarSign" className="h-4 w-4 text-blue-600" />
+                <h4 className="font-semibold text-gray-900">Комиссия</h4>
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-700">Электромонтаж:</span>
+                  <span className="font-semibold text-gray-900">
+                    {isPro ? '50%' : '30%'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-700">Другие услуги:</span>
+                  <span className="font-semibold text-gray-900">50%</span>
+                </div>
+              </div>
+              {!isPro && hasDiploma && hasCar && hasTools && (
+                <div className="mt-3 p-2 bg-purple-100 rounded-lg">
+                  <p className="text-xs text-purple-800 flex items-center gap-1">
+                    <Icon name="Sparkles" className="h-3 w-3" />
+                    После проверки документов получите 50% сразу!
+                  </p>
+                </div>
+              )}
+            </Card>
+
+            <div className="space-y-3">
+              <Button 
+                onClick={handleSave} 
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold" 
+                size="lg"
+              >
+                <Icon name="Save" className="mr-2 h-4 w-4" />
+                Сохранить
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/orders')} 
+                className="w-full"
+              >
+                Отмена
+              </Button>
             </div>
           </div>
-        </Card>
-
-        {/* Информация о комиссиях */}
-        <Card className="p-6 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-          <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-            <Icon name="Info" className="h-5 w-5" />
-            Ваша комиссия
-          </h4>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-blue-700">Электромонтажные работы:</span>
-              <span className="font-bold text-blue-900">
-                {isPro ? '50%' : '30% → 50% через 3 месяца'}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-blue-700">Другие услуги:</span>
-              <span className="font-bold text-blue-900">50%</span>
-            </div>
-          </div>
-          {!isPro && hasDiploma && hasCar && hasTools && (
-            <div className="mt-4 p-3 bg-purple-100 border border-purple-300 rounded-lg">
-              <p className="text-xs text-purple-800">
-                <Icon name="Sparkles" className="h-4 w-4 inline mr-1" />
-                После проверки документов вы получите статус "Профи" и 50% комиссию сразу!
-              </p>
-            </div>
-          )}
-        </Card>
-
-        <div className="space-y-3">
-          <Button 
-            onClick={handleSave} 
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg" 
-            size="lg"
-          >
-            <Icon name="Save" className="mr-2" />
-            Сохранить изменения
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/orders')} 
-            className="w-full border-2 hover:bg-gray-50"
-            size="lg"
-          >
-            Отмена
-          </Button>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
