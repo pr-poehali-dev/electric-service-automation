@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import { toast } from '@/hooks/use-toast';
 
 const Login = () => {
   const { login, register } = useAuth();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -113,6 +115,25 @@ const Login = () => {
             {mode === 'login' ? 'Войти' : 'Зарегистрироваться'}
           </Button>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-muted-foreground">Или</span>
+          </div>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={() => navigate('/role-select')}
+        >
+          <Icon name="Send" className="mr-2 h-4 w-4" />
+          Войти через Telegram
+        </Button>
 
         <p className="text-sm text-muted-foreground text-center mt-6">
           {mode === 'login' ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}

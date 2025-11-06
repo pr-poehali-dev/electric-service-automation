@@ -139,6 +139,16 @@ export interface Order {
   googleTaskId?: string;
 }
 
+export interface ExecutorEarnings {
+  orderId: string;
+  totalAmount: number;
+  installationWorkAmount: number;
+  productAmount: number;
+  executorEarnings: number;
+  installationEarnings: number;
+  productEarnings: number;
+}
+
 export interface PortfolioItem {
   id: string;
   title: string;

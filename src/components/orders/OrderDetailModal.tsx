@@ -16,6 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useReviews } from '@/contexts/ReviewContext';
 import { useCart } from '@/contexts/CartContext';
+import { calculateExecutorEarnings } from '@/utils/executorEarnings';
 
 interface OrderDetailModalProps {
   order: Order;
@@ -166,6 +167,42 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
 
         <div className="p-6 space-y-4">
           <OrderProgressSection order={currentOrder} />
+
+          {permissions.isElectrician && user && currentOrder.assignedTo === user.uid && (
+            <Card className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <div className="space-y-2">
+                <h3 className="font-semibold text-sm text-gray-700 flex items-center gap-2">
+                  <Icon name="Wallet" size={16} />
+                  Ваш доход с этой заявки
+                </h3>
+                {(() => {
+                  const earnings = calculateExecutorEarnings(currentOrder);
+                  return (
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-xs text-gray-600">Монтажные работы (30%)</p>
+                        <p className="text-lg font-bold text-gray-900">
+                          {earnings.installationEarnings.toLocaleString('ru-RU')} ₽
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Товары (50%)</p>
+                        <p className="text-lg font-bold text-gray-900">
+                          {earnings.productEarnings.toLocaleString('ru-RU')} ₽
+                        </p>
+                      </div>
+                      <div className="col-span-2 pt-2 border-t border-green-200">
+                        <p className="text-xs text-gray-600">Итого к получению</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {earnings.executorEarnings.toLocaleString('ru-RU')} ₽
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            </Card>
+          )}
 
           {isAuthenticated && permissions.canEditOrders && (
             <>

@@ -15,6 +15,7 @@ import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import OrderDetailModal from '@/components/orders/OrderDetailModal';
 import OrderCard from '@/components/orders/OrderCard';
+import EarningsWidget from '@/components/executor/EarningsWidget';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -190,7 +191,11 @@ export default function Orders() {
           )}
         </div>
 
-        <div className="p-6">
+        <div className="p-6 space-y-4">
+          {permissions.isElectrician && user && (
+            <EarningsWidget orders={orders} executorId={user.uid} />
+          )}
+
           {filteredOrders.length === 0 && orders.length > 0 && (
             <Card className="p-8 text-center">
               <Icon name="Search" size={48} className="mx-auto mb-4 text-gray-400" />

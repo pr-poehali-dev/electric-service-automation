@@ -16,6 +16,7 @@ import OrderHistory from "./pages/OrderHistory";
 import ExecutorProfile from "./pages/ExecutorProfile";
 import ExecutorPublicProfile from "./pages/ExecutorPublicProfile";
 import Login from "./pages/Login";
+import RoleSelection from "./pages/RoleSelection";
 import ExecutorDashboard from "./pages/ExecutorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
@@ -53,6 +54,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+      <Route path="/role-select" element={user ? <Navigate to="/" /> : <RoleSelection />} />
       <Route path="/" element={<Services />} />
       <Route path="/calculator" element={<Calculator />} />
       <Route path="/electrical" element={<ElectricalHome />} />
