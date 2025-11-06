@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CartItem, Product, Order, ServiceOption, Payment, PaymentStatus } from '@/types/electrical';
+import { CartItem, Product, Order, ServiceOption, Payment, PaymentStatus, calculateExecutorEarnings, updateExecutorProfileAfterOrder } from '@/types/electrical';
 import { useNotifications } from './NotificationContext';
+import { useAuth } from './AuthContext';
 import {
   addItemToCart,
   removeItemFromCart,
@@ -45,6 +46,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const notificationsContext = useNotifications();
+  const { updateUser, getExecutorProfile } = useAuth();
   
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem('electrical-cart');
@@ -158,6 +160,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
     updateOrderStatusInApi(orderId, status).catch(err => 
       console.error('Failed to update order status in DB:', err)
     );
+    
+    if (status === 'completed') {
+      const order = orders.find(o => o.id === orderId);
+      const executorProfile = getExecutorProfile();
+      
+      if (order && executorProfile) {
+        const earnings = calculateExecutorEarnings(order, executorProfile);
+        const updatedProfile = updateExecutorProfileAfterOrder(executorProfile, earnings);
+        
+        updateUser({
+          rank: updatedProfile.rank,
+          completedOrders: updatedProfile.completedOrders,
+          totalRevenue: updatedProfile.totalRevenue,
+          isPro: updatedProfile.isPro,
+          proUnlockedAt: updatedProfile.proUnlockedAt
+        });
+        
+        if (notificationsContext) {
+          notificationsContext.addNotification({
+            type: 'info',
+            orderId: orderId,
+            title: 'Доход начислен',
+            message: `Вы заработали ${earnings.executorEarnings.toLocaleString()} ₽ за заказ #${orderId.slice(-6)}`
+          });
+          
+          if (updatedProfile.rank !== executorProfile.rank) {
+            notificationsContext.addNotification({
+              type: 'info',
+              orderId: orderId,
+              title: 'Повышение звания!',
+              message: `Поздравляем! Вы получили новое звание: ${updatedProfile.rank}`
+            });
+          }
+        }
+      }
+    }
     
     if (notificationsContext) {
       notificationsContext.addNotification({

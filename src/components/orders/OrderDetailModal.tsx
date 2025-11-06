@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { Order, ElectricalItem } from '@/types/electrical';
+import { Order, ElectricalItem, calculateExecutorEarnings as calcEarnings } from '@/types/electrical';
 import OrderStatusManager from './OrderStatusManager';
 import AssignExecutorSelector from './AssignExecutorSelector';
 import PaymentManager from '@/components/payments/PaymentManager';
@@ -12,11 +12,11 @@ import OrderInfoSection from './OrderInfoSection';
 import OrderItemsSection from './OrderItemsSection';
 import OrderContactSection from './OrderContactSection';
 import OrderReviewSection from './OrderReviewSection';
+import OrderEarningsCard from '@/components/executor/OrderEarningsCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useReviews } from '@/contexts/ReviewContext';
 import { useCart } from '@/contexts/CartContext';
-import { calculateExecutorEarnings } from '@/utils/executorEarnings';
 
 interface OrderDetailModalProps {
   order: Order;
@@ -41,10 +41,12 @@ const STATUS_COLORS = {
 };
 
 export default function OrderDetailModal({ order, onClose, onStatusChange, onRepeatOrder, onAssignExecutor }: OrderDetailModalProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, getExecutorProfile } = useAuth();
   const permissions = usePermissions();
   const { getOrderReviews, getOrderPhotoReports } = useReviews();
   const { addPayment, updatePaymentStatus } = useCart();
+  const executorProfile = getExecutorProfile();
+  const earnings = executorProfile ? calcEarnings(order, executorProfile) : null;
   const [isEditing, setIsEditing] = useState(false);
   const [editedOrder, setEditedOrder] = useState<Order>(order);
   const [expandedSections, setExpandedSections] = useState({
@@ -170,37 +172,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
 
           {permissions.isElectrician && user && currentOrder.assignedTo === user.uid && (
             <Card className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-              <div className="space-y-2">
-                <h3 className="font-semibold text-sm text-gray-700 flex items-center gap-2">
-                  <Icon name="Wallet" size={16} />
-                  Ваш доход с этой заявки
-                </h3>
-                {(() => {
-                  const earnings = calculateExecutorEarnings(currentOrder);
-                  return (
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <p className="text-xs text-gray-600">Монтажные работы (30%)</p>
-                        <p className="text-lg font-bold text-gray-900">
-                          {earnings.installationEarnings.toLocaleString('ru-RU')} ₽
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">Товары (50%)</p>
-                        <p className="text-lg font-bold text-gray-900">
-                          {earnings.productEarnings.toLocaleString('ru-RU')} ₽
-                        </p>
-                      </div>
-                      <div className="col-span-2 pt-2 border-t border-green-200">
-                        <p className="text-xs text-gray-600">Итого к получению</p>
-                        <p className="text-2xl font-bold text-green-600">
-                          {earnings.executorEarnings.toLocaleString('ru-RU')} ₽
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
+              {earnings && <OrderEarningsCard earnings={earnings} isPro={executorProfile?.isPro} />}
             </Card>
           )}
 

@@ -16,6 +16,7 @@ import PageNavigation from '@/components/PageNavigation';
 import OrderDetailModal from '@/components/orders/OrderDetailModal';
 import OrderCard from '@/components/orders/OrderCard';
 import EarningsWidget from '@/components/executor/EarningsWidget';
+import ExecutorStatsCard from '@/components/executor/ExecutorStatsCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -67,7 +68,8 @@ export default function Orders() {
     }
   }, [location.state, orders]);
 
-  const { user } = useAuth();
+  const { user, getExecutorProfile } = useAuth();
+  const executorProfile = getExecutorProfile();
 
   const filteredOrders = useMemo(() => {
     return orders.filter(order => {
@@ -192,8 +194,11 @@ export default function Orders() {
         </div>
 
         <div className="p-6 space-y-4">
-          {permissions.isElectrician && user && (
-            <EarningsWidget orders={orders} executorId={user.uid} />
+          {permissions.isElectrician && executorProfile && (
+            <div className="space-y-4 mb-4">
+              <ExecutorStatsCard profile={executorProfile} />
+              <EarningsWidget orders={orders} executorId={user?.uid || ''} />
+            </div>
           )}
 
           {filteredOrders.length === 0 && orders.length > 0 && (

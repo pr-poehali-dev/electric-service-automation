@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ExecutorRank } from '@/types/electrical';
+import { ExecutorRank, ExecutorProfile } from '@/types/electrical';
 
 export type UserRole = 'client' | 'electrician' | 'admin';
 
@@ -13,6 +13,15 @@ export interface User {
   rank?: ExecutorRank;
   completedOrders?: number;
   totalRevenue?: number;
+  hasCar?: boolean;
+  hasTools?: boolean;
+  isActive?: boolean;
+  isPro?: boolean;
+  hasDiploma?: boolean;
+  diplomaVerified?: boolean;
+  carVerified?: boolean;
+  toolsVerified?: boolean;
+  proUnlockedAt?: number;
 }
 
 interface AuthContextType {
@@ -21,6 +30,8 @@ interface AuthContextType {
   register: (phone: string, password: string, name: string, role: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  updateUser: (updates: Partial<User>) => void;
+  getExecutorProfile: () => ExecutorProfile | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -87,8 +98,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('user');
   };
 
+  const updateUser = (updates: Partial<User>) => {
+    if (!user) return;
+    const updatedUser = { ...user, ...updates };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
+  const getExecutorProfile = (): ExecutorProfile | null => {
+    if (!user || user.role !== 'electrician') return null;
+    return {
+      userId: user.id,
+      rank: user.rank || 'specialist',
+      completedOrders: user.completedOrders || 0,
+      totalRevenue: user.totalRevenue || 0,
+      registrationDate: new Date(user.createdAt).getTime(),
+      lastRankUpdate: undefined,
+      hasCar: user.hasCar,
+      hasTools: user.hasTools,
+      isActive: user.isActive,
+      isPro: user.isPro,
+      hasDiploma: user.hasDiploma,
+      diplomaVerified: user.diplomaVerified,
+      carVerified: user.carVerified,
+      toolsVerified: user.toolsVerified,
+      proUnlockedAt: user.proUnlockedAt
+    };
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user, updateUser, getExecutorProfile }}>
       {children}
     </AuthContext.Provider>
   );
