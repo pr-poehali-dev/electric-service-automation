@@ -236,31 +236,31 @@ export interface ExecutorEarnings {
 }
 
 export function calculateExecutorEarnings(order: Order): ExecutorEarnings {
-  let installationWorkAmount = 0;
-  let productAmount = 0;
+  let electricalServicesAmount = 0;
+  let otherServicesAmount = 0;
 
   order.items.forEach(item => {
     const totalItemPrice = item.price * item.quantity;
     
     if (item.category === 'switch' || item.category === 'outlet' || item.category === 'chandelier') {
-      productAmount += totalItemPrice;
+      electricalServicesAmount += totalItemPrice;
     } else {
-      installationWorkAmount += totalItemPrice;
+      otherServicesAmount += totalItemPrice;
     }
   });
 
-  const installationEarnings = installationWorkAmount * 0.3;
-  const productEarnings = productAmount * 0.5;
-  const executorEarnings = installationEarnings + productEarnings;
+  const electricalEarnings = electricalServicesAmount * 0.3;
+  const otherEarnings = otherServicesAmount * 0.5;
+  const executorEarnings = electricalEarnings + otherEarnings;
 
   return {
     orderId: order.id,
     totalAmount: order.totalAmount || 0,
-    installationWorkAmount,
-    productAmount,
+    installationWorkAmount: electricalServicesAmount,
+    productAmount: otherServicesAmount,
     executorEarnings: Math.round(executorEarnings),
-    installationEarnings: Math.round(installationEarnings),
-    productEarnings: Math.round(productEarnings)
+    installationEarnings: Math.round(electricalEarnings),
+    productEarnings: Math.round(otherEarnings)
   };
 }
 
@@ -271,6 +271,37 @@ export interface ExecutorProfile {
   totalRevenue: number;
   registrationDate: number;
   lastRankUpdate?: number;
+  hasCar?: boolean;
+  hasTools?: boolean;
+  isActive?: boolean;
+}
+
+export function calculateRankBonus(profile: ExecutorProfile): number {
+  let bonus = 0;
+  
+  if (profile.hasCar) bonus += 10;
+  if (profile.hasTools) bonus += 5;
+  if (profile.isActive) bonus += 5;
+  
+  return bonus;
+}
+
+export function checkRankUpgrade(profile: ExecutorProfile): ExecutorRank | null {
+  const currentRank = profile.rank;
+  const completedOrders = profile.completedOrders;
+  const totalRevenue = profile.totalRevenue;
+  
+  const ranks: ExecutorRank[] = ['specialist', 'master', 'senior', 'expert', 'legend'];
+  const currentIndex = ranks.indexOf(currentRank);
+  
+  for (let i = ranks.length - 1; i > currentIndex; i--) {
+    const rankInfo = RANKS[ranks[i]];
+    if (completedOrders >= rankInfo.minCompletedOrders && totalRevenue >= rankInfo.minRevenue) {
+      return ranks[i];
+    }
+  }
+  
+  return null;
 }
 
 export interface PortfolioItem {
