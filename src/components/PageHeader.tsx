@@ -27,7 +27,7 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
         <img 
           src={imageUrl}
           alt="Калининград"
-          className="w-full h-auto object-cover"
+          className="w-full h-[200px] md:h-[300px] object-cover"
         />
         
         <div className="absolute top-4 right-4">

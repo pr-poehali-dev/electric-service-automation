@@ -230,24 +230,24 @@ export default function AllOrders() {
             </div>
 
             <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as Order['status'] | 'all')} className="w-full">
-              <TabsList className="w-full grid grid-cols-5 h-auto">
-                <TabsTrigger value="all" className="flex-col py-2 px-1">
+              <TabsList className="w-full grid grid-cols-5 h-auto bg-gradient-to-br from-blue-100 to-indigo-100 p-1">
+                <TabsTrigger value="all" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
                   <span className="text-lg font-bold">{orders.length}</span>
                   <span className="text-xs">Все</span>
                 </TabsTrigger>
-                <TabsTrigger value="pending" className="flex-col py-2 px-1">
+                <TabsTrigger value="pending" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
                   <span className="text-lg font-bold">{orders.filter(o => o.status === 'pending').length}</span>
                   <span className="text-xs">Новые</span>
                 </TabsTrigger>
-                <TabsTrigger value="confirmed" className="flex-col py-2 px-1">
+                <TabsTrigger value="confirmed" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
                   <span className="text-lg font-bold">{orders.filter(o => o.status === 'confirmed').length}</span>
                   <span className="text-xs">Принято</span>
                 </TabsTrigger>
-                <TabsTrigger value="in-progress" className="flex-col py-2 px-1">
+                <TabsTrigger value="in-progress" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
                   <span className="text-lg font-bold">{orders.filter(o => o.status === 'in-progress').length}</span>
                   <span className="text-xs">В работе</span>
                 </TabsTrigger>
-                <TabsTrigger value="completed" className="flex-col py-2 px-1">
+                <TabsTrigger value="completed" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
                   <span className="text-lg font-bold">{orders.filter(o => o.status === 'completed').length}</span>
                   <span className="text-xs">Готово</span>
                 </TabsTrigger>

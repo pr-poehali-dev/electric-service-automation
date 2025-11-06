@@ -232,10 +232,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setOrders(prev => [newOrder, ...prev]);
     clearCart();
     
+    const totalAmount = newOrder.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    const planfixData = {
+      order_id: newOrder.id,
+      customer_name: newOrder.customerName || 'Не указано',
+      customer_phone: newOrder.phone,
+      address: newOrder.address,
+      date: newOrder.date,
+      time: newOrder.time,
+      total_amount: totalAmount,
+      items: newOrder.items,
+      status: newOrder.status
+    };
+    
     fetch('https://functions.poehali.dev/fa59900f-ff39-40ef-99de-7d268159765e', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newOrder)
+      body: JSON.stringify(planfixData)
     }).catch(err => console.error('Planfix sync failed:', err));
     
     if (notificationsContext) {

@@ -77,19 +77,18 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 Статус: {order_data.status}
 '''
     
-    planfix_url = f'https://{account}/rest/task/create'
+    account_clean = account.replace('.planfix.ru', '')
+    planfix_url = f'https://{account_clean}.planfix.ru/rest/task'
     
     payload = {
-        'name': f'Заявка #{order_data.order_id} - {order_data.customer_name}',
+        'title': f'Заявка #{order_data.order_id} - {order_data.customer_name}',
         'description': task_description,
-        'status': 1 if order_data.status == 'pending' else 2,
-        'assignees': [],
-        'template': 1
+        'project': 1
     }
     
     headers = {
         'Authorization': f'Bearer {api_key}',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json; charset=utf-8'
     }
     
     response = requests.post(planfix_url, json=payload, headers=headers, timeout=10)
@@ -102,7 +101,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': json.dumps({
                 'success': True,
                 'task_id': planfix_data.get('id'),
-                'task_url': f'https://{account}/task/{planfix_data.get("id")}'
+                'task_url': f'https://{account_clean}.planfix.ru/task/{planfix_data.get("id")}'
             })
         }
     
