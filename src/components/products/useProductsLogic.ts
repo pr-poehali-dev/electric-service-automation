@@ -121,13 +121,13 @@ export function useProductsLogic() {
       const cableVirtualProduct: typeof wiringProduct = {
         ...wiringProduct,
         id: 'auto-cable-wiring',
-        name: `Монтаж кабеля (${cableMeters}м)`,
+        name: 'Монтаж кабеля',
         description: `Примерный метраж: ${cableMeters}м`,
-        priceInstallOnly: cableMeters * 100,
-        priceWithWiring: cableMeters * 100,
+        priceInstallOnly: 100,
+        priceWithWiring: 100,
         options: []
       };
-      addToCart(cableVirtualProduct, 1, 'full-wiring');
+      addToCart(cableVirtualProduct, cableMeters, 'full-wiring');
     }
     
     containers.forEach(container => {

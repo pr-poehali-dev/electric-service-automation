@@ -12,6 +12,7 @@ import ContactModal from '@/components/ContactModal';
 import OrderDetailModal from '@/components/orders/OrderDetailModal';
 import RoleGate from '@/components/auth/RoleGate';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePermissions } from '@/hooks/usePermissions';
 import { useGoogleAutoSync } from '@/hooks/useGoogleAutoSync';
 
 const STATUS_LABELS = {
@@ -149,7 +150,8 @@ AllOrderCard.displayName = 'AllOrderCard';
 export default function AllOrders() {
   const navigate = useNavigate();
   const { orders, updateOrderStatus, assignExecutor, addToCart, clearCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const permissions = usePermissions();
   const [showContactModal, setShowContactModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState<Order['status'] | 'all'>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -170,12 +172,21 @@ export default function AllOrders() {
     );
   }
 
-  const filteredOrders = useMemo(() => 
-    filterStatus === 'all' 
-      ? orders 
-      : orders.filter(order => order.status === filterStatus),
-    [orders, filterStatus]
-  );
+  const filteredOrders = useMemo(() => {
+    let filtered = orders;
+    
+    if (!permissions.isAdmin && user) {
+      filtered = orders.filter(order => 
+        order.status === 'pending' || order.assignedTo === user.uid
+      );
+    }
+    
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(order => order.status === filterStatus);
+    }
+    
+    return filtered;
+  }, [orders, filterStatus, permissions.isAdmin, user]);
 
   const rowVirtualizer = useVirtualizer({
     count: filteredOrders.length,

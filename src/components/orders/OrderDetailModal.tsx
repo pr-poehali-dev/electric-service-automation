@@ -92,16 +92,35 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
     });
   };
 
+  const { user } = useAuth();
+
+  const handleAcceptOrder = () => {
+    if (order.status === 'pending') {
+      onStatusChange(order.id, 'confirmed');
+      
+      if (user && onAssignExecutor) {
+        onAssignExecutor(order.id, user.uid, user.displayName || user.email || 'Мастер');
+      }
+    }
+  };
+
   const handleStatusChange = (newStatus: Order['status']) => {
     onStatusChange(order.id, newStatus);
   };
 
   const getNextStatus = (): Order['status'] | null => {
     switch (order.status) {
-      case 'pending': return 'confirmed';
       case 'confirmed': return 'in-progress';
       case 'in-progress': return 'completed';
       default: return null;
+    }
+  };
+
+  const getStatusActionLabel = (status: Order['status']): string => {
+    switch (status) {
+      case 'confirmed': return 'Начать работу';
+      case 'in-progress': return 'Завершить';
+      default: return 'Перевести';
     }
   };
 
@@ -148,30 +167,33 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
         <div className="p-6 space-y-4">
           <OrderProgressSection order={currentOrder} />
 
-          {isAuthenticated && permissions.canEditOrders && nextStatus && (
-            <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`px-3 py-1 rounded-full border ${STATUS_COLORS[order.status]}`}>
-                    {STATUS_LABELS[order.status]}
-                  </div>
-                  <Icon name="ArrowRight" size={20} className="text-gray-400" />
-                  <div className={`px-3 py-1 rounded-full border ${STATUS_COLORS[nextStatus]}`}>
-                    {STATUS_LABELS[nextStatus]}
-                  </div>
-                </div>
+          {isAuthenticated && permissions.canEditOrders && (
+            <>
+              {order.status === 'pending' && (
                 <Button 
-                  size="sm"
-                  onClick={() => handleStatusChange(nextStatus)}
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600"
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  size="lg"
+                  onClick={handleAcceptOrder}
                 >
-                  Перевести
+                  <Icon name="Check" size={20} className="mr-2" />
+                  Принять заявку
                 </Button>
-              </div>
-            </Card>
+              )}
+              
+              {nextStatus && (
+                <Button 
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600"
+                  size="lg"
+                  onClick={() => handleStatusChange(nextStatus)}
+                >
+                  <Icon name={nextStatus === 'completed' ? 'CheckCircle' : 'Play'} size={20} className="mr-2" />
+                  {getStatusActionLabel(order.status)}
+                </Button>
+              )}
+            </>
           )}
 
-          {isAuthenticated && permissions.canEditOrders && onAssignExecutor && (
+          {isAuthenticated && permissions.isAdmin && order.status !== 'pending' && onAssignExecutor && (
             <Card className="p-4">
               <AssignExecutorSelector
                 order={currentOrder}
