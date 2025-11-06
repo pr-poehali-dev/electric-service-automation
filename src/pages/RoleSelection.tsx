@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import TelegramAuthButton from '@/components/auth/TelegramAuthButton';
+import { RANKS } from '@/types/electrical';
 
 export default function RoleSelection() {
   const [selectedRole, setSelectedRole] = useState<'client' | 'executor' | null>(null);
@@ -53,9 +54,25 @@ export default function RoleSelection() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">Я исполнитель</h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 mb-3">
                     Принимать заказы, отслеживать доход и управлять своим графиком работы
                   </p>
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl">{RANKS.specialist.badge}</span>
+                      <span className="font-semibold text-amber-900">{RANKS.specialist.name}</span>
+                    </div>
+                    <p className="text-xs text-amber-700 mb-2">{RANKS.specialist.description}</p>
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-amber-900">Начальные обязанности:</p>
+                      {RANKS.specialist.responsibilities.slice(0, 3).map((resp, idx) => (
+                        <div key={idx} className="flex items-center gap-1 text-xs text-amber-700">
+                          <Icon name="Check" className="h-3 w-3" />
+                          <span>{resp}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>

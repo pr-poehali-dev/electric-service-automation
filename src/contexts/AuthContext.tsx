@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { ExecutorRank } from '@/types/electrical';
 
 export type UserRole = 'client' | 'electrician' | 'admin';
 
@@ -9,6 +10,9 @@ export interface User {
   role: UserRole;
   createdAt: string;
   avatar?: string;
+  rank?: ExecutorRank;
+  completedOrders?: number;
+  totalRevenue?: number;
 }
 
 interface AuthContextType {
@@ -67,7 +71,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       phone: cleanPhone,
       name,
       role: (role as UserRole) || 'client',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      rank: role === 'electrician' ? 'specialist' : undefined,
+      completedOrders: role === 'electrician' ? 0 : undefined,
+      totalRevenue: role === 'electrician' ? 0 : undefined
     };
     
     setUser(newUser);

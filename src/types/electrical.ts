@@ -59,6 +59,92 @@ export interface ElectricalItem {
 
 export type OrderStatus = 'pending' | 'confirmed' | 'in-progress' | 'completed';
 
+export type ExecutorRank = 'specialist' | 'master' | 'senior' | 'expert' | 'legend';
+
+export interface RankInfo {
+  id: ExecutorRank;
+  name: string;
+  description: string;
+  responsibilities: string[];
+  minCompletedOrders: number;
+  minRevenue: number;
+  badge: string;
+}
+
+export const RANKS: Record<ExecutorRank, RankInfo> = {
+  'specialist': {
+    id: 'specialist',
+    name: 'Специалист',
+    description: 'Начальное звание для новых исполнителей',
+    responsibilities: [
+      'Сверление отверстий',
+      'Штробление стен',
+      'Установка подрозетников',
+      'Прокладка кабеля',
+      'Уборка после работ'
+    ],
+    minCompletedOrders: 0,
+    minRevenue: 0,
+    badge: '🔧'
+  },
+  'master': {
+    id: 'master',
+    name: 'Мастер',
+    description: 'Опытный специалист с подтвержденными навыками',
+    responsibilities: [
+      'Все обязанности Специалиста',
+      'Монтаж электрощитов',
+      'Подключение автоматов',
+      'Диагностика неисправностей'
+    ],
+    minCompletedOrders: 10,
+    minRevenue: 50000,
+    badge: '⚡'
+  },
+  'senior': {
+    id: 'senior',
+    name: 'Старший мастер',
+    description: 'Высококвалифицированный электрик',
+    responsibilities: [
+      'Все обязанности Мастера',
+      'Проектирование электросетей',
+      'Сложные монтажные работы',
+      'Обучение новичков'
+    ],
+    minCompletedOrders: 30,
+    minRevenue: 150000,
+    badge: '⭐'
+  },
+  'expert': {
+    id: 'expert',
+    name: 'Эксперт',
+    description: 'Профессионал высшего уровня',
+    responsibilities: [
+      'Все обязанности Старшего мастера',
+      'Комплексные электромонтажные системы',
+      'Промышленные объекты',
+      'Консультирование клиентов'
+    ],
+    minCompletedOrders: 50,
+    minRevenue: 300000,
+    badge: '💎'
+  },
+  'legend': {
+    id: 'legend',
+    name: 'Легенда',
+    description: 'Мастер своего дела с безупречной репутацией',
+    responsibilities: [
+      'Все виды электромонтажных работ',
+      'VIP-клиенты',
+      'Особо сложные проекты',
+      'Представитель компании'
+    ],
+    minCompletedOrders: 100,
+    minRevenue: 1000000,
+    badge: '👑'
+  }
+};
+
 export type PaymentStatus = 'unpaid' | 'partially_paid' | 'paid' | 'refunded' | 'pending';
 
 export type PaymentMethod = 'cash' | 'card' | 'bank_transfer' | 'yookassa' | 'tinkoff' | 'sberbank';
@@ -147,6 +233,15 @@ export interface ExecutorEarnings {
   executorEarnings: number;
   installationEarnings: number;
   productEarnings: number;
+}
+
+export interface ExecutorProfile {
+  userId: string;
+  rank: ExecutorRank;
+  completedOrders: number;
+  totalRevenue: number;
+  registrationDate: number;
+  lastRankUpdate?: number;
 }
 
 export interface PortfolioItem {
