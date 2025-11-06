@@ -52,7 +52,7 @@ export default function ElectricalHome() {
               УСЛУГИ <span className="text-[#FF8C00]">ЭЛЕКТРИКА</span>
             </h1>
             <p className="text-sm text-muted-foreground">
-              Рассчитайте стоимость за 2 минуты
+              Рассчитайте стоимость работы за 2 минуты
             </p>
           </div>
 
