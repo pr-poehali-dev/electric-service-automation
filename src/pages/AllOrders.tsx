@@ -164,7 +164,11 @@ export default function AllOrders() {
       }
     }
     
-    return filtered;
+    return filtered.sort((a, b) => {
+      const dateA = a.scheduledDate ? new Date(a.scheduledDate).getTime() : a.createdAt;
+      const dateB = b.scheduledDate ? new Date(b.scheduledDate).getTime() : b.createdAt;
+      return dateA - dateB;
+    });
   }, [orders, filterStatus, permissions.isAdmin, user]);
 
   const rowVirtualizer = useVirtualizer({

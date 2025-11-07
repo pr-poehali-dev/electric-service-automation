@@ -94,9 +94,13 @@ export default function Orders() {
     });
     
     return filtered.sort((a, b) => {
-      const dateA = a.scheduledDate ? new Date(a.scheduledDate).getTime() : new Date(a.createdAt).getTime();
-      const dateB = b.scheduledDate ? new Date(b.scheduledDate).getTime() : new Date(b.createdAt).getTime();
-      return dateA - dateB;
+      if (permissions.isElectrician && !permissions.isAdmin) {
+        const dateA = a.scheduledDate ? new Date(a.scheduledDate).getTime() : a.createdAt;
+        const dateB = b.scheduledDate ? new Date(b.scheduledDate).getTime() : b.createdAt;
+        return dateA - dateB;
+      } else {
+        return b.createdAt - a.createdAt;
+      }
     });
   }, [orders, statusFilter, debouncedSearchQuery, permissions, user]);
 
