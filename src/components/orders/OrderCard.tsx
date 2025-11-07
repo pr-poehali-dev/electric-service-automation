@@ -11,8 +11,10 @@ interface OrderCardProps {
 }
 
 const STATUS_LABELS = {
-  'pending': 'Ожидает',
+  'pending': 'Поиск мастера',
   'confirmed': 'Подтверждена',
+  'on-the-way': 'В пути',
+  'arrived': 'Прибыл',
   'in-progress': 'В работе',
   'completed': 'Завершена'
 };
@@ -20,6 +22,8 @@ const STATUS_LABELS = {
 const STATUS_COLORS = {
   'pending': 'bg-yellow-100 text-yellow-800 border-yellow-300',
   'confirmed': 'bg-blue-100 text-blue-800 border-blue-300',
+  'on-the-way': 'bg-purple-100 text-purple-800 border-purple-300',
+  'arrived': 'bg-indigo-100 text-indigo-800 border-indigo-300',
   'in-progress': 'bg-orange-100 text-orange-800 border-orange-300',
   'completed': 'bg-green-100 text-green-800 border-green-300'
 };

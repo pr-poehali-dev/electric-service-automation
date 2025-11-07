@@ -22,8 +22,10 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 const STATUS_LABELS = {
-  'pending': 'Ожидает',
+  'pending': 'Поиск мастера',
   'confirmed': 'Подтверждена',
+  'on-the-way': 'В пути',
+  'arrived': 'Прибыл',
   'in-progress': 'В работе',
   'completed': 'Завершена'
 };

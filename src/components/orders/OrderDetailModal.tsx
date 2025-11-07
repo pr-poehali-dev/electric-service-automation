@@ -28,8 +28,10 @@ interface OrderDetailModalProps {
 }
 
 const STATUS_LABELS = {
-  'pending': 'Ожидает',
+  'pending': 'Поиск мастера',
   'confirmed': 'Подтверждена',
+  'on-the-way': 'В пути',
+  'arrived': 'Мастер прибыл',
   'in-progress': 'В работе',
   'completed': 'Завершена'
 };
@@ -37,6 +39,8 @@ const STATUS_LABELS = {
 const STATUS_COLORS = {
   'pending': 'bg-yellow-100 text-yellow-800 border-yellow-300',
   'confirmed': 'bg-blue-100 text-blue-800 border-blue-300',
+  'on-the-way': 'bg-purple-100 text-purple-800 border-purple-300',
+  'arrived': 'bg-indigo-100 text-indigo-800 border-indigo-300',
   'in-progress': 'bg-orange-100 text-orange-800 border-orange-300',
   'completed': 'bg-green-100 text-green-800 border-green-300'
 };
@@ -180,7 +184,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
         </div>
 
         <div className="p-6 space-y-4">
-          <OrderProgressSection order={currentOrder} />
+          <OrderProgressSection order={currentOrder} isElectrician={permissions.isElectrician} />
 
           {permissions.isElectrician && user && currentOrder.assignedTo === user.uid && (
             <Card className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
@@ -200,18 +204,21 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
                   {permissions.isElectrician && !permissions.isAdmin ? 'Откликнуться' : 'Принять заявку'}
                 </Button>
               )}
-              
-              {nextStatus && (
-                <Button 
-                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600"
-                  size="lg"
-                  onClick={() => handleStatusChange(nextStatus)}
-                >
-                  <Icon name={nextStatus === 'completed' ? 'CheckCircle' : 'Play'} size={20} className="mr-2" />
-                  {getStatusActionLabel(order.status)}
-                </Button>
-              )}
             </>
+          )}
+
+          {permissions.isElectrician && user && currentOrder.assignedTo === user.uid && (
+            <OrderStatusManager 
+              order={currentOrder} 
+              onStatusChange={handleStatusChange}
+            />
+          )}
+
+          {permissions.isAdmin && (
+            <OrderStatusManager 
+              order={currentOrder} 
+              onStatusChange={handleStatusChange}
+            />
           )}
 
           {isAuthenticated && permissions.isAdmin && order.status !== 'pending' && onAssignExecutor && (
@@ -313,6 +320,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
                   order={currentOrder}
                   isEditing={isEditing}
                   onEdit={handleOrderEdit}
+                  isElectrician={permissions.isElectrician}
                 />
               </div>
             )}

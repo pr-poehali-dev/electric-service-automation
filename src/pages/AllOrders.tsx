@@ -17,8 +17,10 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { useGoogleAutoSync } from '@/hooks/useGoogleAutoSync';
 
 const STATUS_LABELS = {
-  'pending': 'Ожидает',
+  'pending': 'Поиск мастера',
   'confirmed': 'Подтверждена',
+  'on-the-way': 'В пути',
+  'arrived': 'Прибыл',
   'in-progress': 'В работе',
   'completed': 'Завершена'
 };
@@ -26,6 +28,8 @@ const STATUS_LABELS = {
 const STATUS_COLORS = {
   'pending': 'bg-yellow-100 text-yellow-800',
   'confirmed': 'bg-blue-100 text-blue-800',
+  'on-the-way': 'bg-purple-100 text-purple-800',
+  'arrived': 'bg-indigo-100 text-indigo-800',
   'in-progress': 'bg-orange-100 text-orange-800',
   'completed': 'bg-green-100 text-green-800'
 };

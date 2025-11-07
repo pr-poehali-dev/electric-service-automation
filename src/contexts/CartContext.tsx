@@ -38,6 +38,7 @@ interface CartContextType {
   orders: Order[];
   createOrder: (orderData: Omit<Order, 'id' | 'items' | 'createdAt' | 'totalSwitches' | 'totalOutlets' | 'totalPoints' | 'estimatedCable' | 'estimatedFrames'>) => Order;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
+  updateOrder: (order: Order) => void;
   assignExecutor: (orderId: string, electricianId: string, electricianName: string) => void;
   addPayment: (orderId: string, payment: Omit<Payment, 'id' | 'createdAt'>) => void;
   updatePaymentStatus: (orderId: string, paymentId: string, status: PaymentStatus) => void;
@@ -181,6 +182,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const statusMessages = {
       'pending': 'ожидает подтверждения',
       'confirmed': 'подтверждена и принята в работу',
+      'on-the-way': 'мастер в пути',
+      'arrived': 'мастер прибыл',
       'in-progress': 'начата, мастер приступил к работе',
       'completed': 'завершена'
     };
@@ -296,6 +299,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const updateOrder = (updatedOrder: Order) => {
+    setOrders(prev => 
+      prev.map(order => order.id === updatedOrder.id ? updatedOrder : order)
+    );
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -309,6 +318,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         orders,
         createOrder,
         updateOrderStatus,
+        updateOrder,
         assignExecutor,
         addPayment,
         updatePaymentStatus

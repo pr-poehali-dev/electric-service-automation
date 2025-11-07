@@ -78,7 +78,7 @@ export function isElectricalWorkService(serviceName: string): boolean {
   );
 }
 
-export type OrderStatus = 'pending' | 'confirmed' | 'in-progress' | 'completed';
+export type OrderStatus = 'pending' | 'confirmed' | 'on-the-way' | 'arrived' | 'in-progress' | 'completed';
 
 export type ExecutorRank = 'specialist' | 'master' | 'senior' | 'expert' | 'legend';
 
@@ -245,6 +245,9 @@ export interface Order {
   googleCalendarEventId?: string;
   googleKeepNoteId?: string;
   googleTaskId?: string;
+  departureConfirmedAt?: number;
+  arrivedAt?: number;
+  isDemo?: boolean;
 }
 
 export interface ExecutorEarnings {
