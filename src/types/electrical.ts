@@ -96,7 +96,7 @@ export const RANKS: Record<ExecutorRank, RankInfo> = {
   'specialist': {
     id: 'specialist',
     name: 'Специалист',
-    description: 'Начальное звание для новых исполнителей',
+    description: 'Начальный статус для новых исполнителей',
     responsibilities: [
       'Сверление отверстий',
       'Штробление стен',

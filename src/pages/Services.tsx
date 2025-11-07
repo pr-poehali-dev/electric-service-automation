@@ -146,31 +146,28 @@ export default function Services() {
               href="https://t.me/konigelectric"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
+              className="flex-1 flex items-center justify-center p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
               title="Telegram"
             >
-              <Icon name="Send" size={18} />
-              <span className="text-sm font-semibold">Telegram</span>
+              <Icon name="Send" size={20} />
             </a>
             
             <a
               href="https://vk.com/im?sel=-23524557"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
+              className="flex-1 flex items-center justify-center p-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
               title="ВКонтакте"
             >
-              <Icon name="MessageCircle" size={18} />
-              <span className="text-sm font-semibold">VK</span>
+              <Icon name="MessageCircle" size={20} />
             </a>
             
             <a
               href="tel:+74012520725"
-              className="flex-1 flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
+              className="flex-1 flex items-center justify-center p-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
               title="Позвонить"
             >
-              <Icon name="Phone" size={18} />
-              <span className="text-sm font-semibold">Звонок</span>
+              <Icon name="Phone" size={20} />
             </a>
           </div>
         </Card>

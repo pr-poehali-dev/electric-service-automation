@@ -61,7 +61,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const loadOrders = async () => {
       try {
         const dbOrders = await loadOrdersFromApi();
-        const formattedOrders: Order[] = dbOrders.map(parseOrderFromDatabase);
+        let formattedOrders: Order[] = dbOrders.map(parseOrderFromDatabase);
+        
+        if (formattedOrders.length < 5) {
+          const mockOrdersNeeded = 5 - formattedOrders.length;
+          const mockOrders: Order[] = Array.from({ length: mockOrdersNeeded }, (_, i) => ({
+            id: `demo-${Date.now()}-${i}`,
+            items: [
+              { name: 'Установить розетку', price: 500, quantity: 2, category: 'установка' },
+              { name: 'Установить выключатель', price: 400, quantity: 1, category: 'установка' }
+            ],
+            status: ['pending', 'confirmed', 'in-progress'][i % 3] as Order['status'],
+            phone: '+7 (999) 123-45-67',
+            address: 'Калининград, демо-адрес',
+            createdAt: Date.now() - (i * 86400000),
+            totalAmount: 1400,
+            totalSwitches: 1,
+            totalOutlets: 2,
+            totalPoints: 3,
+            estimatedCable: 15,
+            estimatedFrames: 3,
+            isDemo: true
+          }));
+          
+          formattedOrders = [...formattedOrders, ...mockOrders];
+        }
+        
         setOrders(formattedOrders);
       } catch (err) {
         console.error('Failed to load orders from DB:', err);

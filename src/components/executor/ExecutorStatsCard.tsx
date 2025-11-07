@@ -21,7 +21,7 @@ export default function ExecutorStatsCard({ profile }: ExecutorStatsCardProps) {
   return (
     <Card className="p-4 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
       <div className="space-y-4">
-        {/* Текущее звание */}
+        {/* Текущий статус */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div>
@@ -64,7 +64,7 @@ export default function ExecutorStatsCard({ profile }: ExecutorStatsCardProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-amber-800">
-                До звания "{nextRank.name}"
+                До статуса "{nextRank.name}"
               </span>
               <span className="text-xs text-amber-600">{nextRank.badge}</span>
             </div>

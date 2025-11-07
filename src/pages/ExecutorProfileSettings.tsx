@@ -155,8 +155,8 @@ export default function ExecutorProfileSettings() {
                     )}
                   </div>
                   {hasDiploma && !user.diplomaVerified && (
-                    <div className="mt-3 pl-11">
-                      <Label className="text-xs text-purple-700 font-medium mb-2 block">📤 Загрузите фото диплома для проверки</Label>
+                    <div className="mt-3 pl-11" onClick={(e) => e.stopPropagation()}>
+                      <Label className="text-xs text-purple-700 font-medium mb-3 block">Загрузите фото диплома для проверки</Label>
                       <Input
                         id="diploma-upload"
                         type="file"
@@ -169,7 +169,6 @@ export default function ExecutorProfileSettings() {
                       />
                       {diplomaFile && (
                         <p className="text-xs text-purple-600 mt-2 flex items-center gap-1 font-medium">
-                          <Icon name="FileCheck" className="h-3 w-3" />
                           ✅ {diplomaFile.name} - отправлено на проверку
                         </p>
                       )}
@@ -178,13 +177,16 @@ export default function ExecutorProfileSettings() {
                 </div>
 
                 {/* Автомобиль */}
-                <div className={`border-2 rounded-lg p-4 transition-all ${
-                  user.carVerified 
-                    ? 'border-green-400 bg-green-50' 
-                    : hasCar 
-                    ? 'border-blue-300 bg-blue-50 hover:border-blue-400' 
-                    : 'border-gray-200 hover:border-blue-200'
-                }`}>
+                <div 
+                  className={`border-2 rounded-lg p-4 transition-all cursor-pointer ${
+                    user.carVerified 
+                      ? 'border-green-400 bg-green-50' 
+                      : hasCar 
+                      ? 'border-blue-300 bg-blue-50 hover:border-blue-400' 
+                      : 'border-gray-200 hover:border-blue-200'
+                  }`}
+                  onClick={() => handleChange('hasCar', !hasCar)}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-full ${user.carVerified ? 'bg-green-100' : 'bg-blue-100'}`}>
@@ -193,10 +195,14 @@ export default function ExecutorProfileSettings() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <Label className="text-sm font-semibold">Автомобиль</Label>
-                          <Switch checked={hasCar} onCheckedChange={(val) => handleChange('hasCar', val)} />
                         </div>
                         <p className="text-xs text-gray-600 font-medium">🚗 +10% больше заказов от клиентов</p>
                       </div>
+                      <Switch 
+                        checked={hasCar} 
+                        onCheckedChange={(val) => handleChange('hasCar', val)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
                     </div>
                     {user.carVerified && (
                       <div className="flex items-center gap-1 px-2 py-1 bg-green-500 rounded-full">
@@ -206,8 +212,8 @@ export default function ExecutorProfileSettings() {
                     )}
                   </div>
                   {hasCar && !user.carVerified && (
-                    <div className="mt-3 pl-11">
-                      <Label className="text-xs text-blue-700 font-medium mb-2 block">📤 Загрузите фото авто/прав для проверки</Label>
+                    <div className="mt-3 pl-11" onClick={(e) => e.stopPropagation()}>
+                      <Label className="text-xs text-blue-700 font-medium mb-3 block">Загрузите фото авто/прав для проверки</Label>
                       <Input
                         id="car-upload"
                         type="file"
@@ -220,7 +226,6 @@ export default function ExecutorProfileSettings() {
                       />
                       {carFile && (
                         <p className="text-xs text-blue-600 mt-2 flex items-center gap-1 font-medium">
-                          <Icon name="FileCheck" className="h-3 w-3" />
                           ✅ {carFile.name} - отправлено на проверку
                         </p>
                       )}
@@ -229,13 +234,16 @@ export default function ExecutorProfileSettings() {
                 </div>
 
                 {/* Инструменты */}
-                <div className={`border-2 rounded-lg p-4 transition-all ${
-                  user.toolsVerified 
-                    ? 'border-green-400 bg-green-50' 
-                    : hasTools 
-                    ? 'border-orange-300 bg-orange-50 hover:border-orange-400' 
-                    : 'border-gray-200 hover:border-orange-200'
-                }`}>
+                <div 
+                  className={`border-2 rounded-lg p-4 transition-all cursor-pointer ${
+                    user.toolsVerified 
+                      ? 'border-green-400 bg-green-50' 
+                      : hasTools 
+                      ? 'border-orange-300 bg-orange-50 hover:border-orange-400' 
+                      : 'border-gray-200 hover:border-orange-200'
+                  }`}
+                  onClick={() => handleChange('hasTools', !hasTools)}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-full ${user.toolsVerified ? 'bg-green-100' : 'bg-orange-100'}`}>
@@ -244,10 +252,14 @@ export default function ExecutorProfileSettings() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <Label className="text-sm font-semibold">Инструменты</Label>
-                          <Switch checked={hasTools} onCheckedChange={(val) => handleChange('hasTools', val)} />
                         </div>
                         <p className="text-xs text-gray-600 font-medium">🔧 +10% доверия и рейтинг</p>
                       </div>
+                      <Switch 
+                        checked={hasTools} 
+                        onCheckedChange={(val) => handleChange('hasTools', val)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
                     </div>
                     {user.toolsVerified && (
                       <div className="flex items-center gap-1 px-2 py-1 bg-green-500 rounded-full">
@@ -257,8 +269,8 @@ export default function ExecutorProfileSettings() {
                     )}
                   </div>
                   {hasTools && !user.toolsVerified && (
-                    <div className="mt-3 pl-11">
-                      <Label className="text-xs text-orange-700 font-medium mb-2 block">📤 Загрузите фото инструментов для проверки</Label>
+                    <div className="mt-3 pl-11" onClick={(e) => e.stopPropagation()}>
+                      <Label className="text-xs text-orange-700 font-medium mb-3 block">Загрузите фото инструментов для проверки</Label>
                       <Input
                         id="tools-upload"
                         type="file"
@@ -271,7 +283,6 @@ export default function ExecutorProfileSettings() {
                       />
                       {toolsFile && (
                         <p className="text-xs text-orange-600 mt-2 flex items-center gap-1 font-medium">
-                          <Icon name="FileCheck" className="h-3 w-3" />
                           ✅ {toolsFile.name} - отправлено на проверку
                         </p>
                       )}

@@ -40,6 +40,14 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         >
           <Icon name="Home" size={20} />
         </Button>
+        <Button 
+          variant="ghost"
+          className="h-10 text-sm px-3"
+          onClick={() => navigate(isElectrician ? '/all-orders' : '/products')}
+          title={isElectrician ? "Поиск заказов" : "Услуги электрика"}
+        >
+          {isElectrician ? 'Поиск заказов' : 'Услуги электрика'}
+        </Button>
         {isElectrician && !isCheckoutPage && !isCartPage && (
           <button 
             className="h-10 text-sm px-3 hover:bg-gray-100 rounded-md transition-colors flex items-center gap-2 cursor-pointer"
@@ -57,14 +65,6 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
             />
           </button>
         )}
-        <Button 
-          variant="ghost"
-          className="h-10 text-sm px-3"
-          onClick={() => navigate(isElectrician ? '/all-orders' : '/products')}
-          title={isElectrician ? "Поиск заказов" : "Услуги электрика"}
-        >
-          {isElectrician ? 'Поиск заказов' : 'Услуги электрика'}
-        </Button>
         {cartCount > 0 && isCartPage && !isElectrician && (
           <Button 
             variant="ghost"
