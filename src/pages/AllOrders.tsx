@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, memo } from 'react';
+import { useState, useMemo, useRef, memo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Button } from '@/components/ui/button';
