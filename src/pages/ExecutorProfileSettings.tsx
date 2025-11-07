@@ -131,7 +131,10 @@ export default function ExecutorProfileSettings() {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Switch checked={hasDiploma} onCheckedChange={(val) => handleChange('hasDiploma', val)} />
-                      <Label className="text-sm font-medium">Диплом специалиста</Label>
+                      <div>
+                        <Label className="text-sm font-medium">Диплом специалиста</Label>
+                        <p className="text-xs text-gray-500 mt-0.5">+10% к доходу</p>
+                      </div>
                     </div>
                     {user.diplomaVerified && (
                       <div className="flex items-center gap-1 text-green-600">
@@ -164,17 +167,10 @@ export default function ExecutorProfileSettings() {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Switch checked={hasCar} onCheckedChange={(val) => handleChange('hasCar', val)} />
-                      <Label className="text-sm font-medium">Автомобиль</Label>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button className="text-gray-400 hover:text-gray-600">
-                            <Icon name="Info" className="h-3 w-3" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">+10% к доходу</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      <div>
+                        <Label className="text-sm font-medium">Автомобиль</Label>
+                        <p className="text-xs text-gray-500 mt-0.5">+10% к доходу</p>
+                      </div>
                     </div>
                     {user.carVerified && (
                       <div className="flex items-center gap-1 text-green-600">
@@ -207,17 +203,10 @@ export default function ExecutorProfileSettings() {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Switch checked={hasTools} onCheckedChange={(val) => handleChange('hasTools', val)} />
-                      <Label className="text-sm font-medium">Инструменты</Label>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button className="text-gray-400 hover:text-gray-600">
-                            <Icon name="Info" className="h-3 w-3" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">+5% к доходу</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      <div>
+                        <Label className="text-sm font-medium">Инструменты</Label>
+                        <p className="text-xs text-gray-500 mt-0.5">+5% к доходу</p>
+                      </div>
                     </div>
                     {user.toolsVerified && (
                       <div className="flex items-center gap-1 text-green-600">
@@ -249,7 +238,10 @@ export default function ExecutorProfileSettings() {
                 <div className="border border-gray-200 rounded-lg p-3 hover:border-amber-200 transition-colors">
                   <div className="flex items-center gap-2">
                     <Switch checked={isActive} onCheckedChange={(val) => handleChange('isActive', val)} />
-                    <Label className="text-sm font-medium">Принимаю заказы</Label>
+                    <div>
+                      <Label className="text-sm font-medium">Принимаю заказы</Label>
+                      <p className="text-xs text-gray-500 mt-0.5">+5% к доходу при активном статусе</p>
+                    </div>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button className="text-gray-400 hover:text-gray-600">

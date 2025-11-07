@@ -123,15 +123,7 @@ export default function Products() {
             </Card>
           )}
 
-          <div className="mt-6 bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div className="bg-gray-50 p-4 text-center border-t space-y-2">
-              <p className="text-xs text-gray-500">
-                Welcome to <a href="https://t.me/konigelectric" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Telegram</a> 🚀
-              </p>
-              <p className="text-xs text-gray-500">Спасибо за ваш выбор!</p>
-              <p className="text-xs text-gray-500 mt-1">📞 +7 (4012) 52-07-25</p>
-            </div>
-          </div>
+
         </div>
       </div>
 

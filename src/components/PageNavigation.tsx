@@ -46,15 +46,15 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
             onClick={() => handleActiveToggle(!user?.isActive)}
             title="Переключить статус"
           >
+            <span className={`text-xs font-medium ${user?.isActive ? 'text-green-700' : 'text-gray-600'}`}>
+              {user?.isActive ? 'Работаю' : 'Не работаю'}
+            </span>
             <Switch 
               checked={user?.isActive || false}
               onCheckedChange={handleActiveToggle}
               className="data-[state=checked]:bg-green-500"
               onClick={(e) => e.stopPropagation()}
             />
-            <span className={`text-xs font-medium ${user?.isActive ? 'text-green-700' : 'text-gray-600'}`}>
-              {user?.isActive ? 'Работаю' : 'Не работаю'}
-            </span>
           </button>
         )}
         <Button 

@@ -12,12 +12,7 @@ interface OrderInfoSectionProps {
 
 export default function OrderInfoSection({ order, isEditing, onEdit }: OrderInfoSectionProps) {
   return (
-    <Card className="p-6 animate-fadeIn">
-      <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
-        <Icon name="Info" size={20} className="text-primary" />
-        Информация о заявке
-      </h2>
-      <div className="space-y-4">
+    <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1 text-muted-foreground">Дата создания</label>
           <div className="text-base font-medium bg-gray-50 p-3 rounded-lg border border-gray-200">
@@ -86,6 +81,5 @@ export default function OrderInfoSection({ order, isEditing, onEdit }: OrderInfo
           </div>
         )}
       </div>
-    </Card>
   );
 }

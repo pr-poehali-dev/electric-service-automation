@@ -15,15 +15,7 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
   const safeTotalAmount = totalAmount || 0;
 
   return (
-    <Card className="p-6 animate-fadeIn bg-white border-2 border-dashed border-gray-300">
-      <div className="border-b-2 border-dashed border-gray-300 pb-4 mb-6">
-        <h2 className="font-bold text-xl text-center flex items-center justify-center gap-2">
-          <Icon name="Receipt" size={24} className="text-primary" />
-          Состав заявки
-        </h2>
-      </div>
-      
-      <div className="space-y-2 font-mono text-sm">
+    <div className="space-y-2 font-mono text-sm">
         {safeItems.map((item, index) => {
           const itemPrice = item.price || 0;
           const itemQuantity = item.quantity || 1;
@@ -88,6 +80,6 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
       <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-center text-xs text-gray-500">
         <p>Спасибо за заказ! 🔌</p>
       </div>
-    </Card>
+    </div>
   );
 }

@@ -50,7 +50,7 @@ export default function Services() {
                 <Icon name="PlayCircle" size={32} className="text-white" />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-white mb-1">Продолжить работу</h2>
+                <h2 className="text-xl font-bold text-white mb-1">Продолжить</h2>
                 <p className="text-sm text-blue-100">Список задач ({cart.length})</p>
               </div>
             </div>

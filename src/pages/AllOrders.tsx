@@ -206,15 +206,14 @@ export default function AllOrders() {
           <PageNavigation onContactClick={() => setShowContactModal(true)} />
 
           <div className="p-6 space-y-6">
-            <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-2">
+            <div className="bg-white shadow-lg p-6 rounded-lg">
+              <h1 className="text-2xl font-bold text-gray-800 mb-4">
                 Поиск заказов
               </h1>
-            </div>
 
             {permissions.isAdmin ? (
               <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as Order['status'] | 'all')} className="w-full">
-                <TabsList className="w-full grid grid-cols-5 h-auto bg-gradient-to-br from-blue-100 to-indigo-100 p-1">
+                <TabsList className="w-full grid grid-cols-5 h-auto p-1">
                   <TabsTrigger value="all" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
                     <span className="text-lg font-bold">{orders.length}</span>
                     <span className="text-xs">Все</span>
@@ -239,7 +238,7 @@ export default function AllOrders() {
               </Tabs>
             ) : (
               <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as ElectricianFilter)} className="w-full">
-                <TabsList className="w-full grid grid-cols-3 h-auto bg-gradient-to-br from-blue-100 to-indigo-100 p-1">
+                <TabsList className="w-full grid grid-cols-3 h-auto p-1">
                   <TabsTrigger value="new" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
                     <span className="text-lg font-bold">{orders.filter(o => o.status === 'pending' && !o.assignedTo && !o.assignedExecutors?.some(ex => ex.id === user?.id)).length}</span>
                     <span className="text-xs">Новые</span>
@@ -255,6 +254,7 @@ export default function AllOrders() {
                 </TabsList>
               </Tabs>
             )}
+            </div>
 
             {filteredOrders.length === 0 ? (
               <Card className="p-12 text-center shadow-md">
@@ -265,7 +265,16 @@ export default function AllOrders() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Заявок не найдено</h3>
                 <p className="text-gray-600">
-                  {filterStatus === 'all' ? 'Здесь появятся заявки на электромонтажные работы' : `В статусе "${STATUS_LABELS[filterStatus as Order['status']]}" нет заявок`}
+                  {filterStatus === 'all' 
+                    ? 'Здесь появятся заявки на электромонтажные работы' 
+                    : filterStatus === 'new'
+                    ? 'Новых заявок пока нет'
+                    : filterStatus === 'responded'
+                    ? 'Вы ещё не откликались на заявки'
+                    : filterStatus === 'invited'
+                    ? 'Вас ещё не приглашали на заявки'
+                    : `В этом статусе нет заявок`
+                  }
                 </p>
               </Card>
             ) : (

@@ -66,11 +66,7 @@ export default function OrderReviewSection({
         />
       )}
 
-      <Card className="p-6 animate-fadeIn">
-        <h2 className="font-bold text-lg mb-4 flex items-center gap-2">
-          <Icon name="MessageSquare" size={20} className="text-primary" />
-          Отзывы и оценки
-        </h2>
+      <div>
         {orderReviews.length > 0 ? (
           <ReviewList reviews={orderReviews} />
         ) : (
@@ -94,7 +90,7 @@ export default function OrderReviewSection({
             )}
           </div>
         )}
-      </Card>
+      </div>
 
       {isAuthenticated && canManageReviews && (
         <Card className="p-6 animate-fadeIn">

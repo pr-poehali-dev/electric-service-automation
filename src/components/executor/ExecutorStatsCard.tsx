@@ -45,21 +45,17 @@ export default function ExecutorStatsCard({ profile }: ExecutorStatsCardProps) {
         {/* Статистика */}
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-white rounded-lg p-3 border border-amber-200">
-            <div className="mb-1">
-              <h4 className="text-sm font-semibold text-gray-900 mb-1">Специалист</h4>
-            </div>
+            <h4 className="text-sm font-semibold text-gray-900 mb-1">Специалист</h4>
             <p className="text-xl font-bold text-gray-900 mb-1">{profile.completedOrders}</p>
             <p className="text-[10px] text-gray-500 leading-tight">Выполняйте больше заказов для повышения ранга</p>
           </div>
           
           <div className="bg-white rounded-lg p-3 border border-amber-200">
-            <div className="mb-1">
-              <h4 className="text-sm font-semibold text-gray-900 mb-1">Начисления</h4>
-            </div>
+            <h4 className="text-sm font-semibold text-gray-900 mb-1">Начисления</h4>
             <p className="text-xl font-bold text-gray-900 mb-1">
               {profile.totalRevenue.toLocaleString()} ₽
             </p>
-            <p className="text-[10px] text-gray-500 leading-tight">Подтвердите диплом, авто и инструменты для +20%</p>
+            <p className="text-[10px] text-gray-500 leading-tight">{currentRank.commission}% с заказа • Подтверждения дают +20%</p>
           </div>
         </div>
 

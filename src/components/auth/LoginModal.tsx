@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import InputMask from 'react-input-mask';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -103,13 +104,12 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
           
           <div>
             <label className="block text-sm font-medium mb-2">Телефон</label>
-            <Input
-              type="tel"
+            <InputMask
+              mask="8 (999) 999-99-99"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="8 (900) 000-00-01"
-              className="w-full"
-              required
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
+              placeholder="8 (___) ___-__-__"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
             />
           </div>
 
@@ -127,7 +127,7 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
           
           {isRegisterMode && (
             <div>
-              <label className="block text-sm font-medium mb-2">Роль</label>
+              <label className="block text-sm font-medium mb-2">Я хочу регистрацию как:</label>
               <div className="flex gap-3">
                 <Button
                   type="button"
@@ -168,23 +168,13 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
           )}
 
           <div className="space-y-3">
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                className="flex-1"
-              >
-                Отмена
-              </Button>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="flex-1"
-              >
-                {loading ? (isRegisterMode ? 'Регистрация...' : 'Вход...') : (isRegisterMode ? 'Зарегистрироваться' : 'Войти')}
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full"
+            >
+              {loading ? (isRegisterMode ? 'Регистрация...' : 'Вход...') : (isRegisterMode ? 'Зарегистрироваться' : 'Войти')}
+            </Button>
             
             <Button
               type="button"

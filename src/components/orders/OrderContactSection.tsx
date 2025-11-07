@@ -11,8 +11,7 @@ interface OrderContactSectionProps {
 
 export default function OrderContactSection({ order, isEditing, onEdit }: OrderContactSectionProps) {
   return (
-    <Card className="p-6 animate-fadeIn">
-      <div className="space-y-4">
+    <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1 text-muted-foreground flex items-center gap-2">
             <Icon name="User" size={16} className="text-primary" />
@@ -79,6 +78,5 @@ export default function OrderContactSection({ order, isEditing, onEdit }: OrderC
           </div>
         )}
       </div>
-    </Card>
   );
 }
