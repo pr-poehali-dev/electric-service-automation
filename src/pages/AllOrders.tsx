@@ -281,7 +281,7 @@ export default function AllOrders() {
               <div
                 ref={parentRef}
                 className="overflow-auto"
-                style={{ height: 'calc(100vh - 350px)', minHeight: '500px' }}
+                style={{ height: 'calc(100vh - 280px)', minHeight: '600px' }}
               >
                 <div
                   style={{

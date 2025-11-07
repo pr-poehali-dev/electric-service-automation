@@ -261,7 +261,7 @@ export default function Orders() {
             <div
               ref={parentRef}
               className="overflow-auto"
-              style={{ height: 'calc(100vh - 480px)', minHeight: '300px' }}
+              style={{ height: 'calc(100vh - 320px)', minHeight: '500px' }}
             >
               <div className="mb-3 flex items-center justify-between px-1">
                 <span className="text-sm text-gray-600">
