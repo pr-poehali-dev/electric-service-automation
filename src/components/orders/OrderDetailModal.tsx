@@ -230,27 +230,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
             </Card>
           )}
 
-          <Card className="p-4">
-            <button
-              onClick={() => toggleSection('payment')}
-              className="w-full flex items-center justify-between"
-            >
-              <h3 className="font-semibold flex items-center gap-2">
-                <Icon name="CreditCard" size={18} />
-                Оплата
-              </h3>
-              <Icon name={expandedSections.payment ? 'ChevronUp' : 'ChevronDown'} size={20} />
-            </button>
-            {expandedSections.payment && (
-              <div className="mt-4">
-                <PaymentManager
-                  order={currentOrder}
-                  onAddPayment={addPayment}
-                  onUpdatePaymentStatus={updatePaymentStatus}
-                />
-              </div>
-            )}
-          </Card>
+
 
           {isAuthenticated && permissions.isAdmin && (
             <Card className="p-4">
@@ -270,12 +250,25 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
               <Icon name={expandedSections.info ? 'ChevronUp' : 'ChevronDown'} size={20} />
             </button>
             {expandedSections.info && (
-              <div className="mt-4">
-                <OrderInfoSection 
-                  order={currentOrder} 
-                  isEditing={isEditing}
-                  onEdit={handleOrderEdit}
-                />
+              <div className="mt-4 space-y-6">
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Детали заявки</h4>
+                  <OrderInfoSection 
+                    order={currentOrder} 
+                    isEditing={isEditing}
+                    onEdit={handleOrderEdit}
+                    isAdmin={permissions.isAdmin}
+                  />
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Контактные данные</h4>
+                  <OrderContactSection 
+                    order={currentOrder}
+                    isEditing={isEditing}
+                    onEdit={handleOrderEdit}
+                    isElectrician={permissions.isElectrician}
+                  />
+                </div>
               </div>
             )}
           </Card>
@@ -287,7 +280,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
             >
               <h3 className="font-semibold flex items-center gap-2">
                 <Icon name="ShoppingCart" size={18} />
-                Состав заявки
+                Состав заявки и оплата
               </h3>
               <Icon name={expandedSections.items ? 'ChevronUp' : 'ChevronDown'} size={20} />
             </button>
@@ -298,24 +291,35 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
                   totalAmount={currentOrder.totalAmount}
                   isEditing={isEditing}
                   onItemEdit={handleItemEdit}
+                  order={currentOrder}
                 />
               </div>
             )}
           </Card>
 
+          {permissions.canEditOrders && (
+            <Card className="p-4">
+              <PaymentManager
+                order={currentOrder}
+                onAddPayment={addPayment}
+                onUpdatePaymentStatus={updatePaymentStatus}
+              />
+            </Card>
+          )}
+
           <Card className="p-4">
             <button
               onClick={() => toggleSection('contact')}
-              className="w-full flex items-center justify-between"
+              className="w-full flex items-center justify-between" style={{display: 'none'}}
             >
               <h3 className="font-semibold flex items-center gap-2">
                 <Icon name="Phone" size={18} />
-                Контактные данные
+                Контактные данные (скрыт)
               </h3>
               <Icon name={expandedSections.contact ? 'ChevronUp' : 'ChevronDown'} size={20} />
             </button>
             {expandedSections.contact && (
-              <div className="mt-4">
+              <div className="mt-4" style={{display: 'none'}}>
                 <OrderContactSection 
                   order={currentOrder}
                   isEditing={isEditing}

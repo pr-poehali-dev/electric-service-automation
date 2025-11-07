@@ -8,27 +8,30 @@ interface OrderInfoSectionProps {
   order: Order;
   isEditing: boolean;
   onEdit: (field: keyof Order, value: string) => void;
+  isAdmin?: boolean;
 }
 
-export default function OrderInfoSection({ order, isEditing, onEdit }: OrderInfoSectionProps) {
+export default function OrderInfoSection({ order, isEditing, onEdit, isAdmin = false }: OrderInfoSectionProps) {
   return (
     <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1 text-muted-foreground">Дата создания</label>
-          <div className="text-base font-medium bg-gray-50 p-3 rounded-lg border border-gray-200">
-            {new Date(order.createdAt).toLocaleString('ru-RU', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
+        {isAdmin && (
+          <div>
+            <label className="block text-sm font-medium mb-1 text-muted-foreground">Дата создания (только для администратора)</label>
+            <div className="text-base font-medium bg-gray-50 p-3 rounded-lg border border-gray-200">
+              {new Date(order.createdAt).toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </div>
           </div>
-        </div>
+        )}
         
         {order.preferredDate && (
           <div>
-            <label className="block text-sm font-medium mb-1 text-muted-foreground">Предпочитаемая дата выполнения</label>
+            <label className="block text-sm font-medium mb-1 text-muted-foreground">Дата начала работы</label>
             {isEditing ? (
               <Input 
                 type="date" 
