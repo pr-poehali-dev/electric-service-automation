@@ -5,6 +5,7 @@ import Icon from '@/components/ui/icon';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useCart } from '@/contexts/CartContext';
+import { useNotifications } from '@/hooks/useNotifications';
 import { Order } from '@/types/electrical';
 
 interface OrderStatusManagerProps {
@@ -16,6 +17,7 @@ export default function OrderStatusManager({ order, onStatusChange }: OrderStatu
   const { isAuthenticated, user } = useAuth();
   const permissions = usePermissions();
   const { updateOrder } = useCart();
+  const { addNotification } = useNotifications();
   const [showDepartureConfirm, setShowDepartureConfirm] = useState(false);
 
   if (!isAuthenticated) {
@@ -32,6 +34,24 @@ export default function OrderStatusManager({ order, onStatusChange }: OrderStatu
     };
     updateOrder(updatedOrder);
     setShowDepartureConfirm(true);
+    
+    addNotification({
+      type: 'executor_on_way',
+      orderId: order.id,
+      title: '🚗 Мастер в пути',
+      message: `Мастер выехал к вам по адресу: ${order.address}. Ожидайте прибытия через ~40-60 минут`,
+      priority: 'high'
+    });
+
+    setTimeout(() => {
+      addNotification({
+        type: 'phone_access',
+        orderId: order.id,
+        title: '📞 Доступны контактные данные',
+        message: `Контактные данные клиента для заявки по адресу "${order.address}" теперь доступны`,
+        priority: 'high'
+      });
+    }, 20 * 60 * 1000);
     
     setTimeout(() => setShowDepartureConfirm(false), 8000);
   };
@@ -53,10 +73,27 @@ export default function OrderStatusManager({ order, onStatusChange }: OrderStatu
       arrivedAt: Date.now()
     };
     updateOrder(updatedOrder);
+
+    addNotification({
+      type: 'executor_arrived',
+      orderId: order.id,
+      title: '✅ Мастер прибыл',
+      message: `Мастер прибыл по адресу: ${order.address}. Скоро начнёт работу`,
+      priority: 'high'
+    });
   };
 
   const handleStartWork = () => {
     onStatusChange(order.id, 'in-progress');
+    
+    addNotification({
+      type: 'status_change',
+      orderId: order.id,
+      newStatus: 'in-progress',
+      title: '🔧 Работа началась',
+      message: `Мастер приступил к выполнению работ по заявке #${order.id.slice(-6)}`,
+      priority: 'normal'
+    });
   };
 
   if (permissions.isAdmin) {

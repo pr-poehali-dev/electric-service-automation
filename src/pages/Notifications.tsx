@@ -61,6 +61,12 @@ export default function Notifications() {
         return 'UserCheck';
       case 'payment_received':
         return 'CreditCard';
+      case 'executor_on_way':
+        return 'Navigation';
+      case 'executor_arrived':
+        return 'MapPin';
+      case 'phone_access':
+        return 'Phone';
       default:
         return 'Info';
     }
@@ -125,11 +131,19 @@ export default function Notifications() {
                   className={`p-4 cursor-pointer transition-all hover:shadow-md ${
                     notification.read
                       ? 'bg-white'
+                      : (notification as any).priority === 'high'
+                      ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-purple-300 border-2 shadow-lg'
                       : 'bg-blue-50 border-blue-200 border-2'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-full flex-shrink-0 ${notification.read ? 'bg-gray-100' : 'bg-blue-100'}`}>
+                    <div className={`p-2 rounded-full flex-shrink-0 ${
+                      notification.read 
+                        ? 'bg-gray-100' 
+                        : (notification as any).priority === 'high'
+                        ? 'bg-gradient-to-br from-purple-100 to-blue-100'
+                        : 'bg-blue-100'
+                    }`}>
                       <Icon 
                         name={getIcon(notification.type)} 
                         size={20} 

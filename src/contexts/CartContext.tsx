@@ -187,6 +187,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       'in-progress': 'начата, мастер приступил к работе',
       'completed': 'завершена'
     };
+
+    const notificationTitles = {
+      'pending': 'Поиск мастера',
+      'confirmed': '✅ Заявка подтверждена',
+      'on-the-way': '🚗 Мастер в пути',
+      'arrived': '✅ Мастер прибыл',
+      'in-progress': '🔧 Работа началась',
+      'completed': '🎉 Работа завершена'
+    };
     
     const order = orders.find(o => o.id === orderId);
     const oldStatus = order?.status || 'pending';
@@ -239,13 +248,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     }
     
-    if (notificationsContext) {
+    if (notificationsContext && oldStatus !== status) {
+      const priority = ['on-the-way', 'arrived', 'completed'].includes(status) ? 'high' : 'normal';
+      
       notificationsContext.addNotification({
         type: 'status_change',
         orderId: orderId,
         newStatus: status,
-        title: 'Статус заявки изменен',
-        message: `Заявка #${orderId.slice(-6)} ${statusMessages[status] || 'обновлена'}`
+        title: notificationTitles[status] || 'Статус заявки изменен',
+        message: `Заявка #${orderId.slice(-6)} ${statusMessages[status] || 'обновлена'}`,
+        priority: priority as any
       });
     }
   };
@@ -266,8 +278,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       notificationsContext.addNotification({
         type: 'info',
         orderId: orderId,
-        title: 'Исполнитель назначен',
-        message: `На заявку #${orderId.slice(-6)} назначен мастер: ${electricianName}`
+        title: '👷 Исполнитель назначен',
+        message: `На заявку #${orderId.slice(-6)} назначен мастер: ${electricianName}`,
+        priority: 'high' as any
       });
     }
   };

@@ -3,13 +3,14 @@ import { useAuth } from './AuthContext';
 
 interface Notification {
   id: string;
-  type: 'new_order' | 'status_change' | 'info';
+  type: 'new_order' | 'status_change' | 'info' | 'executor_on_way' | 'executor_arrived' | 'phone_access';
   orderId?: string;
   newStatus?: string;
   title: string;
   message: string;
   timestamp: string;
   read: boolean;
+  priority?: 'high' | 'normal' | 'low';
 }
 
 interface NotificationContextType {
