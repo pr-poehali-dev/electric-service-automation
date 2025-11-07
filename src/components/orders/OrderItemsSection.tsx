@@ -76,10 +76,6 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
           </div>
         </div>
       </div>
-      
-      <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-center text-xs text-gray-500">
-        <p>Спасибо за заказ! 🔌</p>
-      </div>
     </div>
   );
 }
