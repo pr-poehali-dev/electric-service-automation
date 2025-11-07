@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { ReviewProvider } from "./contexts/ReviewContext";
+import { useScrollToTop } from "./hooks/useScrollToTop";
 import Home from "./pages/Home";
 import Tasks from "./pages/Tasks";
 import Schedule from "./pages/Schedule";
@@ -34,6 +35,7 @@ import AllOrders from "./pages/AllOrders";
 import Portfolio from "./pages/Portfolio";
 import Profile from "./pages/Profile";
 import Services from "./pages/Services";
+import Contact from "./pages/Contact";
 import GoogleCallback from "./pages/GoogleCallback";
 import Notifications from "./pages/Notifications";
 import ExecutorProfileSettings from "./pages/ExecutorProfileSettings";
@@ -52,6 +54,7 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode,
 
 const AppRoutes = () => {
   const { user } = useAuth();
+  useScrollToTop();
 
   return (
     <Routes>
@@ -65,6 +68,7 @@ const AppRoutes = () => {
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/portfolio" element={<Portfolio />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/all-orders" element={<AllOrders />} />
       <Route path="/notifications" element={<Notifications />} />

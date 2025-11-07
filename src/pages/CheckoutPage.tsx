@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import InputMask from 'react-input-mask';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -14,6 +15,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart, createOrder } = useCart();
   const [showContactModal, setShowContactModal] = useState(false);
+  const phoneInputRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     phone: '',
@@ -62,6 +64,16 @@ export default function CheckoutPage() {
     const newErrors = { phone: '' };
     if (!formData.phone || formData.phone.replace(/[^0-9]/g, '').length < 11) {
       newErrors.phone = 'Укажите номер телефона';
+      setErrors(newErrors);
+      
+      setTimeout(() => {
+        phoneInputRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }, 100);
+      
+      return false;
     }
     setErrors(newErrors);
     return !newErrors.phone;
@@ -87,35 +99,18 @@ export default function CheckoutPage() {
 
         <div className="p-6 space-y-4">
           <Card className="p-6 space-y-4">
-            <div>
+            <div ref={phoneInputRef}>
               <label className="block text-sm font-semibold mb-2">
                 Телефон <span className="text-red-500">*</span>
               </label>
-              <input
-                type="tel"
+              <InputMask
+                mask="8 (999) 999-99-99"
                 value={formData.phone}
-                onChange={(e) => {
-                  const input = e.target.value.replace(/\D/g, '');
-                  let value = input;
-                  if (input.startsWith('9') && input.length === 10) {
-                    value = '8' + input;
-                  }
-                  
-                  let formatted = '';
-                  if (value.length > 0) {
-                    formatted = value[0];
-                    if (value.length > 1) formatted += ' (' + value.substring(1, 4);
-                    if (value.length > 4) formatted += ') ' + value.substring(4, 7);
-                    if (value.length > 7) formatted += '-' + value.substring(7, 9);
-                    if (value.length > 9) formatted += '-' + value.substring(9, 11);
-                  }
-                  
-                  setFormData({ ...formData, phone: formatted });
-                }}
-                className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="8 (___) ___-__-__"
+                className={`w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
                   errors.phone ? 'border-red-500 animate-shake' : 'border-gray-300'
                 }`}
-                placeholder="8 (900) 000-00-00"
               />
               {errors.phone && (
                 <p className="text-red-500 text-xs mt-1">{errors.phone}</p>

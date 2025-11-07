@@ -65,7 +65,7 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         >
           {isElectrician ? 'Поиск заказов' : 'Услуги электрика'}
         </Button>
-        {cartCount > 0 && isCartPage && (
+        {cartCount > 0 && isCartPage && !isElectrician && (
           <Button 
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
@@ -78,7 +78,7 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
             </span>
           </Button>
         )}
-        {cartCount > 0 && isProductsPage && (
+        {cartCount > 0 && isProductsPage && !isElectrician && (
           <Button 
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
@@ -112,7 +112,7 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={onContactClick}
+            onClick={() => navigate('/contact')}
             title="Связаться с нами"
           >
             <Icon name="MessageCircle" size={20} />

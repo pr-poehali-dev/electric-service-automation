@@ -127,35 +127,50 @@ export default function ExecutorProfileSettings() {
 
               <div className="space-y-3">
                 {/* Диплом */}
-                <div className="border border-gray-200 rounded-lg p-3 hover:border-purple-200 transition-colors">
+                <div className={`border-2 rounded-lg p-4 transition-all ${
+                  user.diplomaVerified 
+                    ? 'border-green-400 bg-green-50' 
+                    : hasDiploma 
+                    ? 'border-purple-300 bg-purple-50 hover:border-purple-400' 
+                    : 'border-gray-200 hover:border-purple-200'
+                }`}>
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Switch checked={hasDiploma} onCheckedChange={(val) => handleChange('hasDiploma', val)} />
-                      <div>
-                        <Label className="text-sm font-medium">Диплом специалиста</Label>
-                        <p className="text-xs text-gray-500 mt-0.5">+10% к доходу</p>
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-full ${user.diplomaVerified ? 'bg-green-100' : 'bg-purple-100'}`}>
+                        <Icon name="GraduationCap" className={`h-5 w-5 ${user.diplomaVerified ? 'text-green-600' : 'text-purple-600'}`} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Label className="text-sm font-semibold">Диплом специалиста</Label>
+                          <Switch checked={hasDiploma} onCheckedChange={(val) => handleChange('hasDiploma', val)} />
+                        </div>
+                        <p className="text-xs text-gray-600 font-medium">💰 +10% к доходу за каждый заказ</p>
                       </div>
                     </div>
                     {user.diplomaVerified && (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <Icon name="CheckCircle" className="h-4 w-4" />
-                        <span className="text-xs">Проверено</span>
+                      <div className="flex items-center gap-1 px-2 py-1 bg-green-500 rounded-full">
+                        <Icon name="CheckCircle" className="h-4 w-4 text-white" />
+                        <span className="text-xs font-bold text-white">Подтверждено</span>
                       </div>
                     )}
                   </div>
-                  {hasDiploma && (
-                    <div>
+                  {hasDiploma && !user.diplomaVerified && (
+                    <div className="mt-3 pl-11">
+                      <Label className="text-xs text-purple-700 font-medium mb-2 block">📤 Загрузите фото диплома для проверки</Label>
                       <Input
                         id="diploma-upload"
                         type="file"
                         accept="image/*,.pdf"
-                        onChange={(e) => handleFileChange('diploma', e.target.files?.[0] || null)}
-                        className="text-xs"
+                        onChange={(e) => {
+                          handleFileChange('diploma', e.target.files?.[0] || null);
+                          handleChange('hasDiploma', true);
+                        }}
+                        className="text-xs border-purple-300"
                       />
                       {diplomaFile && (
-                        <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                        <p className="text-xs text-purple-600 mt-2 flex items-center gap-1 font-medium">
                           <Icon name="FileCheck" className="h-3 w-3" />
-                          {diplomaFile.name}
+                          ✅ {diplomaFile.name} - отправлено на проверку
                         </p>
                       )}
                     </div>
@@ -163,35 +178,50 @@ export default function ExecutorProfileSettings() {
                 </div>
 
                 {/* Автомобиль */}
-                <div className="border border-gray-200 rounded-lg p-3 hover:border-blue-200 transition-colors">
+                <div className={`border-2 rounded-lg p-4 transition-all ${
+                  user.carVerified 
+                    ? 'border-green-400 bg-green-50' 
+                    : hasCar 
+                    ? 'border-blue-300 bg-blue-50 hover:border-blue-400' 
+                    : 'border-gray-200 hover:border-blue-200'
+                }`}>
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Switch checked={hasCar} onCheckedChange={(val) => handleChange('hasCar', val)} />
-                      <div>
-                        <Label className="text-sm font-medium">Автомобиль</Label>
-                        <p className="text-xs text-gray-500 mt-0.5">+10% к доходу</p>
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-full ${user.carVerified ? 'bg-green-100' : 'bg-blue-100'}`}>
+                        <Icon name="Car" className={`h-5 w-5 ${user.carVerified ? 'text-green-600' : 'text-blue-600'}`} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Label className="text-sm font-semibold">Автомобиль</Label>
+                          <Switch checked={hasCar} onCheckedChange={(val) => handleChange('hasCar', val)} />
+                        </div>
+                        <p className="text-xs text-gray-600 font-medium">🚗 +10% больше заказов от клиентов</p>
                       </div>
                     </div>
                     {user.carVerified && (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <Icon name="CheckCircle" className="h-4 w-4" />
-                        <span className="text-xs">Проверено</span>
+                      <div className="flex items-center gap-1 px-2 py-1 bg-green-500 rounded-full">
+                        <Icon name="CheckCircle" className="h-4 w-4 text-white" />
+                        <span className="text-xs font-bold text-white">Подтверждено</span>
                       </div>
                     )}
                   </div>
-                  {hasCar && (
-                    <div>
+                  {hasCar && !user.carVerified && (
+                    <div className="mt-3 pl-11">
+                      <Label className="text-xs text-blue-700 font-medium mb-2 block">📤 Загрузите фото авто/прав для проверки</Label>
                       <Input
                         id="car-upload"
                         type="file"
                         accept="image/*,.pdf"
-                        onChange={(e) => handleFileChange('car', e.target.files?.[0] || null)}
-                        className="text-xs"
+                        onChange={(e) => {
+                          handleFileChange('car', e.target.files?.[0] || null);
+                          handleChange('hasCar', true);
+                        }}
+                        className="text-xs border-blue-300"
                       />
                       {carFile && (
-                        <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                        <p className="text-xs text-blue-600 mt-2 flex items-center gap-1 font-medium">
                           <Icon name="FileCheck" className="h-3 w-3" />
-                          {carFile.name}
+                          ✅ {carFile.name} - отправлено на проверку
                         </p>
                       )}
                     </div>
@@ -199,35 +229,50 @@ export default function ExecutorProfileSettings() {
                 </div>
 
                 {/* Инструменты */}
-                <div className="border border-gray-200 rounded-lg p-3 hover:border-green-200 transition-colors">
+                <div className={`border-2 rounded-lg p-4 transition-all ${
+                  user.toolsVerified 
+                    ? 'border-green-400 bg-green-50' 
+                    : hasTools 
+                    ? 'border-orange-300 bg-orange-50 hover:border-orange-400' 
+                    : 'border-gray-200 hover:border-orange-200'
+                }`}>
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Switch checked={hasTools} onCheckedChange={(val) => handleChange('hasTools', val)} />
-                      <div>
-                        <Label className="text-sm font-medium">Инструменты</Label>
-                        <p className="text-xs text-gray-500 mt-0.5">+5% к доходу</p>
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-full ${user.toolsVerified ? 'bg-green-100' : 'bg-orange-100'}`}>
+                        <Icon name="Wrench" className={`h-5 w-5 ${user.toolsVerified ? 'text-green-600' : 'text-orange-600'}`} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Label className="text-sm font-semibold">Инструменты</Label>
+                          <Switch checked={hasTools} onCheckedChange={(val) => handleChange('hasTools', val)} />
+                        </div>
+                        <p className="text-xs text-gray-600 font-medium">🔧 +10% доверия и рейтинг</p>
                       </div>
                     </div>
                     {user.toolsVerified && (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <Icon name="CheckCircle" className="h-4 w-4" />
-                        <span className="text-xs">Проверено</span>
+                      <div className="flex items-center gap-1 px-2 py-1 bg-green-500 rounded-full">
+                        <Icon name="CheckCircle" className="h-4 w-4 text-white" />
+                        <span className="text-xs font-bold text-white">Подтверждено</span>
                       </div>
                     )}
                   </div>
-                  {hasTools && (
-                    <div>
+                  {hasTools && !user.toolsVerified && (
+                    <div className="mt-3 pl-11">
+                      <Label className="text-xs text-orange-700 font-medium mb-2 block">📤 Загрузите фото инструментов для проверки</Label>
                       <Input
                         id="tools-upload"
                         type="file"
                         accept="image/*"
-                        onChange={(e) => handleFileChange('tools', e.target.files?.[0] || null)}
-                        className="text-xs"
+                        onChange={(e) => {
+                          handleFileChange('tools', e.target.files?.[0] || null);
+                          handleChange('hasTools', true);
+                        }}
+                        className="text-xs border-orange-300"
                       />
                       {toolsFile && (
-                        <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                        <p className="text-xs text-orange-600 mt-2 flex items-center gap-1 font-medium">
                           <Icon name="FileCheck" className="h-3 w-3" />
-                          {toolsFile.name}
+                          ✅ {toolsFile.name} - отправлено на проверку
                         </p>
                       )}
                     </div>

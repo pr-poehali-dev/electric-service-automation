@@ -10,7 +10,6 @@ import { Order, ElectricalItem } from '@/types/electrical';
 import ContactModal from '@/components/ContactModal';
 import ProductSelectionModal from '@/components/ProductSelectionModal';
 import CalculatorModal from '@/components/CalculatorModal';
-import BottomMenu from '@/components/BottomMenu';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import OrderDetailModal from '@/components/orders/OrderDetailModal';
@@ -322,13 +321,7 @@ export default function Orders() {
         </div>
       </div>
 
-      <BottomMenu 
-        onContactClick={() => setShowContactModal(true)}
-        onProductsClick={() => setShowProductModal(true)}
-        onCalculatorClick={() => setShowCalculatorModal(true)}
-      />
-
-      {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}
+      <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
       {showProductModal && <ProductSelectionModal onClose={() => setShowProductModal(false)} />}
       {showCalculatorModal && <CalculatorModal onClose={() => setShowCalculatorModal(false)} />}
       

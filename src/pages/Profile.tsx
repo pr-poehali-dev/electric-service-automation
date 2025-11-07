@@ -1,15 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import ContactModal from '@/components/ContactModal';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { orders } = useCart();
+  const { user } = useAuth();
   const [showContactModal, setShowContactModal] = useState(false);
+
+  useEffect(() => {
+    if (user && user.role !== 'client') {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">

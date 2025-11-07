@@ -158,15 +158,6 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
             </div>
           )}
 
-          {!isRegisterMode && (
-            <div className="bg-blue-50 p-3 rounded-lg text-xs text-gray-600">
-              <p className="font-semibold mb-1">Тестовые аккаунты:</p>
-              <p>• Клиент: 89000000001 / 1234</p>
-              <p>• Электрик: 89000000002 / 1234</p>
-              <p>• Админ: 89000000003 / 1234</p>
-            </div>
-          )}
-
           <div className="space-y-3">
             <Button
               type="submit"
