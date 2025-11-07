@@ -128,18 +128,51 @@ export default function Services() {
           </div>
         </Card>
 
-        <Card className="p-6 bg-yellow-50 border border-yellow-200">
-          <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+        <Card className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200">
+          <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
             <Icon name="Info" size={20} className="text-orange-600" />
             О нас
           </h3>
-          <p className="text-sm text-gray-700 mb-2">
+          <p className="text-sm text-gray-700 mb-3">
             БАЛТСЕТЬ <sup className="text-xs text-primary">³⁹</sup> — профессиональные электромонтажные работы в Калининграде и области
           </p>
-          <p className="text-sm text-gray-600 flex items-center gap-2">
+          <p className="text-sm text-gray-600 flex items-center gap-2 mb-4">
             <Icon name="Clock" size={16} className="text-orange-600" />
             Работаем: Пн-Вс, 10:00 - 18:00
           </p>
+          
+          <div className="flex items-center gap-3 pt-3 border-t border-amber-200">
+            <a
+              href="https://t.me/konigelectric"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
+              title="Telegram"
+            >
+              <Icon name="Send" size={18} />
+              <span className="text-sm font-semibold">Telegram</span>
+            </a>
+            
+            <a
+              href="https://vk.com/im?sel=-23524557"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
+              title="ВКонтакте"
+            >
+              <Icon name="MessageCircle" size={18} />
+              <span className="text-sm font-semibold">VK</span>
+            </a>
+            
+            <a
+              href="tel:+74012520725"
+              className="flex-1 flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
+              title="Позвонить"
+            >
+              <Icon name="Phone" size={18} />
+              <span className="text-sm font-semibold">Звонок</span>
+            </a>
+          </div>
         </Card>
         </div>
       </div>

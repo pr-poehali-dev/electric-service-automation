@@ -25,7 +25,7 @@ export default function Calculator() {
       <div className="max-w-md mx-auto">
         <div className="bg-white shadow-lg p-6 space-y-6">
           <h1 className="text-2xl font-bold text-gray-800">
-            <span className="font-extrabold text-primary">РАССЧИТАЙТЕ СТОИМОСТЬ РАБОТЫ</span>
+            <span className="font-extrabold text-primary">Смета на электромонтаж</span>
             <br />
             <span className="text-lg text-gray-600">ЗА 2 МИНУТЫ</span>
           </h1>
@@ -43,6 +43,28 @@ export default function Calculator() {
                   <option key={value} value={value}>{label}</option>
                 ))}
               </select>
+            </div>
+
+            <div className="mt-4">
+              <img 
+                src="https://cdn.poehali.dev/projects/04a96223-0450-42d8-9b56-4bcab545e4ff/files/7c96c0b6-122e-4ae0-9ffd-d102807a0642.jpg"
+                alt="Профессиональный электрик"
+                className="w-full h-48 object-cover rounded-lg shadow-md"
+              />
+              <div className="mt-3 text-center">
+                <p className="text-sm text-gray-700">
+                  👉 Задавайте вопросы в{' '}
+                  <a 
+                    href="https://t.me/konigelectric" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-700 font-semibold underline"
+                  >
+                    Telegram
+                  </a>
+                  {' '}❤️
+                </p>
+              </div>
             </div>
 
             {defaults && (

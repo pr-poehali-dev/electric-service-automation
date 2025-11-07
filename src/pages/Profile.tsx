@@ -2,22 +2,33 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import ContactModal from '@/components/ContactModal';
+import InputMask from 'react-input-mask';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { orders } = useCart();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [showContactModal, setShowContactModal] = useState(false);
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [phoneValue, setPhoneValue] = useState(user?.phone || '');
 
   useEffect(() => {
     if (user && user.role !== 'client') {
       navigate('/');
     }
   }, [user, navigate]);
+
+  const handlePhoneSave = () => {
+    if (phoneValue && phoneValue.replace(/\D/g, '').length === 11) {
+      updateUser({ phone: phoneValue });
+      setIsEditingPhone(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
@@ -56,9 +67,42 @@ export default function Profile() {
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg">
                 <Icon name="User" size={36} className="text-white" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h2 className="text-2xl font-bold text-gray-800">Добро пожаловать!</h2>
                 <p className="text-sm text-muted-foreground">Клиент сервиса</p>
+                {user?.phone && (
+                  <div className="mt-2">
+                    {!isEditingPhone ? (
+                      <button
+                        onClick={() => {
+                          setIsEditingPhone(true);
+                          setPhoneValue(user.phone || '');
+                        }}
+                        className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                      >
+                        <Icon name="Phone" size={14} />
+                        {user.phone}
+                        <Icon name="Edit2" size={12} />
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-2 mt-2">
+                        <InputMask
+                          mask="8 (999) 999-99-99"
+                          value={phoneValue}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhoneValue(e.target.value)}
+                          placeholder="8 (___) ___-__-__"
+                          className="text-xs p-2 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-40"
+                        />
+                        <Button size="sm" onClick={handlePhoneSave} className="h-8">
+                          <Icon name="Check" size={14} />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => setIsEditingPhone(false)} className="h-8">
+                          <Icon name="X" size={14} />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
