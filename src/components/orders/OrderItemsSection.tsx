@@ -16,12 +16,12 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
 
   return (
     <div className="space-y-2 font-mono text-sm">
-        {safeItems.map((item, index) => {
-          const itemPrice = item.price || 0;
-          const itemQuantity = item.quantity || 1;
-          const itemTotal = itemPrice * itemQuantity;
+      {safeItems.map((item, index) => {
+        const itemPrice = item.price || 0;
+        const itemQuantity = item.quantity || 1;
+        const itemTotal = itemPrice * itemQuantity;
 
-          return (
+        return (
           <div key={index} className="border-b border-dashed border-gray-200 pb-2 mb-2">
             <div className="flex justify-between items-start gap-4">
               <div className="flex-1">
@@ -66,14 +66,13 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
               <span className="font-bold text-gray-900">{itemTotal.toLocaleString()} ₽</span>
             </div>
           </div>
-          );
-        })}
-        
-        <div className="border-t-2 border-gray-800 pt-4 mt-6">
-          <div className="flex justify-between items-center">
-            <span className="font-bold text-xl text-gray-900">ИТОГО:</span>
-            <span className="font-bold text-2xl text-primary">{safeTotalAmount.toLocaleString()} ₽</span>
-          </div>
+        );
+      })}
+      
+      <div className="border-t-2 border-gray-800 pt-4 mt-6">
+        <div className="flex justify-between items-center">
+          <span className="font-bold text-xl text-gray-900">ИТОГО:</span>
+          <span className="font-bold text-2xl text-primary">{safeTotalAmount.toLocaleString()} ₽</span>
         </div>
       </div>
     </div>
