@@ -42,6 +42,7 @@ interface CartContextType {
   assignExecutor: (orderId: string, electricianId: string, electricianName: string) => void;
   addPayment: (orderId: string, payment: Omit<Payment, 'id' | 'createdAt'>) => void;
   updatePaymentStatus: (orderId: string, paymentId: string, status: PaymentStatus) => void;
+  markOrderAsViewed: (orderId: string, userId: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -318,6 +319,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const markOrderAsViewed = (orderId: string, userId: string) => {
+    setOrders(prev => 
+      prev.map(order => {
+        if (order.id !== orderId) return order;
+        if (order.viewedBy?.includes(userId)) return order;
+        return {
+          ...order,
+          viewedBy: [...(order.viewedBy || []), userId]
+        };
+      })
+    );
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -334,7 +348,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateOrder,
         assignExecutor,
         addPayment,
-        updatePaymentStatus
+        updatePaymentStatus,
+        markOrderAsViewed
       }}
     >
       {children}

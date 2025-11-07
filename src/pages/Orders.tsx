@@ -33,7 +33,7 @@ const STATUS_LABELS = {
 export default function Orders() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { orders, clearCart, updateOrderStatus, addToCart, assignExecutor } = useCart();
+  const { orders, clearCart, updateOrderStatus, addToCart, assignExecutor, markOrderAsViewed } = useCart();
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -122,6 +122,25 @@ export default function Orders() {
     return counts;
   }, [orders]);
 
+  const unviewedPendingCount = useMemo(() => {
+    if (!user) return 0;
+    return orders.filter(order => 
+      order.status === 'pending' && 
+      !order.viewedBy?.includes(user.id)
+    ).length;
+  }, [orders, user]);
+
+  useEffect(() => {
+    if (statusFilter === 'pending' && user) {
+      const pendingOrders = orders.filter(o => o.status === 'pending');
+      pendingOrders.forEach(order => {
+        if (!order.viewedBy?.includes(user.id)) {
+          markOrderAsViewed(order.id, user.id);
+        }
+      });
+    }
+  }, [statusFilter, orders, user, markOrderAsViewed]);
+
   const rowVirtualizer = useVirtualizer({
     count: filteredOrders.length,
     getScrollElement: () => parentRef.current,
@@ -182,9 +201,14 @@ export default function Orders() {
                     <span className="text-lg font-bold">{statusCounts.all}</span>
                     <span className="text-xs">Все</span>
                   </TabsTrigger>
-                  <TabsTrigger value="pending" className="flex-col py-2 px-1">
+                  <TabsTrigger value="pending" className="flex-col py-2 px-1 relative">
                     <span className="text-lg font-bold">{statusCounts.pending}</span>
                     <span className="text-xs">Новые</span>
+                    {unviewedPendingCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-bold shadow-lg animate-pulse">
+                        {unviewedPendingCount}
+                      </span>
+                    )}
                   </TabsTrigger>
                   <TabsTrigger value="confirmed" className="flex-col py-2 px-1">
                     <span className="text-lg font-bold">{statusCounts.confirmed}</span>

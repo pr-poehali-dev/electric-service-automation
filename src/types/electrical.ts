@@ -248,6 +248,7 @@ export interface Order {
   departureConfirmedAt?: number;
   arrivedAt?: number;
   isDemo?: boolean;
+  viewedBy?: string[];
 }
 
 export interface ExecutorEarnings {

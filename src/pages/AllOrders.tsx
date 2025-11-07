@@ -137,13 +137,38 @@ type ElectricianFilter = 'new' | 'responded' | 'invited' | 'all';
 
 export default function AllOrders() {
   const navigate = useNavigate();
-  const { orders, updateOrderStatus, assignExecutor, addToCart, clearCart } = useCart();
+  const { orders, updateOrderStatus, assignExecutor, addToCart, clearCart, markOrderAsViewed } = useCart();
   const { isAuthenticated, user } = useAuth();
   const permissions = usePermissions();
   const [showContactModal, setShowContactModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState<ElectricianFilter | Order['status'] | 'all'>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
+
+  const unviewedNewCount = useMemo(() => {
+    if (!user) return 0;
+    return orders.filter(order => 
+      order.status === 'pending' && 
+      !order.assignedTo && 
+      !order.assignedExecutors?.some(ex => ex.id === user.id) &&
+      !order.viewedBy?.includes(user.id)
+    ).length;
+  }, [orders, user]);
+
+  useEffect(() => {
+    if (filterStatus === 'new' && user) {
+      const newOrders = orders.filter(o => 
+        o.status === 'pending' && 
+        !o.assignedTo && 
+        !o.assignedExecutors?.some(ex => ex.id === user.id)
+      );
+      newOrders.forEach(order => {
+        if (!order.viewedBy?.includes(user.id)) {
+          markOrderAsViewed(order.id, user.id);
+        }
+      });
+    }
+  }, [filterStatus, orders, user, markOrderAsViewed]);
   
   const filteredOrders = useMemo(() => {
     let filtered = orders;
@@ -253,9 +278,14 @@ export default function AllOrders() {
             ) : (
               <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as ElectricianFilter)} className="w-full">
                 <TabsList className="w-full grid grid-cols-3 h-auto p-1">
-                  <TabsTrigger value="new" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                  <TabsTrigger value="new" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md relative">
                     <span className="text-lg font-bold">{orders.filter(o => o.status === 'pending' && !o.assignedTo && !o.assignedExecutors?.some(ex => ex.id === user?.id)).length}</span>
                     <span className="text-xs">Новые</span>
+                    {unviewedNewCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-bold shadow-lg animate-pulse">
+                        {unviewedNewCount}
+                      </span>
+                    )}
                   </TabsTrigger>
                   <TabsTrigger value="responded" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
                     <span className="text-lg font-bold">{orders.filter(o => o.assignedExecutors?.some(ex => ex.id === user?.id) && o.status !== 'completed').length}</span>
