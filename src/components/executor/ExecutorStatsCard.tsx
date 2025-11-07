@@ -24,9 +24,11 @@ export default function ExecutorStatsCard({ profile }: ExecutorStatsCardProps) {
         {/* Текущее звание */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-3xl">{currentRank.badge}</span>
             <div>
-              <h3 className="text-lg font-bold text-amber-900">{currentRank.name}</h3>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-3xl">{currentRank.badge}</span>
+                <h3 className="text-lg font-bold text-amber-900">{currentRank.name}</h3>
+              </div>
               <p className="text-xs text-amber-700">{currentRank.description}</p>
             </div>
           </div>
@@ -43,21 +45,21 @@ export default function ExecutorStatsCard({ profile }: ExecutorStatsCardProps) {
         {/* Статистика */}
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-white rounded-lg p-3 border border-amber-200">
-            <div className="flex items-center gap-2 mb-1">
-              <Icon name="CheckCircle" className="h-4 w-4 text-green-600" />
-              <span className="text-xs text-gray-600">Заказов</span>
+            <div className="mb-1">
+              <h4 className="text-sm font-semibold text-gray-900 mb-1">Специалист</h4>
             </div>
-            <p className="text-xl font-bold text-gray-900">{profile.completedOrders}</p>
+            <p className="text-xl font-bold text-gray-900 mb-1">{profile.completedOrders}</p>
+            <p className="text-[10px] text-gray-500 leading-tight">Выполняйте больше заказов для повышения ранга</p>
           </div>
           
           <div className="bg-white rounded-lg p-3 border border-amber-200">
-            <div className="flex items-center gap-2 mb-1">
-              <Icon name="TrendingUp" className="h-4 w-4 text-blue-600" />
-              <span className="text-xs text-gray-600">Доход</span>
+            <div className="mb-1">
+              <h4 className="text-sm font-semibold text-gray-900 mb-1">Начисления</h4>
             </div>
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-xl font-bold text-gray-900 mb-1">
               {profile.totalRevenue.toLocaleString()} ₽
             </p>
+            <p className="text-[10px] text-gray-500 leading-tight">Подтвердите диплом, авто и инструменты для +20%</p>
           </div>
         </div>
 

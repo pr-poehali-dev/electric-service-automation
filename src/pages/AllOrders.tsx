@@ -123,13 +123,15 @@ const AllOrderCard = memo(({ order, onViewDetails, updateOrderStatus }: { order:
 
 AllOrderCard.displayName = 'AllOrderCard';
 
+type ElectricianFilter = 'new' | 'responded' | 'invited' | 'all';
+
 export default function AllOrders() {
   const navigate = useNavigate();
   const { orders, updateOrderStatus, assignExecutor, addToCart, clearCart } = useCart();
   const { isAuthenticated, user } = useAuth();
   const permissions = usePermissions();
   const [showContactModal, setShowContactModal] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<Order['status'] | 'all'>('all');
+  const [filterStatus, setFilterStatus] = useState<ElectricianFilter | Order['status'] | 'all'>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
   
@@ -137,13 +139,25 @@ export default function AllOrders() {
     let filtered = orders;
     
     if (!permissions.isAdmin && user) {
-      filtered = orders.filter(order => 
-        order.status === 'pending' && !order.assignedTo
-      );
-    }
-    
-    if (filterStatus !== 'all') {
-      filtered = filtered.filter(order => order.status === filterStatus);
+      if (filterStatus === 'new') {
+        filtered = orders.filter(order => 
+          order.status === 'pending' && !order.assignedTo && !order.assignedExecutors?.some(ex => ex.id === user.id)
+        );
+      } else if (filterStatus === 'responded') {
+        filtered = orders.filter(order => 
+          order.assignedExecutors?.some(ex => ex.id === user.id) && order.status !== 'completed'
+        );
+      } else if (filterStatus === 'invited') {
+        filtered = orders.filter(order => 
+          order.assignedTo === user.id
+        );
+      } else if (filterStatus !== 'all') {
+        filtered = orders.filter(order => order.status === filterStatus);
+      }
+    } else {
+      if (filterStatus !== 'all' && ['pending', 'confirmed', 'in-progress', 'completed'].includes(filterStatus)) {
+        filtered = filtered.filter(order => order.status === filterStatus);
+      }
     }
     
     return filtered;
@@ -198,30 +212,49 @@ export default function AllOrders() {
               </h1>
             </div>
 
-            <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as Order['status'] | 'all')} className="w-full">
-              <TabsList className="w-full grid grid-cols-5 h-auto bg-gradient-to-br from-blue-100 to-indigo-100 p-1">
-                <TabsTrigger value="all" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
-                  <span className="text-lg font-bold">{orders.length}</span>
-                  <span className="text-xs">Все</span>
-                </TabsTrigger>
-                <TabsTrigger value="pending" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
-                  <span className="text-lg font-bold">{orders.filter(o => o.status === 'pending').length}</span>
-                  <span className="text-xs">Новые</span>
-                </TabsTrigger>
-                <TabsTrigger value="confirmed" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
-                  <span className="text-lg font-bold">{orders.filter(o => o.status === 'confirmed').length}</span>
-                  <span className="text-xs">Принято</span>
-                </TabsTrigger>
-                <TabsTrigger value="in-progress" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
-                  <span className="text-lg font-bold">{orders.filter(o => o.status === 'in-progress').length}</span>
-                  <span className="text-xs">В работе</span>
-                </TabsTrigger>
-                <TabsTrigger value="completed" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
-                  <span className="text-lg font-bold">{orders.filter(o => o.status === 'completed').length}</span>
-                  <span className="text-xs">Готово</span>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            {permissions.isAdmin ? (
+              <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as Order['status'] | 'all')} className="w-full">
+                <TabsList className="w-full grid grid-cols-5 h-auto bg-gradient-to-br from-blue-100 to-indigo-100 p-1">
+                  <TabsTrigger value="all" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <span className="text-lg font-bold">{orders.length}</span>
+                    <span className="text-xs">Все</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="pending" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <span className="text-lg font-bold">{orders.filter(o => o.status === 'pending').length}</span>
+                    <span className="text-xs">Новые</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="confirmed" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <span className="text-lg font-bold">{orders.filter(o => o.status === 'confirmed').length}</span>
+                    <span className="text-xs">Принято</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="in-progress" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <span className="text-lg font-bold">{orders.filter(o => o.status === 'in-progress').length}</span>
+                    <span className="text-xs">В работе</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="completed" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <span className="text-lg font-bold">{orders.filter(o => o.status === 'completed').length}</span>
+                    <span className="text-xs">Готово</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            ) : (
+              <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as ElectricianFilter)} className="w-full">
+                <TabsList className="w-full grid grid-cols-3 h-auto bg-gradient-to-br from-blue-100 to-indigo-100 p-1">
+                  <TabsTrigger value="new" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <span className="text-lg font-bold">{orders.filter(o => o.status === 'pending' && !o.assignedTo && !o.assignedExecutors?.some(ex => ex.id === user?.id)).length}</span>
+                    <span className="text-xs">Новые</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="responded" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <span className="text-lg font-bold">{orders.filter(o => o.assignedExecutors?.some(ex => ex.id === user?.id) && o.status !== 'completed').length}</span>
+                    <span className="text-xs">Вы откликнулись</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="invited" className="flex-col py-2 px-1 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                    <span className="text-lg font-bold">{orders.filter(o => o.assignedTo === user?.id).length}</span>
+                    <span className="text-xs">Вас пригласили</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            )}
 
             {filteredOrders.length === 0 ? (
               <Card className="p-12 text-center shadow-md">

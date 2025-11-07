@@ -237,6 +237,7 @@ export interface Order {
   notes?: string;
   assignedTo?: string;
   assignedToName?: string;
+  assignedExecutors?: Array<{ id: string; name: string }>;
   totalAmount?: number;
   paymentStatus?: PaymentStatus;
   payments?: Payment[];

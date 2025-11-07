@@ -50,30 +50,6 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
         <div className="absolute top-4 right-4">
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2">
-              {user.role === 'electrician' && (
-                <div className="bg-white/95 backdrop-blur-sm rounded-lg px-4 py-3 shadow-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <Switch 
-                        checked={user.isActive || false}
-                        onCheckedChange={handleActiveToggle}
-                        className="data-[state=checked]:bg-green-500"
-                      />
-                      <div className="flex items-center gap-1">
-                        <Icon 
-                          name={user.isActive ? "CheckCircle2" : "CircleDashed"} 
-                          size={16} 
-                          className={user.isActive ? "text-green-600" : "text-gray-400"}
-                        />
-                        <span className={`text-sm font-medium ${user.isActive ? 'text-green-700' : 'text-gray-600'}`}>
-                          {user.isActive ? 'Принимаю заказы' : 'Не принимаю'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
               <div className="flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
                 <button 
                   onClick={handleProfileClick}

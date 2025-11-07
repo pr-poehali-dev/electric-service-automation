@@ -8,6 +8,8 @@ import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Icon from '@/components/ui/icon';
 import PageHeader from '@/components/PageHeader';
+import PageNavigation from '@/components/PageNavigation';
+import ContactModal from '@/components/ContactModal';
 import ExecutorStatsCard from '@/components/executor/ExecutorStatsCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { RANKS, checkProStatus } from '@/types/electrical';
@@ -21,10 +23,13 @@ export default function ExecutorProfileSettings() {
   const [hasTools, setHasTools] = useState(user?.hasTools || false);
   const [isActive, setIsActive] = useState(user?.isActive || false);
   const [hasDiploma, setHasDiploma] = useState(user?.hasDiploma || false);
+  const [showContactModal, setShowContactModal] = useState(false);
   
   const [diplomaFile, setDiplomaFile] = useState<File | null>(null);
   const [carFile, setCarFile] = useState<File | null>(null);
   const [toolsFile, setToolsFile] = useState<File | null>(null);
+  
+  const [hasChanges, setHasChanges] = useState(false);
 
   if (!executorProfile || !user) {
     navigate('/orders');
@@ -35,6 +40,14 @@ export default function ExecutorProfileSettings() {
     if (type === 'diploma') setDiplomaFile(file);
     if (type === 'car') setCarFile(file);
     if (type === 'tools') setToolsFile(file);
+  };
+
+  const handleChange = (field: string, value: any) => {
+    setHasChanges(true);
+    if (field === 'hasCar') setHasCar(value);
+    if (field === 'hasTools') setHasTools(value);
+    if (field === 'isActive') setIsActive(value);
+    if (field === 'hasDiploma') setHasDiploma(value);
   };
 
   const handleSave = () => {
@@ -64,6 +77,7 @@ export default function ExecutorProfileSettings() {
     }
 
     updateUser(updates);
+    setHasChanges(false);
     navigate('/orders');
   };
 
@@ -76,19 +90,11 @@ export default function ExecutorProfileSettings() {
         <PageHeader />
 
         <div className="max-w-md mx-auto">
-          <div className="bg-white shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => navigate('/orders')}
-                  className="-ml-2"
-                >
-                  <Icon name="ArrowLeft" className="h-4 w-4" />
-                </Button>
-                <h1 className="text-2xl font-bold text-gray-800">Профиль</h1>
-              </div>
+          <PageNavigation onContactClick={() => setShowContactModal(true)} />
+          
+          <div className="bg-white shadow-lg p-4">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold text-gray-800">Профиль</h1>
             </div>
           </div>
           <div className="p-6 space-y-4">
@@ -116,11 +122,7 @@ export default function ExecutorProfileSettings() {
                       ПРОФИ
                     </span>
                   </div>
-                ) : (
-                  <div className="bg-gray-100 px-3 py-1.5 rounded-full">
-                    <span className="text-xs font-medium text-gray-600">Стандарт</span>
-                  </div>
-                )}
+                ) : null}
               </div>
 
               <div className="space-y-3">
@@ -128,7 +130,7 @@ export default function ExecutorProfileSettings() {
                 <div className="border border-gray-200 rounded-lg p-3 hover:border-purple-200 transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Switch checked={hasDiploma} onCheckedChange={setHasDiploma} />
+                      <Switch checked={hasDiploma} onCheckedChange={(val) => handleChange('hasDiploma', val)} />
                       <Label className="text-sm font-medium">Диплом специалиста</Label>
                     </div>
                     {user.diplomaVerified && (
@@ -161,7 +163,7 @@ export default function ExecutorProfileSettings() {
                 <div className="border border-gray-200 rounded-lg p-3 hover:border-blue-200 transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Switch checked={hasCar} onCheckedChange={setHasCar} />
+                      <Switch checked={hasCar} onCheckedChange={(val) => handleChange('hasCar', val)} />
                       <Label className="text-sm font-medium">Автомобиль</Label>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -204,7 +206,7 @@ export default function ExecutorProfileSettings() {
                 <div className="border border-gray-200 rounded-lg p-3 hover:border-green-200 transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Switch checked={hasTools} onCheckedChange={setHasTools} />
+                      <Switch checked={hasTools} onCheckedChange={(val) => handleChange('hasTools', val)} />
                       <Label className="text-sm font-medium">Инструменты</Label>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -246,7 +248,7 @@ export default function ExecutorProfileSettings() {
                 {/* Активность */}
                 <div className="border border-gray-200 rounded-lg p-3 hover:border-amber-200 transition-colors">
                   <div className="flex items-center gap-2">
-                    <Switch checked={isActive} onCheckedChange={setIsActive} />
+                    <Switch checked={isActive} onCheckedChange={(val) => handleChange('isActive', val)} />
                     <Label className="text-sm font-medium">Принимаю заказы</Label>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -263,11 +265,15 @@ export default function ExecutorProfileSettings() {
               </div>
             </Card>
 
-            <Card className="p-4 bg-blue-50">
-              <div className="flex items-center gap-2 mb-3">
-                <Icon name="DollarSign" className="h-4 w-4 text-blue-600" />
-                <h4 className="font-semibold text-gray-900">Комиссия</h4>
-              </div>
+            <div className="pt-3">
+              <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </TooltipProvider>
+  );
+}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-700">Электромонтаж:</span>
@@ -292,8 +298,9 @@ export default function ExecutorProfileSettings() {
 
             <div className="space-y-3">
               <Button 
-                onClick={handleSave} 
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold" 
+                onClick={handleSave}
+                disabled={!hasChanges}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed" 
                 size="lg"
               >
                 <Icon name="Save" className="mr-2 h-4 w-4" />
@@ -301,15 +308,9 @@ export default function ExecutorProfileSettings() {
               </Button>
               <Button 
                 variant="outline" 
-                onClick={() => navigate('/orders')} 
+                onClick={() => navigate('/')} 
                 className="w-full"
               >
-                Отмена
+                На главную
               </Button>
             </div>
-          </div>
-        </div>
-      </div>
-    </TooltipProvider>
-  );
-}
