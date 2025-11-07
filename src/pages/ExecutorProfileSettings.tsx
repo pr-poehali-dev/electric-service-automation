@@ -265,37 +265,6 @@ export default function ExecutorProfileSettings() {
               </div>
             </Card>
 
-            <div className="pt-3">
-              <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </TooltipProvider>
-  );
-}
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Электромонтаж:</span>
-                  <span className="font-semibold text-gray-900">
-                    {isPro ? '50%' : '30%'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Другие услуги:</span>
-                  <span className="font-semibold text-gray-900">50%</span>
-                </div>
-              </div>
-              {!isPro && hasDiploma && hasCar && hasTools && (
-                <div className="mt-3 p-2 bg-purple-100 rounded-lg">
-                  <p className="text-xs text-purple-800 flex items-center gap-1">
-                    <Icon name="Sparkles" className="h-3 w-3" />
-                    После проверки документов получите 50% сразу!
-                  </p>
-                </div>
-              )}
-            </Card>
-
             <div className="space-y-3">
               <Button 
                 onClick={handleSave}
@@ -314,3 +283,11 @@ export default function ExecutorProfileSettings() {
                 На главную
               </Button>
             </div>
+          </div>
+        </div>
+
+        <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
+      </div>
+    </TooltipProvider>
+  );
+}
