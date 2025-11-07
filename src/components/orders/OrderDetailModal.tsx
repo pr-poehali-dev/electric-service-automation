@@ -11,6 +11,7 @@ import OrderProgressSection from './OrderProgressSection';
 import OrderInfoSection from './OrderInfoSection';
 import OrderItemsSection from './OrderItemsSection';
 import OrderContactSection from './OrderContactSection';
+import OrderInfoCompactSection from './OrderInfoCompactSection';
 import OrderReviewSection from './OrderReviewSection';
 import OrderEarningsCard from '@/components/executor/OrderEarningsCard';
 import OrderCompletionModal from './OrderCompletionModal';
@@ -184,28 +185,37 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
         </div>
 
         <div className="p-6 space-y-4">
-          <Card className="p-4 bg-gray-50">
-            <div className="space-y-3">
-              <div>
-                <h4 className="text-sm font-medium text-gray-600 mb-2">Детали заявки</h4>
-                <OrderInfoSection 
-                  order={currentOrder} 
-                  isEditing={isEditing}
-                  onEdit={handleOrderEdit}
-                  isAdmin={permissions.isAdmin}
-                />
+          {!isEditing ? (
+            <Card className="p-4 bg-gray-50">
+              <OrderInfoCompactSection 
+                order={currentOrder}
+                isElectrician={permissions.isElectrician}
+              />
+            </Card>
+          ) : (
+            <Card className="p-4 bg-gray-50">
+              <div className="space-y-3">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-600 mb-2">Детали заявки</h4>
+                  <OrderInfoSection 
+                    order={currentOrder} 
+                    isEditing={isEditing}
+                    onEdit={handleOrderEdit}
+                    isAdmin={permissions.isAdmin}
+                  />
+                </div>
+                <div className="border-t border-gray-200 pt-3">
+                  <h4 className="text-sm font-medium text-gray-600 mb-2">Контактные данные</h4>
+                  <OrderContactSection 
+                    order={currentOrder}
+                    isEditing={isEditing}
+                    onEdit={handleOrderEdit}
+                    isElectrician={permissions.isElectrician}
+                  />
+                </div>
               </div>
-              <div className="border-t border-gray-200 pt-3">
-                <h4 className="text-sm font-medium text-gray-600 mb-2">Контактные данные</h4>
-                <OrderContactSection 
-                  order={currentOrder}
-                  isEditing={isEditing}
-                  onEdit={handleOrderEdit}
-                  isElectrician={permissions.isElectrician}
-                />
-              </div>
-            </div>
-          </Card>
+            </Card>
+          )}
 
           <OrderProgressSection order={currentOrder} isElectrician={permissions.isElectrician} />
 

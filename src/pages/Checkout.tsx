@@ -18,6 +18,7 @@ export default function Checkout() {
   const [showContactModal, setShowContactModal] = useState(false);
 
   const [formData, setFormData] = useState({
+    customerName: '',
     phone: '',
     address: '',
     date: '',
@@ -27,6 +28,7 @@ export default function Checkout() {
   });
 
   const [errors, setErrors] = useState({
+    customerName: '',
     phone: '',
     address: '',
     date: '',
@@ -35,11 +37,16 @@ export default function Checkout() {
 
   const validateForm = () => {
     const newErrors = {
+      customerName: '',
       phone: '',
       address: '',
       date: '',
       time: ''
     };
+
+    if (!formData.customerName) {
+      newErrors.customerName = 'Укажите ваше имя';
+    }
 
     if (!formData.phone) {
       newErrors.phone = 'Укажите номер телефона';
@@ -169,6 +176,27 @@ export default function Checkout() {
             </h2>
             
             <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  Ваше имя <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Как к вам обращаться"
+                  value={formData.customerName}
+                  onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                  className={`w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
+                    errors.customerName ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                {errors.customerName && (
+                  <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                    <Icon name="AlertCircle" size={14} />
+                    {errors.customerName}
+                  </p>
+                )}
+              </div>
+
               <div>
                 <label className="text-sm font-medium mb-2 block">
                   Номер телефона <span className="text-red-500">*</span>

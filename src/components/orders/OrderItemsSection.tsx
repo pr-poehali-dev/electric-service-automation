@@ -13,6 +13,13 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
   const safeItems = items || [];
   const safeTotalAmount = totalAmount || 0;
 
+  const cableItem = safeItems.find(item => 
+    item.name.toLowerCase().includes('кабел') || 
+    item.name.toLowerCase().includes('монтаж кабеля')
+  );
+  const cableMeters = cableItem ? cableItem.quantity : 0;
+  const materialsCost = cableMeters * 130;
+
   return (
     <div className="space-y-2 font-mono text-sm">
       {safeItems.map((item, index) => {
@@ -73,14 +80,15 @@ export default function OrderItemsSection({ items, totalAmount, isEditing, onIte
           <span className="font-bold text-xl text-gray-900">ИТОГО:</span>
           <span className="font-bold text-2xl text-primary">{safeTotalAmount.toLocaleString()} ₽</span>
         </div>
-        <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mt-3">
-          <div className="flex items-center gap-2 text-sm">
-            <Icon name="Package" size={16} className="text-blue-600" />
-            <span className="text-gray-700">Примерная стоимость материалов:</span>
-            <span className="font-bold text-blue-700">{Math.round(safeTotalAmount * 0.3).toLocaleString()} ₽</span>
+        {cableMeters > 0 && (
+          <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mt-3">
+            <div className="flex items-center gap-2 text-sm">
+              <Icon name="Package" size={16} className="text-blue-600" />
+              <span className="text-gray-700">Примерная стоимость материалов:</span>
+              <span className="font-bold text-blue-700">{materialsCost.toLocaleString()} ₽</span>
+            </div>
           </div>
-          <p className="text-xs text-gray-600 mt-1 ml-6">~30% от стоимости работ</p>
-        </div>
+        )}
       </div>
     </div>
   );
