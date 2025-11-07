@@ -11,6 +11,7 @@ import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import ContactModal from '@/components/ContactModal';
 import ExecutorStatsCard from '@/components/executor/ExecutorStatsCard';
+import ProStatusModal from '@/components/executor/ProStatusModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { RANKS, checkProStatus } from '@/types/electrical';
 
@@ -24,6 +25,7 @@ export default function ExecutorProfileSettings() {
   const [isActive, setIsActive] = useState(user?.isActive || false);
   const [hasDiploma, setHasDiploma] = useState(user?.hasDiploma || false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showProModal, setShowProModal] = useState<'education' | 'car' | 'tools' | null>(null);
   
   const [diplomaFile, setDiplomaFile] = useState<File | null>(null);
   const [carFile, setCarFile] = useState<File | null>(null);
@@ -37,9 +39,19 @@ export default function ExecutorProfileSettings() {
   }
 
   const handleFileChange = (type: 'diploma' | 'car' | 'tools', file: File | null) => {
-    if (type === 'diploma') setDiplomaFile(file);
-    if (type === 'car') setCarFile(file);
-    if (type === 'tools') setToolsFile(file);
+    if (type === 'diploma') {
+      setDiplomaFile(file);
+      setHasDiploma(true);
+    }
+    if (type === 'car') {
+      setCarFile(file);
+      setHasCar(true);
+    }
+    if (type === 'tools') {
+      setToolsFile(file);
+      setHasTools(true);
+    }
+    setHasChanges(true);
   };
 
   const handleChange = (field: string, value: any) => {
@@ -126,24 +138,21 @@ export default function ExecutorProfileSettings() {
               </div>
 
               <div className="space-y-3">
-                {/* Диплом */}
-                <div className={`border-2 rounded-lg p-4 transition-all ${
-                  user.diplomaVerified 
-                    ? 'border-green-400 bg-green-50' 
-                    : hasDiploma 
-                    ? 'border-purple-300 bg-purple-50 hover:border-purple-400' 
-                    : 'border-gray-200 hover:border-purple-200'
-                }`}>
-                  <div className="flex items-center justify-between mb-2">
+                {/* Образование */}
+                <button
+                  onClick={() => setShowProModal('education')}
+                  className={`w-full border-2 rounded-lg p-4 transition-all text-left ${
+                    user.diplomaVerified 
+                      ? 'border-green-400 bg-green-50' 
+                      : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                  }`}>
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-full ${user.diplomaVerified ? 'bg-green-100' : 'bg-purple-100'}`}>
                         <Icon name="GraduationCap" className={`h-5 w-5 ${user.diplomaVerified ? 'text-green-600' : 'text-purple-600'}`} />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Label className="text-sm font-semibold">Диплом специалиста</Label>
-                          <Switch checked={hasDiploma} onCheckedChange={(val) => handleChange('hasDiploma', val)} />
-                        </div>
+                        <Label className="text-sm font-semibold cursor-pointer">Добавить образование</Label>
                         <p className="text-xs text-gray-600 font-medium">💰 +10% к доходу за каждый заказ</p>
                       </div>
                     </div>
@@ -154,55 +163,25 @@ export default function ExecutorProfileSettings() {
                       </div>
                     )}
                   </div>
-                  {hasDiploma && !user.diplomaVerified && (
-                    <div className="mt-3 pl-11" onClick={(e) => e.stopPropagation()}>
-                      <Label className="text-xs text-purple-700 font-medium mb-3 block">Загрузите фото диплома для проверки</Label>
-                      <Input
-                        id="diploma-upload"
-                        type="file"
-                        accept="image/*,.pdf"
-                        onChange={(e) => {
-                          handleFileChange('diploma', e.target.files?.[0] || null);
-                          handleChange('hasDiploma', true);
-                        }}
-                        className="text-xs border-purple-300"
-                      />
-                      {diplomaFile && (
-                        <p className="text-xs text-purple-600 mt-2 flex items-center gap-1 font-medium">
-                          ✅ {diplomaFile.name} - отправлено на проверку
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
+                </button>
 
                 {/* Автомобиль */}
-                <div 
-                  className={`border-2 rounded-lg p-4 transition-all cursor-pointer ${
+                <button
+                  onClick={() => setShowProModal('car')}
+                  className={`w-full border-2 rounded-lg p-4 transition-all text-left ${
                     user.carVerified 
                       ? 'border-green-400 bg-green-50' 
-                      : hasCar 
-                      ? 'border-blue-300 bg-blue-50 hover:border-blue-400' 
-                      : 'border-gray-200 hover:border-blue-200'
-                  }`}
-                  onClick={() => handleChange('hasCar', !hasCar)}
-                >
-                  <div className="flex items-center justify-between mb-2">
+                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                  }`}>
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-full ${user.carVerified ? 'bg-green-100' : 'bg-blue-100'}`}>
                         <Icon name="Car" className={`h-5 w-5 ${user.carVerified ? 'text-green-600' : 'text-blue-600'}`} />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Label className="text-sm font-semibold">Автомобиль</Label>
-                        </div>
+                        <Label className="text-sm font-semibold cursor-pointer">Автомобиль</Label>
                         <p className="text-xs text-gray-600 font-medium">🚗 +10% больше заказов от клиентов</p>
                       </div>
-                      <Switch 
-                        checked={hasCar} 
-                        onCheckedChange={(val) => handleChange('hasCar', val)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
                     </div>
                     {user.carVerified && (
                       <div className="flex items-center gap-1 px-2 py-1 bg-green-500 rounded-full">
@@ -211,55 +190,25 @@ export default function ExecutorProfileSettings() {
                       </div>
                     )}
                   </div>
-                  {hasCar && !user.carVerified && (
-                    <div className="mt-3 pl-11" onClick={(e) => e.stopPropagation()}>
-                      <Label className="text-xs text-blue-700 font-medium mb-3 block">Загрузите фото авто/прав для проверки</Label>
-                      <Input
-                        id="car-upload"
-                        type="file"
-                        accept="image/*,.pdf"
-                        onChange={(e) => {
-                          handleFileChange('car', e.target.files?.[0] || null);
-                          handleChange('hasCar', true);
-                        }}
-                        className="text-xs border-blue-300"
-                      />
-                      {carFile && (
-                        <p className="text-xs text-blue-600 mt-2 flex items-center gap-1 font-medium">
-                          ✅ {carFile.name} - отправлено на проверку
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
+                </button>
 
                 {/* Инструменты */}
-                <div 
-                  className={`border-2 rounded-lg p-4 transition-all cursor-pointer ${
+                <button
+                  onClick={() => setShowProModal('tools')}
+                  className={`w-full border-2 rounded-lg p-4 transition-all text-left ${
                     user.toolsVerified 
                       ? 'border-green-400 bg-green-50' 
-                      : hasTools 
-                      ? 'border-orange-300 bg-orange-50 hover:border-orange-400' 
-                      : 'border-gray-200 hover:border-orange-200'
-                  }`}
-                  onClick={() => handleChange('hasTools', !hasTools)}
-                >
-                  <div className="flex items-center justify-between mb-2">
+                      : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50'
+                  }`}>
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-full ${user.toolsVerified ? 'bg-green-100' : 'bg-orange-100'}`}>
                         <Icon name="Wrench" className={`h-5 w-5 ${user.toolsVerified ? 'text-green-600' : 'text-orange-600'}`} />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Label className="text-sm font-semibold">Инструменты</Label>
-                        </div>
+                        <Label className="text-sm font-semibold cursor-pointer">Инструменты</Label>
                         <p className="text-xs text-gray-600 font-medium">🔧 +10% доверия и рейтинг</p>
                       </div>
-                      <Switch 
-                        checked={hasTools} 
-                        onCheckedChange={(val) => handleChange('hasTools', val)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
                     </div>
                     {user.toolsVerified && (
                       <div className="flex items-center gap-1 px-2 py-1 bg-green-500 rounded-full">
@@ -268,27 +217,7 @@ export default function ExecutorProfileSettings() {
                       </div>
                     )}
                   </div>
-                  {hasTools && !user.toolsVerified && (
-                    <div className="mt-3 pl-11" onClick={(e) => e.stopPropagation()}>
-                      <Label className="text-xs text-orange-700 font-medium mb-3 block">Загрузите фото инструментов для проверки</Label>
-                      <Input
-                        id="tools-upload"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          handleFileChange('tools', e.target.files?.[0] || null);
-                          handleChange('hasTools', true);
-                        }}
-                        className="text-xs border-orange-300"
-                      />
-                      {toolsFile && (
-                        <p className="text-xs text-orange-600 mt-2 flex items-center gap-1 font-medium">
-                          ✅ {toolsFile.name} - отправлено на проверку
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
+                </button>
 
                 {/* Активность */}
                 <div className="border border-gray-200 rounded-lg p-3 hover:border-amber-200 transition-colors">
@@ -335,6 +264,23 @@ export default function ExecutorProfileSettings() {
         </div>
 
         <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
+        
+        {showProModal && (
+          <ProStatusModal
+            type={showProModal}
+            onClose={() => setShowProModal(null)}
+            onSubmit={(file) => {
+              if (showProModal === 'education') handleFileChange('diploma', file);
+              if (showProModal === 'car') handleFileChange('car', file);
+              if (showProModal === 'tools') handleFileChange('tools', file);
+            }}
+            isVerified={
+              showProModal === 'education' ? user?.diplomaVerified :
+              showProModal === 'car' ? user?.carVerified :
+              user?.toolsVerified
+            }
+          />
+        )}
       </div>
     </TooltipProvider>
   );
