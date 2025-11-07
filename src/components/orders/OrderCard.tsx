@@ -65,13 +65,18 @@ const OrderCard = memo(({ order, onViewDetails, onRepeat }: OrderCardProps) => {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="font-bold text-lg">#{order.id.slice(-6)}</h3>
+            <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
+              <Icon name="MapPin" size={18} className="text-primary" />
+              {order.address || 'Адрес не указан'}
+            </h3>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
             <span className={`text-xs font-semibold py-1 px-3 rounded-full border ${STATUS_COLORS[order.status]}`}>
               {STATUS_LABELS[order.status]}
             </span>
+            <span className="text-xs text-gray-500">#{order.id.slice(-6)}</span>
           </div>
-          <p className="text-sm text-gray-600">{getServiceTypeLabel(order.items)}</p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 mt-2">
             {new Date(order.createdAt).toLocaleDateString('ru-RU', {
               day: 'numeric',
               month: 'long',

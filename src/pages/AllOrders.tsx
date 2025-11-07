@@ -66,11 +66,17 @@ const AllOrderCard = memo(({ order, onViewDetails, updateOrderStatus }: { order:
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-lg font-bold text-gray-800">Заявка #{order.id.slice(-6)}</h3>
-            <span className={`text-xs px-3 py-1 rounded-full font-medium ${STATUS_COLORS[order.status]}`}>
-              {STATUS_LABELS[order.status]}
-            </span>
+          <div className="mb-2">
+            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 mb-2">
+              <Icon name="MapPin" size={18} className="text-primary" />
+              {order.address || 'Адрес не указан'}
+            </h3>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`text-xs px-3 py-1 rounded-full font-medium ${STATUS_COLORS[order.status]}`}>
+                {STATUS_LABELS[order.status]}
+              </span>
+              <span className="text-xs text-gray-500">#{order.id.slice(-6)}</span>
+            </div>
           </div>
           <div className="flex items-center gap-1 text-sm text-gray-500">
             <Icon name="Clock" size={14} />
