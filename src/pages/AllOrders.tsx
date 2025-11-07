@@ -138,7 +138,7 @@ export default function AllOrders() {
     
     if (!permissions.isAdmin && user) {
       filtered = orders.filter(order => 
-        order.status === 'pending' || order.assignedTo === user.uid
+        order.status === 'pending' && !order.assignedTo
       );
     }
     

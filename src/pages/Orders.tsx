@@ -72,11 +72,11 @@ export default function Orders() {
   const executorProfile = getExecutorProfile();
 
   const filteredOrders = useMemo(() => {
-    return orders.filter(order => {
+    const filtered = orders.filter(order => {
       if (!order || !order.items) return false;
       
       if (permissions.isElectrician && !permissions.isAdmin && user) {
-        if (order.assignedTo !== user.uid) return false;
+        if (order.assignedTo !== user.id) return false;
       }
       
       if (statusFilter !== 'all' && order.status !== statusFilter) return false;
@@ -90,6 +90,12 @@ export default function Orders() {
       }
       
       return true;
+    });
+    
+    return filtered.sort((a, b) => {
+      const dateA = a.scheduledDate ? new Date(a.scheduledDate).getTime() : new Date(a.createdAt).getTime();
+      const dateB = b.scheduledDate ? new Date(b.scheduledDate).getTime() : new Date(b.createdAt).getTime();
+      return dateA - dateB;
     });
   }, [orders, statusFilter, debouncedSearchQuery, permissions, user]);
 

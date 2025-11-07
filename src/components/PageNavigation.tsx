@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -14,13 +15,19 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
   const navigate = useNavigate();
   const location = useLocation();
   const { cart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated, updateUser } = useAuth();
   const permissions = usePermissions();
   const { unreadCount } = useNotifications();
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const isCheckoutPage = location.pathname === '/checkout';
   const isCartPage = location.pathname === '/cart';
   const isProductsPage = location.pathname === '/products';
+  
+  const handleActiveToggle = (checked: boolean) => {
+    updateUser({ isActive: checked });
+  };
+  
+  const isElectrician = user?.role === 'electrician';
 
   return (
     <div className="bg-white shadow-lg p-4 flex items-center justify-between">
@@ -36,10 +43,10 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         <Button 
           variant="ghost"
           className="h-10 text-sm px-3"
-          onClick={() => navigate('/products')}
-          title="Услуги электрика"
+          onClick={() => navigate(isElectrician ? '/all-orders' : '/products')}
+          title={isElectrician ? "Поиск заказов" : "Услуги электрика"}
         >
-          Услуги электрика
+          {isElectrician ? 'Поиск заказов' : 'Услуги электрика'}
         </Button>
         {cartCount > 0 && isCartPage && (
           <Button 
@@ -69,15 +76,17 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         )}
       </div>
       <div className="flex items-center gap-3">
-        {isAuthenticated && permissions.canViewAllOrders && (
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => navigate('/all-orders')}
-            title="Все заявки"
-          >
-            <Icon name="ClipboardList" size={20} />
-          </Button>
+        {isElectrician && !isCheckoutPage && !isCartPage && (
+          <div className="flex items-center gap-2">
+            <Switch 
+              checked={user?.isActive || false}
+              onCheckedChange={handleActiveToggle}
+              className="data-[state=checked]:bg-green-500"
+            />
+            <span className={`text-xs font-medium ${user?.isActive ? 'text-green-700' : 'text-gray-600'}`}>
+              {user?.isActive ? 'Работаю' : 'Не работаю'}
+            </span>
+          </div>
         )}
         {isAuthenticated ? (
           <Button 

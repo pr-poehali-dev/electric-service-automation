@@ -8,13 +8,16 @@ import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import Landing from '@/components/Landing';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Services() {
   const navigate = useNavigate();
   const { cart } = useCart();
+  const { user } = useAuth();
   const [showContactModal, setShowContactModal] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const hasItems = cart.length > 0;
+  const isElectrician = user?.role === 'electrician';
 
   useEffect(() => {
     const checkDesktop = () => {
@@ -40,7 +43,7 @@ export default function Services() {
 
         <div className="p-6 space-y-6">
 
-        {hasItems && (
+        {hasItems && !isElectrician && (
           <Card className="p-6 bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/cart')}>
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
@@ -54,14 +57,28 @@ export default function Services() {
           </Card>
         )}
 
+        {isElectrician ? (
+          <Card className="p-6 bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/orders')}>
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Icon name="MapPin" size={32} className="text-white" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-white mb-1">Ближайший адрес</h2>
+                <p className="text-sm text-purple-100">Назначенные заказы</p>
+              </div>
+            </div>
+          </Card>
+        ) : null}
+        
         <Card className="p-6 bg-white shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/orders')}>
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
               <Icon name="Mail" size={32} className="text-white" />
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Мои заявки</h2>
-              <p className="text-sm text-gray-600">История и статусы</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">{isElectrician ? 'Мои заказы' : 'Мои заявки'}</h2>
+              <p className="text-sm text-gray-600">{isElectrician ? 'Назначенные мне работы' : 'История и статусы'}</p>
             </div>
           </div>
         </Card>

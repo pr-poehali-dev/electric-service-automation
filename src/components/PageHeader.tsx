@@ -85,7 +85,7 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
                     <Icon name="ChevronRight" size={12} className="absolute -right-1 -bottom-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold group-hover:text-primary transition-colors">{user.name}</div>
+                    <div className="text-sm font-semibold group-hover:text-primary transition-colors">Мой профиль</div>
                     <div className={`text-xs px-2 py-0.5 rounded ${getRoleBadge(user.role).color}`}>
                       {getRoleBadge(user.role).text}
                     </div>

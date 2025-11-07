@@ -12,9 +12,12 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps) {
-  const { login } = useAuth();
+  const { login, register } = useAuth();
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [role, setRole] = useState<'client' | 'electrician'>('client');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -36,15 +39,31 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
 
     try {
       const normalizedPhone = normalizePhone(phone);
-      const success = await login(normalizedPhone, password);
-      if (success) {
-        onSuccess?.();
-        onClose();
+      
+      if (isRegisterMode) {
+        if (!name.trim()) {
+          setError('Укажите имя');
+          setLoading(false);
+          return;
+        }
+        const success = await register(normalizedPhone, password, name, role);
+        if (success) {
+          onSuccess?.();
+          onClose();
+        } else {
+          setError('Ошибка регистрации');
+        }
       } else {
-        setError('Неверный телефон или пароль');
+        const success = await login(normalizedPhone, password);
+        if (success) {
+          onSuccess?.();
+          onClose();
+        } else {
+          setError('Неверный телефон или пароль');
+        }
       }
     } catch (err) {
-      setError('Ошибка входа');
+      setError(isRegisterMode ? 'Ошибка регистрации' : 'Ошибка входа');
     } finally {
       setLoading(false);
     }
@@ -53,7 +72,10 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
   const handleClose = () => {
     setPhone('');
     setPassword('');
+    setName('');
+    setRole('client');
     setError('');
+    setIsRegisterMode(false);
     onClose();
   };
 
@@ -61,10 +83,24 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Вход в систему</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">{isRegisterMode ? 'Регистрация' : 'Вход в систему'}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          {isRegisterMode && (
+            <div>
+              <label className="block text-sm font-medium mb-2">Имя</label>
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ваше имя"
+                className="w-full"
+                required
+              />
+            </div>
+          )}
+          
           <div>
             <label className="block text-sm font-medium mb-2">Телефон</label>
             <Input
@@ -88,6 +124,32 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
               required
             />
           </div>
+          
+          {isRegisterMode && (
+            <div>
+              <label className="block text-sm font-medium mb-2">Роль</label>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant={role === 'client' ? 'default' : 'outline'}
+                  className="flex-1"
+                  onClick={() => setRole('client')}
+                >
+                  <Icon name="User" size={16} className="mr-2" />
+                  Клиент
+                </Button>
+                <Button
+                  type="button"
+                  variant={role === 'electrician' ? 'default' : 'outline'}
+                  className="flex-1"
+                  onClick={() => setRole('electrician')}
+                >
+                  <Icon name="Zap" size={16} className="mr-2" />
+                  Электрик
+                </Button>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -96,28 +158,44 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
             </div>
           )}
 
-          <div className="bg-blue-50 p-3 rounded-lg text-xs text-gray-600">
-            <p className="font-semibold mb-1">Тестовые аккаунты:</p>
-            <p>• Клиент: 89000000001 / 1234</p>
-            <p>• Электрик: 89000000002 / 1234</p>
-            <p>• Админ: 89000000003 / 1234</p>
-          </div>
+          {!isRegisterMode && (
+            <div className="bg-blue-50 p-3 rounded-lg text-xs text-gray-600">
+              <p className="font-semibold mb-1">Тестовые аккаунты:</p>
+              <p>• Клиент: 89000000001 / 1234</p>
+              <p>• Электрик: 89000000002 / 1234</p>
+              <p>• Админ: 89000000003 / 1234</p>
+            </div>
+          )}
 
-          <div className="flex gap-3">
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                className="flex-1"
+              >
+                Отмена
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="flex-1"
+              >
+                {loading ? (isRegisterMode ? 'Регистрация...' : 'Вход...') : (isRegisterMode ? 'Зарегистрироваться' : 'Войти')}
+              </Button>
+            </div>
+            
             <Button
               type="button"
-              variant="outline"
-              onClick={handleClose}
-              className="flex-1"
+              variant="link"
+              onClick={() => {
+                setIsRegisterMode(!isRegisterMode);
+                setError('');
+              }}
+              className="w-full text-sm"
             >
-              Отмена
-            </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="flex-1"
-            >
-              {loading ? 'Вход...' : 'Войти'}
+              {isRegisterMode ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться'}
             </Button>
           </div>
         </form>
