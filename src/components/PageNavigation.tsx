@@ -48,23 +48,6 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         >
           {isElectrician ? 'Поиск заказов' : 'Услуги электрика'}
         </Button>
-        {isElectrician && !isCheckoutPage && !isCartPage && (
-          <button 
-            className="h-10 text-sm px-3 hover:bg-gray-100 rounded-md transition-colors flex items-center gap-2 cursor-pointer"
-            onClick={() => handleActiveToggle(!user?.isActive)}
-            title="Переключить статус"
-          >
-            <span className={`text-xs font-medium ${user?.isActive ? 'text-green-700' : 'text-gray-600'}`}>
-              {user?.isActive ? 'Работаю' : 'Не работаю'}
-            </span>
-            <Switch 
-              checked={user?.isActive || false}
-              onCheckedChange={handleActiveToggle}
-              className="data-[state=checked]:bg-green-500"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </button>
-        )}
         {cartCount > 0 && isCartPage && !isElectrician && (
           <Button 
             variant="ghost"
@@ -93,6 +76,23 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         )}
       </div>
       <div className="flex items-center gap-3">
+        {isElectrician && !isCheckoutPage && !isCartPage && (
+          <button 
+            className="h-10 text-sm px-3 hover:bg-gray-100 rounded-md transition-colors flex items-center gap-2 cursor-pointer"
+            onClick={() => handleActiveToggle(!user?.isActive)}
+            title="Переключить статус"
+          >
+            <span className={`text-xs font-medium ${user?.isActive ? 'text-green-700' : 'text-gray-600'}`}>
+              {user?.isActive ? 'Работаю' : 'Не работаю'}
+            </span>
+            <Switch 
+              checked={user?.isActive || false}
+              onCheckedChange={handleActiveToggle}
+              className="data-[state=checked]:bg-green-500"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </button>
+        )}
         {isAuthenticated ? (
           <Button 
             variant="ghost" 

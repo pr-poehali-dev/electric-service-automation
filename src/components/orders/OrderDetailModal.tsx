@@ -184,6 +184,29 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
         </div>
 
         <div className="p-6 space-y-4">
+          <Card className="p-4 bg-gray-50">
+            <div className="space-y-3">
+              <div>
+                <h4 className="text-sm font-medium text-gray-600 mb-2">Детали заявки</h4>
+                <OrderInfoSection 
+                  order={currentOrder} 
+                  isEditing={isEditing}
+                  onEdit={handleOrderEdit}
+                  isAdmin={permissions.isAdmin}
+                />
+              </div>
+              <div className="border-t border-gray-200 pt-3">
+                <h4 className="text-sm font-medium text-gray-600 mb-2">Контактные данные</h4>
+                <OrderContactSection 
+                  order={currentOrder}
+                  isEditing={isEditing}
+                  onEdit={handleOrderEdit}
+                  isElectrician={permissions.isElectrician}
+                />
+              </div>
+            </div>
+          </Card>
+
           <OrderProgressSection order={currentOrder} isElectrician={permissions.isElectrician} />
 
           {permissions.isElectrician && user && currentOrder.assignedTo === user.uid && (
@@ -230,8 +253,6 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
             </Card>
           )}
 
-
-
           {isAuthenticated && permissions.isAdmin && (
             <Card className="p-4">
               <GoogleIntegrationPanel order={currentOrder} />
@@ -240,47 +261,12 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
 
           <Card className="p-4">
             <button
-              onClick={() => toggleSection('info')}
-              className="w-full flex items-center justify-between"
-            >
-              <h3 className="font-semibold flex items-center gap-2">
-                <Icon name="Info" size={18} />
-                Информация о заявке
-              </h3>
-              <Icon name={expandedSections.info ? 'ChevronUp' : 'ChevronDown'} size={20} />
-            </button>
-            {expandedSections.info && (
-              <div className="mt-4 space-y-6">
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Детали заявки</h4>
-                  <OrderInfoSection 
-                    order={currentOrder} 
-                    isEditing={isEditing}
-                    onEdit={handleOrderEdit}
-                    isAdmin={permissions.isAdmin}
-                  />
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Контактные данные</h4>
-                  <OrderContactSection 
-                    order={currentOrder}
-                    isEditing={isEditing}
-                    onEdit={handleOrderEdit}
-                    isElectrician={permissions.isElectrician}
-                  />
-                </div>
-              </div>
-            )}
-          </Card>
-
-          <Card className="p-4">
-            <button
               onClick={() => toggleSection('items')}
               className="w-full flex items-center justify-between"
             >
               <h3 className="font-semibold flex items-center gap-2">
                 <Icon name="ShoppingCart" size={18} />
-                Состав заявки и оплата
+                Состав заявки
               </h3>
               <Icon name={expandedSections.items ? 'ChevronUp' : 'ChevronDown'} size={20} />
             </button>
@@ -291,7 +277,6 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
                   totalAmount={currentOrder.totalAmount}
                   isEditing={isEditing}
                   onItemEdit={handleItemEdit}
-                  order={currentOrder}
                 />
               </div>
             )}
@@ -307,28 +292,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onRep
             </Card>
           )}
 
-          <Card className="p-4">
-            <button
-              onClick={() => toggleSection('contact')}
-              className="w-full flex items-center justify-between" style={{display: 'none'}}
-            >
-              <h3 className="font-semibold flex items-center gap-2">
-                <Icon name="Phone" size={18} />
-                Контактные данные (скрыт)
-              </h3>
-              <Icon name={expandedSections.contact ? 'ChevronUp' : 'ChevronDown'} size={20} />
-            </button>
-            {expandedSections.contact && (
-              <div className="mt-4" style={{display: 'none'}}>
-                <OrderContactSection 
-                  order={currentOrder}
-                  isEditing={isEditing}
-                  onEdit={handleOrderEdit}
-                  isElectrician={permissions.isElectrician}
-                />
-              </div>
-            )}
-          </Card>
+
 
           <Card className="p-4">
             <button
