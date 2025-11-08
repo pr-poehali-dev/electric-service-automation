@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { calculateItemPrice, getDiscount, calculateFrames } from '@/types/electrical';
 import NewProgressBar from '@/components/NewProgressBar';
 import ContactModal from '@/components/ContactModal';
@@ -15,6 +16,7 @@ import PageNavigation from '@/components/PageNavigation';
 export default function Checkout() {
   const navigate = useNavigate();
   const { cart, createOrder } = useCart();
+  const { isAuthenticated } = useAuth();
   const [showContactModal, setShowContactModal] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -130,8 +132,8 @@ export default function Checkout() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          to: 'v.koenigeu@bk.ru',
-          subject: `Новая заявка #${order.id.slice(0, 8)} от ${formData.customerName}`,
+          to: 'electro.me@yandex.ru',
+          subject: `🔌 Новая заявка #${order.id.slice(0, 6)} на ${finalTotal.toLocaleString('ru-RU')} ₽`,
           html: emailHtml
         })
       });
@@ -142,7 +144,11 @@ export default function Checkout() {
     fireConfetti();
     
     setTimeout(() => {
-      navigate('/orders', { state: { newOrderId: order.id } });
+      if (isAuthenticated) {
+        navigate('/orders', { state: { newOrderId: order.id } });
+      } else {
+        navigate('/thank-you');
+      }
     }, 1500);
   };
 

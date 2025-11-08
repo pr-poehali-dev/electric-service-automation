@@ -40,6 +40,7 @@ import GoogleCallback from "./pages/GoogleCallback";
 import Notifications from "./pages/Notifications";
 import ExecutorProfileSettings from "./pages/ExecutorProfileSettings";
 import AdminExecutors from "./pages/AdminExecutors";
+import ThankYou from "./pages/ThankYou";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const AppRoutes = () => {
       <Route path="/portfolio" element={<Portfolio />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/thank-you" element={<ThankYou />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/all-orders" element={<AllOrders />} />
       <Route path="/notifications" element={<Notifications />} />

@@ -71,7 +71,7 @@ export default function Services() {
           </Card>
         ) : null}
         
-        <Card className="p-6 bg-white shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/orders')}>
+        <Card className="p-6 bg-white shadow-lg hover:shadow-xl transition-all cursor-pointer hidden" onClick={() => navigate('/orders')}>
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
               <Icon name="Mail" size={32} className="text-white" />

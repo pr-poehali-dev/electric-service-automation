@@ -448,7 +448,7 @@ export const PRODUCTS: Product[] = [
     serviceCategory: 'popular',
     installType: 'finish',
     slots: 1,
-    priceInstallOnly: 250,
+    priceInstallOnly: 300,
     priceWithWiring: 1500
   },
   {
@@ -461,7 +461,7 @@ export const PRODUCTS: Product[] = [
     serviceCategory: 'popular',
     installType: 'finish',
     slots: 1,
-    priceInstallOnly: 250,
+    priceInstallOnly: 350,
     priceWithWiring: 850,
     options: [
       {
