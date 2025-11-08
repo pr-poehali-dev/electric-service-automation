@@ -93,12 +93,15 @@ export const toggleItemAdditionalOption = (cart: CartItem[], productId: string, 
 
   if (optionId === 'install-blocks' && !cart.find(i => i.product.id === productId)?.additionalOptions?.includes(optionId)) {
     const item = updatedCart.find(i => i.product.id === productId);
-    if (item && item.product.id.includes('block-')) {
+    if (item) {
       let outletsCount = 1;
+      
       if (item.product.id.includes('block-2')) outletsCount = 2;
       else if (item.product.id.includes('block-3')) outletsCount = 3;
       else if (item.product.id.includes('block-4')) outletsCount = 4;
       else if (item.product.id.includes('block-5')) outletsCount = 5;
+      else if (item.product.name.includes('Добавить розетку')) outletsCount = 1;
+      else if (item.product.name.includes('Выключатель перенести')) outletsCount = 1;
 
       const totalOutlets = outletsCount * item.quantity;
 

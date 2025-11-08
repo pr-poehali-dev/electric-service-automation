@@ -179,7 +179,7 @@ export default function Cart() {
                                   onCheckedChange={() => toggleAdditionalOption(item.product.id, 'install-blocks')}
                                 />
                                 <label htmlFor={`${item.product.id}-install-blocks`} className="text-xs cursor-pointer">
-                                  +250 ₽/шт · Установить розетки/выключатели
+                                  Установить розетки/выключатели
                                 </label>
                               </div>
                             )}
