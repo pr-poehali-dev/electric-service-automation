@@ -133,7 +133,7 @@ export default function Checkout() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: 'electro.me@yandex.ru',
-          subject: `🔌 Новая заявка #${order.id.slice(0, 6)} на ${finalTotal.toLocaleString('ru-RU')} ₽`,
+          subject: `NEW Заявка: ${formData.address}`,
           html: emailHtml
         })
       });

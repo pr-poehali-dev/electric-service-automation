@@ -36,6 +36,12 @@ export default function Orders() {
   const { orders, clearCart, updateOrderStatus, addToCart, assignExecutor, markOrderAsViewed } = useCart();
   const { isAuthenticated } = useAuth();
   const permissions = usePermissions();
+
+  // Redirect non-authenticated users to home
+  if (!isAuthenticated) {
+    navigate('/');
+    return null;
+  }
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);

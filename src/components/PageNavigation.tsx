@@ -22,6 +22,7 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
   const isCheckoutPage = location.pathname === '/checkout';
   const isCartPage = location.pathname === '/cart';
   const isProductsPage = location.pathname === '/products';
+  const hasItems = cart.length > 0;
   
   const handleActiveToggle = (checked: boolean) => {
     updateUser({ isActive: checked });
@@ -48,6 +49,19 @@ export default function PageNavigation({ onContactClick }: PageNavigationProps) 
         >
           {isElectrician ? 'Поиск заказов' : 'Услуги электрика'}
         </Button>
+        {hasItems && !isElectrician && !isCheckoutPage && !isCartPage && !isProductsPage && (
+          <Button 
+            variant="ghost"
+            className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
+            onClick={() => navigate('/cart')}
+            title="Продолжить"
+          >
+            Продолжить
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {cartCount}
+            </span>
+          </Button>
+        )}
         {cartCount > 0 && isCartPage && !isElectrician && (
           <Button 
             variant="ghost"
