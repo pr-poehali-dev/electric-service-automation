@@ -2,6 +2,7 @@
 Business: Отправка email уведомлений через Yandex SMTP
 Args: event с body содержащим to, subject, html
 Returns: Статус отправки письма
+Version: 1.1
 '''
 
 import json
@@ -51,10 +52,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     # Get credentials from env
-    smtp_user = os.environ.get('YANDEX_SMTP_USER', '')
-    smtp_password = os.environ.get('YANDEX_SMTP_PASSWORD', '')
+    smtp_user = os.environ.get('YANDEX_SMTP_USER', '').strip()
+    smtp_password = os.environ.get('YANDEX_SMTP_PASSWORD', '').strip().replace(' ', '')
     
-    print(f"SMTP user: {smtp_user}, Password configured: {bool(smtp_password)}")
+    print(f"SMTP user: {smtp_user}")
+    print(f"Password length: {len(smtp_password)}")
+    print(f"Password first 4 chars: {smtp_password[:4] if len(smtp_password) >= 4 else 'too short'}")
     
     if not smtp_user or not smtp_password:
         return {
@@ -74,12 +77,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     # Send email
     try:
-        print(f"Подключение к SMTP серверу...")
-        with smtplib.SMTP_SSL('smtp.yandex.ru', 465) as server:
-            print(f"Авторизация...")
-            server.login(smtp_user, smtp_password)
-            print(f"Отправка письма на {to_email}...")
-            server.send_message(msg)
+        print(f"Подключение к SMTP серверу через порт 587...")
+        server = smtplib.SMTP('smtp.yandex.ru', 587)
+        server.starttls()
+        print(f"Авторизация для {smtp_user}...")
+        server.login(smtp_user, smtp_password)
+        print(f"Отправка письма на {to_email}...")
+        server.send_message(msg)
+        server.quit()
         
         print(f"Письмо успешно отправлено на {to_email}")
         return {
