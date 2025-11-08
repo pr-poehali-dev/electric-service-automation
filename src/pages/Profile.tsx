@@ -109,7 +109,7 @@ export default function Profile() {
             <div className="space-y-3">
               <Button
                 variant="outline"
-                className="w-full justify-start h-16 border-2 hover:border-blue-400 hover:bg-blue-50 transition-all"
+                className="w-full justify-start h-16 border-2 hover:border-blue-400 hover:bg-blue-50 transition-all hidden"
                 onClick={() => navigate('/orders')}
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mr-4">

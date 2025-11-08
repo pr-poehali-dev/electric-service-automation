@@ -110,7 +110,7 @@ export default function Contact() {
 
           <Card className="p-0 overflow-hidden">
             <a
-              href="https://vk.com/wall1166188_6467"
+              href="https://vk.com/konig_electric"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white transition-all duration-300 hover:scale-[1.02]"

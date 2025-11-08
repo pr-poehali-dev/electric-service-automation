@@ -32,6 +32,7 @@ export default function Header() {
                 variant="ghost"
                 size="sm"
                 onClick={() => window.location.href = '/login'}
+                className="hidden"
               >
                 <Icon name="LogIn" size={18} className="md:mr-2" />
                 <span className="hidden md:inline">Войти</span>

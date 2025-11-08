@@ -166,8 +166,12 @@ export default function Cart() {
                               ))
                             )}
                             
-                            {/* Опція для блоків розеток */}
-                            {item.product.id.includes('block-') && item.product.id.startsWith('wiring-complex') && (
+                            {/* Опція для блоків розеток та додавання розеток/перенесення вимикачів */}
+                            {(
+                              (item.product.id.includes('block-') && item.product.id.startsWith('wiring-complex')) ||
+                              item.product.name.includes('Добавить розетку') ||
+                              item.product.name.includes('Выключатель перенести')
+                            ) && (
                               <div className="flex items-center gap-2">
                                 <Checkbox
                                   id={`${item.product.id}-install-blocks`}

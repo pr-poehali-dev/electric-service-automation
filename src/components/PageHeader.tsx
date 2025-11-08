@@ -80,7 +80,7 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
           ) : (
             <Button
               onClick={() => setShowLoginModal(true)}
-              className="bg-white/95 backdrop-blur-sm text-gray-800 hover:bg-white shadow-lg"
+              className="bg-white/95 backdrop-blur-sm text-gray-800 hover:bg-white shadow-lg hidden"
             >
               <Icon name="LogIn" size={18} className="mr-2" />
               Войти

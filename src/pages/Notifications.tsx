@@ -96,11 +96,6 @@ export default function Notifications() {
             </div>
             {notifications.length > 0 && (
               <div className="flex gap-2">
-                {unreadCount > 0 && (
-                  <Button variant="outline" size="sm" onClick={markAllAsRead}>
-                    Прочитать все
-                  </Button>
-                )}
                 <Button variant="ghost" size="icon" onClick={clearAll}>
                   <Icon name="Trash2" size={16} />
                 </Button>
@@ -123,9 +118,10 @@ export default function Notifications() {
               </p>
             </Card>
           ) : (
-            <div className="space-y-2">
-              {notifications.map((notification) => (
-                <Card
+            <>
+              <div className="space-y-2">
+                {notifications.map((notification) => (
+                  <Card
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
                   className={`p-4 cursor-pointer transition-all hover:shadow-md ${
@@ -165,9 +161,22 @@ export default function Notifications() {
                       </p>
                     </div>
                   </div>
-                </Card>
-              ))}
-            </div>
+                  </Card>
+                ))}
+              </div>
+              
+              {unreadCount > 0 && (
+                <div className="mt-4">
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={markAllAsRead}
+                  >
+                    Прочитать все
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -108,6 +108,37 @@ export default function Checkout() {
       status: 'pending'
     });
 
+    // Отправка email уведомления
+    try {
+      const emailHtml = `
+        <h2>Новая заявка #${order.id.slice(0, 8)}</h2>
+        <p><strong>Клиент:</strong> ${formData.customerName}</p>
+        <p><strong>Телефон:</strong> ${formData.phone}</p>
+        <p><strong>Адрес:</strong> ${formData.address}</p>
+        <p><strong>Дата:</strong> ${formData.date}</p>
+        <p><strong>Время:</strong> ${formData.time}</p>
+        ${formData.comments ? `<p><strong>Комментарии:</strong> ${formData.comments}</p>` : ''}
+        <p><strong>Сумма:</strong> ${finalTotal.toLocaleString('ru-RU')} ₽</p>
+        <hr>
+        <h3>Состав заказа:</h3>
+        <ul>
+          ${cart.map(item => `<li>${item.product.name} x ${item.quantity} - ${calculateItemPrice(item).toLocaleString('ru-RU')} ₽</li>`).join('')}
+        </ul>
+      `;
+      
+      await fetch('https://functions.poehali.dev/844c657d-c59c-4e46-a6dc-f58689204e01', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: 'v.koenigeu@bk.ru',
+          subject: `Новая заявка #${order.id.slice(0, 8)} от ${formData.customerName}`,
+          html: emailHtml
+        })
+      });
+    } catch (error) {
+      console.error('Ошибка отправки email:', error);
+    }
+
     fireConfetti();
     
     setTimeout(() => {
