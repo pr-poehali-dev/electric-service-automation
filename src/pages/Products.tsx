@@ -29,6 +29,8 @@ export default function Products() {
     hasWiringOptions,
     calculateEstimatedCableMeters
   } = useProductsLogic();
+  
+  const showContinue = hasAnyEnabledOptions;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
@@ -37,7 +39,7 @@ export default function Products() {
       <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto">
         <PageNavigation 
           onContactClick={() => setShowContactModal(true)} 
-          showContinueButton={hasAnyEnabledOptions()}
+          showContinueButton={showContinue}
         />
 
         <div className="p-6 space-y-6">
