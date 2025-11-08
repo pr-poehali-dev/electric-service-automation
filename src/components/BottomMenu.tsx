@@ -14,7 +14,7 @@ export default function BottomMenu() {
 
   const menuItems = [
     { id: 'home', icon: 'Home', label: 'Главная', path: '/' },
-    { id: 'portfolio', icon: 'Images', label: 'Портфолио', path: 'https://vk.com/wall1166188_6467', external: true },
+    { id: 'portfolio', icon: 'Images', label: 'Портфолио', path: 'https://vk.com/konig_electric', external: true },
     { id: 'cart', icon: 'ClipboardList', label: 'План работ', path: '/cart' },
     { id: 'contact', icon: 'Phone', label: 'Связь', path: '/contact' }
   ];

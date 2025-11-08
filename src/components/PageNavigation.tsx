@@ -55,9 +55,9 @@ export default function PageNavigation({ onContactClick, showContinueButton = fa
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
             onClick={() => navigate('/cart')}
-            title="Продолжить"
+            title="Добавить в список задач"
           >
-            Продолжить
+            Добавить в список задач
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {cartCount}
@@ -70,9 +70,9 @@ export default function PageNavigation({ onContactClick, showContinueButton = fa
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
             onClick={() => navigate('/checkout')}
-            title="Продолжить"
+            title="Оформить заявку"
           >
-            Продолжить
+            Оформить заявку
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {cartCount}
             </span>
@@ -83,9 +83,9 @@ export default function PageNavigation({ onContactClick, showContinueButton = fa
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
             onClick={() => navigate('/cart')}
-            title="Продолжить"
+            title="Добавить в список задач"
           >
-            Продолжить
+            Добавить в список задач
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {cartCount}
             </span>

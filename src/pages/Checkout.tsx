@@ -174,8 +174,33 @@ export default function Checkout() {
   ];
 
   if (cart.length === 0) {
-    navigate('/');
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+        <PageHeader />
+        
+        <div className="max-w-md mx-auto">
+          <PageNavigation onContactClick={() => setShowContactModal(true)} />
+
+          <div className="p-6">
+            <Card className="p-12 text-center bg-white">
+              <Icon name="ShoppingCart" size={64} className="text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Корзина пуста</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Добавьте услуги для оформления заявки
+              </p>
+              <Button
+                onClick={() => navigate('/products')}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+              >
+                Выбрать услуги
+              </Button>
+            </Card>
+          </div>
+        </div>
+
+        <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
+      </div>
+    );
   }
 
   return (
