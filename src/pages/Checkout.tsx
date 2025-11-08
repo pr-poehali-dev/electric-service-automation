@@ -36,6 +36,8 @@ export default function Checkout() {
     date: '',
     time: ''
   });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
     const newErrors = {
@@ -104,6 +106,8 @@ export default function Checkout() {
     if (!validateForm()) {
       return;
     }
+    
+    setIsSubmitting(true);
 
     const order = createOrder({
       ...formData,
@@ -173,7 +177,7 @@ export default function Checkout() {
     { id: 3, label: 'Оформление', icon: 'CheckCircle2' }
   ];
 
-  if (cart.length === 0) {
+  if (cart.length === 0 && !isSubmitting) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
         <PageHeader />
