@@ -489,13 +489,35 @@ export default function Checkout() {
           <Button
             size="lg"
             onClick={handleSubmit}
-            className="w-full h-14 text-base font-semibold shadow-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+            disabled={isSubmitting}
+            className="w-full h-14 text-base font-semibold shadow-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:opacity-50"
           >
-            <Icon name="CheckCircle" size={20} className="mr-2" />
-            Оформить заявку
+            {isSubmitting ? (
+              <>
+                <Icon name="Loader2" size={20} className="mr-2 animate-spin" />
+                Отправка...
+              </>
+            ) : (
+              <>
+                <Icon name="CheckCircle" size={20} className="mr-2" />
+                Оформить заявку
+              </>
+            )}
           </Button>
         </div>
       </div>
+
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <Card className="p-8 text-center bg-white max-w-sm mx-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <Icon name="Loader2" size={32} className="text-white animate-spin" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Отправка заявки...</h3>
+            <p className="text-sm text-gray-600">Пожалуйста, подождите</p>
+          </Card>
+        </div>
+      )}
 
       <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
 

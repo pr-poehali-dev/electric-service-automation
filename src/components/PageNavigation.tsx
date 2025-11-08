@@ -10,9 +10,10 @@ import { useNotifications } from '@/hooks/useNotifications';
 interface PageNavigationProps {
   onContactClick?: () => void;
   showContinueButton?: boolean;
+  onContinueClick?: () => void;
 }
 
-export default function PageNavigation({ onContactClick, showContinueButton = false }: PageNavigationProps) {
+export default function PageNavigation({ onContactClick, showContinueButton = false, onContinueClick }: PageNavigationProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { cart } = useCart();
@@ -54,10 +55,16 @@ export default function PageNavigation({ onContactClick, showContinueButton = fa
           <Button 
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
-            onClick={() => navigate('/cart')}
-            title="Добавить в список задач"
+            onClick={() => {
+              if (onContinueClick) {
+                onContinueClick();
+              } else {
+                navigate('/cart');
+              }
+            }}
+            title="Продолжить"
           >
-            Добавить в список задач
+            Продолжить
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {cartCount}
@@ -82,10 +89,16 @@ export default function PageNavigation({ onContactClick, showContinueButton = fa
           <Button 
             variant="ghost"
             className="h-10 text-sm px-3 text-blue-600 font-semibold relative"
-            onClick={() => navigate('/cart')}
-            title="Добавить в список задач"
+            onClick={() => {
+              if (onContinueClick) {
+                onContinueClick();
+              } else {
+                navigate('/cart');
+              }
+            }}
+            title="Продолжить"
           >
-            Добавить в список задач
+            Продолжить
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {cartCount}
             </span>

@@ -40,6 +40,7 @@ export default function Products() {
         <PageNavigation 
           onContactClick={() => setShowContactModal(true)} 
           showContinueButton={showContinue}
+          onContinueClick={handleAddToCart}
         />
 
         <div className="p-6 space-y-6">
