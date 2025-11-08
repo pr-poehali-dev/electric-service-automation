@@ -35,7 +35,10 @@ export default function Products() {
       <PageHeader />
 
       <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto">
-        <PageNavigation onContactClick={() => setShowContactModal(true)} />
+        <PageNavigation 
+          onContactClick={() => setShowContactModal(true)} 
+          showContinueButton={hasAnyEnabledOptions()}
+        />
 
         <div className="p-6 space-y-6">
 

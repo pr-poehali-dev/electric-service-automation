@@ -17,9 +17,15 @@ export default function ThankYou() {
           Спасибо за заявку! 🎉
         </h1>
         
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 mb-3">
           Мы получили вашу заявку и скоро свяжемся с вами для уточнения деталей.
         </p>
+        
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <p className="text-sm text-gray-700 font-medium">
+            ✅ Ожидайте звонка или сообщения от нашего специалиста
+          </p>
+        </div>
         
         <div className="space-y-3">
           <a
@@ -28,9 +34,9 @@ export default function ThankYou() {
             rel="noopener noreferrer"
             className="block"
           >
-            <Button className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold">
-              <Icon name="MessageCircle" size={20} className="mr-2" />
-              Уточнить детали по моей заявке
+            <Button className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold text-lg py-6">
+              <Icon name="Send" size={24} className="mr-2" />
+              Написать в Telegram
             </Button>
           </a>
           

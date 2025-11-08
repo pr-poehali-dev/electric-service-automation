@@ -95,6 +95,18 @@ export default function Services() {
           </div>
         </Card>
 
+        <Card className="p-6 bg-white shadow-lg hover:shadow-xl transition-all cursor-pointer" onClick={() => navigate('/portfolio')}>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <Icon name="Image" size={32} className="text-white" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Портфолио</h2>
+              <p className="text-sm text-gray-600">Наши выполненные работы</p>
+            </div>
+          </div>
+        </Card>
+
         <Card className="p-6 bg-blue-50 border border-blue-200">
           <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
             <Icon name="Phone" size={20} className="text-blue-600" />
