@@ -110,11 +110,6 @@ export default function Portfolio() {
             <div className="space-y-4">
               {PORTFOLIO_ITEMS.map(item => (
                 <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-all">
-                  <img 
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-48 object-cover"
-                  />
                   <div className="p-4">
                     <h3 className="font-bold text-base mb-2">{item.title}</h3>
                     <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
