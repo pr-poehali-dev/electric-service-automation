@@ -5,24 +5,25 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { RoomType, ROOM_DEFAULTS, ROOM_LABELS } from '@/types/electrical';
 import { useCart } from '@/contexts/CartContext';
+import ContactModal from '@/components/ContactModal';
+import PageHeader from '@/components/PageHeader';
+import PageNavigation from '@/components/PageNavigation';
 
 export default function Calculator() {
   const navigate = useNavigate();
   const { cart } = useCart();
   const [selectedRoom, setSelectedRoom] = useState<RoomType | ''>('');
+  const [showContactModal, setShowContactModal] = useState(false);
 
   const defaults = selectedRoom ? ROOM_DEFAULTS[selectedRoom as RoomType] : null;
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-24">
-      <img 
-        src="https://cdn.poehali.dev/files/eef76e18-1b64-4ae3-8839-b4fe8da091be.jpg"
-        alt="Калининград"
-        className="w-full h-32 object-cover"
-      />
+      <PageHeader />
 
       <div className="max-w-md mx-auto">
+        <PageNavigation onContactClick={() => setShowContactModal(true)} />
         <div className="bg-white shadow-lg p-6 space-y-6">
           <h1 className="text-2xl font-bold text-gray-800">
             <span className="font-extrabold text-primary">Смета на электромонтаж</span>
@@ -47,7 +48,7 @@ export default function Calculator() {
 
             <div className="mt-4">
               <img 
-                src="https://cdn.poehali.dev/files/879bc45b-03a5-4c35-9a3a-3dfe4c64e659.jpg"
+                src="https://cdn.poehali.dev/files/fc495206-a509-40b1-a08b-6bab202e2b18.jpg"
                 alt="Профессиональный электрик"
                 className="w-full h-48 object-cover rounded-lg shadow-md"
               />
@@ -152,14 +153,7 @@ export default function Calculator() {
         )}
       </div>
 
-      <a
-        href="tel:+74012520725"
-        className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white rounded-2xl shadow-2xl hover:shadow-3xl flex items-center justify-center transition-all duration-300 hover:scale-110 group z-50"
-        title="Связаться с нами"
-      >
-        <Icon name="Phone" size={28} className="group-hover:animate-wiggle" />
-        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-      </a>
+      <ContactModal open={showContactModal} onClose={() => setShowContactModal(false)} />
     </div>
   );
 }
