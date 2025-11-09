@@ -126,7 +126,50 @@ export default function Portfolio() {
           )}
 
           {selectedTab === 'reviews' && (
-            <ReviewList reviews={reviews} showOrderId={true} />
+            <div className="space-y-4">
+              <div style={{ height: '800px', overflow: 'hidden', position: 'relative' }}>
+                <iframe
+                  title="Отзывы Яндекс Услуги"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: '1px solid #e6e6e6',
+                    borderRadius: '8px',
+                    boxSizing: 'border-box'
+                  }}
+                  src="https://yandex.ru/maps-reviews-widget/159261695633?comments"
+                />
+                <a
+                  href="https://yandex.ru/maps/org/uslugi_elektrika/159261695633/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    boxSizing: 'border-box',
+                    textDecoration: 'none',
+                    color: '#b3b3b3',
+                    fontSize: '10px',
+                    fontFamily: 'YS Text,sans-serif',
+                    padding: '0 20px',
+                    position: 'absolute',
+                    bottom: '8px',
+                    width: '100%',
+                    textAlign: 'center',
+                    left: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: 'block',
+                    maxHeight: '14px',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  Услуги электрика на карте Калининграда — Яндекс&nbsp;Карты
+                </a>
+              </div>
+              
+              <div style={{ display: 'none' }}>
+                <ReviewList reviews={reviews} showOrderId={true} />
+              </div>
+            </div>
           )}
         </div>
       </div>
