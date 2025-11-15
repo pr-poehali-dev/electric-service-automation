@@ -33,7 +33,8 @@ export default function PageNavigation({ onContactClick, showContinueButton = fa
   const isElectrician = user?.role === 'electrician';
 
   return (
-    <div className="bg-white shadow-lg p-4 flex items-center justify-between">
+    <div className="bg-white shadow-lg p-4">
+      <div className="flex items-center justify-between max-w-7xl mx-auto">
       <div className="flex items-center gap-1">
         <Button 
           variant="ghost" 
@@ -148,6 +149,7 @@ export default function PageNavigation({ onContactClick, showContinueButton = fa
             <Icon name="MessageCircle" size={20} />
           </Button>
         )}
+      </div>
       </div>
     </div>
   );
