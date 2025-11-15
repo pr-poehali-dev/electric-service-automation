@@ -7,7 +7,7 @@ import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import ContactModal from '@/components/ContactModal';
-import InputMask from 'react-input-mask';
+import { IMaskInput } from 'react-imask';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -86,10 +86,10 @@ export default function Profile() {
                       </button>
                     ) : (
                       <div className="flex items-center gap-2 mt-2">
-                        <InputMask
-                          mask="8 (999) 999-99-99"
+                        <IMaskInput
+                          mask="8 (000) 000-00-00"
                           value={phoneValue}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhoneValue(e.target.value)}
+                          onAccept={(value: string) => setPhoneValue(value)}
                           placeholder="8 (___) ___-__-__"
                           className="text-xs p-2 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-40"
                         />

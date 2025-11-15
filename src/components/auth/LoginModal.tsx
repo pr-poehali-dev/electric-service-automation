@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import InputMask from 'react-input-mask';
+import { IMaskInput } from 'react-imask';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -104,10 +104,10 @@ export default function LoginModal({ open, onClose, onSuccess }: LoginModalProps
           
           <div>
             <label className="block text-sm font-medium mb-2">Телефон</label>
-            <InputMask
-              mask="8 (999) 999-99-99"
+            <IMaskInput
+              mask="8 (000) 000-00-00"
               value={phone}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
+              onAccept={(value: string) => setPhone(value)}
               placeholder="8 (___) ___-__-__"
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
             />

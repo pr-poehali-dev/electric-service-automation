@@ -1,4 +1,4 @@
-import InputMask from 'react-input-mask';
+import { IMaskInput } from 'react-imask';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 
@@ -50,28 +50,10 @@ export default function CheckoutContactForm({ formData, errors, onFormDataChange
           <label className="text-sm font-medium mb-2 block">
             Номер телефона <span className="text-red-500">*</span>
           </label>
-          <InputMask
-            mask="8 (999) 999-99-99"
+          <IMaskInput
+            mask="8 (000) 000-00-00"
             value={formData.phone}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              const value = e.target.value;
-              let digitsOnly = value.replace(/\D/g, '');
-              
-              if (digitsOnly.startsWith('7')) {
-                digitsOnly = '8' + digitsOnly.slice(1);
-              }
-              
-              if (digitsOnly.startsWith('9') && digitsOnly.length <= 10) {
-                digitsOnly = '8' + digitsOnly;
-              }
-              
-              if (digitsOnly.length >= 11) {
-                const formatted = '8 (' + digitsOnly.slice(1, 4) + ') ' + digitsOnly.slice(4, 7) + '-' + digitsOnly.slice(7, 9) + '-' + digitsOnly.slice(9, 11);
-                onFormDataChange({ phone: formatted });
-              } else {
-                onFormDataChange({ phone: value });
-              }
-            }}
+            onAccept={(value: string) => onFormDataChange({ phone: value })}
             placeholder="8 (___) ___-__-__"
             className={`w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
               errors.phone ? 'border-red-500' : 'border-gray-300'

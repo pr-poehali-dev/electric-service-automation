@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import InputMask from 'react-input-mask';
+import { IMaskInput } from 'react-imask';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -134,17 +134,10 @@ export default function CheckoutModal({ open, onClose }: CheckoutModalProps) {
                 <label className="text-sm font-medium mb-2 block">
                   Номер телефона <span className="text-red-500">*</span>
                 </label>
-                <InputMask
-                  mask="8 (999) 999-99-99"
+                <IMaskInput
+                  mask="8 (000) 000-00-00"
                   value={formData.phone}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    let value = e.target.value;
-                    const digitsOnly = value.replace(/\D/g, '');
-                    if (digitsOnly.startsWith('9') && digitsOnly.length === 10) {
-                      value = '8 (' + digitsOnly.slice(0, 3) + ') ' + digitsOnly.slice(3, 6) + '-' + digitsOnly.slice(6, 8) + '-' + digitsOnly.slice(8, 10);
-                    }
-                    setFormData({ ...formData, phone: value });
-                  }}
+                  onAccept={(value: string) => setFormData({ ...formData, phone: value })}
                   placeholder="8 (___) ___-__-__"
                   className={`w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
                     errors.phone ? 'border-red-500' : 'border-gray-300'
