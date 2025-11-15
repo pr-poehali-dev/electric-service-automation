@@ -21,6 +21,13 @@ interface ServiceContainerCardProps {
   calculateContainerTotal: (container: ServiceContainer) => number;
 }
 
+const iconMap: Record<string, string> = {
+  'chandelier-1': 'Lightbulb',
+  'sw-install': 'ToggleLeft',
+  'out-install': 'Plug',
+  'wiring-complex': 'User'
+};
+
 export default function ServiceContainerCard({
   container,
   actualIndex,
@@ -61,6 +68,11 @@ export default function ServiceContainerCard({
   const getDiscountLabel = (option: ServiceOption) => {
     if (!option.discount) return null;
     return `Скидка ${option.discount.percent}% от ${option.discount.minQuantity} шт.`;
+  };
+
+  const getMinPrice = () => {
+    const prices = container.options.filter(o => !o.customPrice).map(o => o.price);
+    return prices.length > 0 ? Math.min(...prices) : 0;
   };
 
   const renderOption = (option: ServiceOption) => {
@@ -184,23 +196,54 @@ export default function ServiceContainerCard({
   };
 
   if (isSingleOption && singleOption) {
+    const iconName = iconMap[container.productId] || 'Lightbulb';
+    
     return (
-      <Card key={container.productId} className="overflow-hidden">
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="font-semibold text-base">{container.productName}</h4>
-          </div>
-          
-          {renderOption(singleOption)}
-          
-          {calculateContainerTotal(container) > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-gray-800">Итого за услугу:</span>
-                <span className="text-2xl font-bold text-green-600">
-                  {calculateContainerTotal(container).toLocaleString('ru-RU')} ₽
-                </span>
+      <Card 
+        key={container.productId} 
+        className="overflow-hidden bg-white border-2 border-gray-100 hover:border-blue-200 transition-all cursor-pointer shadow-sm"
+        onClick={() => toggleContainer(actualIndex)}
+      >
+        <div className="p-5">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center flex-shrink-0">
+              <Icon name={iconName} size={28} className="text-amber-600" />
+            </div>
+            
+            <div className="flex-1">
+              <h4 className="font-bold text-gray-800 text-base uppercase tracking-wide">
+                {container.productName}
+              </h4>
+            </div>
+            
+            <div className="text-right">
+              <div className="text-xs text-gray-500 mb-1">от</div>
+              <div className="text-2xl font-bold text-amber-600">
+                {singleOption.price} <span className="text-lg">₽</span>
               </div>
+            </div>
+            
+            <Icon 
+              name={container.expanded ? 'ChevronUp' : 'ChevronDown'} 
+              size={24} 
+              className="text-gray-400 flex-shrink-0"
+            />
+          </div>
+
+          {container.expanded && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              {renderOption(singleOption)}
+              
+              {calculateContainerTotal(container) > 0 && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-800">Итого за услугу:</span>
+                    <span className="text-2xl font-bold text-green-600">
+                      {calculateContainerTotal(container).toLocaleString('ru-RU')} ₽
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -211,80 +254,82 @@ export default function ServiceContainerCard({
   const constructionOptions = container.options.filter(opt => opt.group === 'construction');
   const panelOptions = container.options.filter(opt => opt.group === 'panel');
   const otherOptions = container.options.filter(opt => !opt.group);
+  const iconName = iconMap[container.productId] || 'Lightbulb';
 
   return (
-    <Card key={container.productId} className="overflow-hidden">
+    <Card 
+      key={container.productId} 
+      className="overflow-hidden bg-white border-2 border-gray-100 hover:border-blue-200 transition-all shadow-sm"
+    >
       <div 
-        className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+        className="p-5 flex items-center gap-4 cursor-pointer"
         onClick={() => toggleContainer(actualIndex)}
       >
-        <div className="flex-1">
-          <h4 className="font-semibold text-base">{container.productName}</h4>
+        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-slate-100 to-blue-100 flex items-center justify-center flex-shrink-0">
+          <Icon name={iconName} size={28} className="text-slate-700" />
         </div>
+        
+        <div className="flex-1">
+          <h4 className="font-bold text-gray-800 text-base uppercase tracking-wide">
+            {container.productName}
+          </h4>
+        </div>
+        
         <Icon 
           name={container.expanded ? 'ChevronUp' : 'ChevronDown'} 
-          size={20} 
-          className="text-gray-400"
+          size={24} 
+          className="text-gray-400 flex-shrink-0"
         />
       </div>
 
       {container.expanded && (
-        <div className="px-4 pb-4 space-y-3">
-          {container.productId.includes('wiring-complex') && (
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3">
-              <p className="text-xs text-blue-800">
-                <strong>Электромонтажные работы:</strong> Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки
-              </p>
+        <div className="px-5 pb-5 space-y-3">
+          {otherOptions.length > 0 && (
+            <div className="space-y-2">
+              {otherOptions.map(renderOption)}
             </div>
           )}
-          <div className="bg-gray-50 rounded-xl p-4">
-            <div 
-              className="flex items-center justify-between cursor-pointer"
-              onClick={() => handleSectionToggle('main')}
-            >
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold text-gray-700">Уточните задачу:</p>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Icon name="Info" size={14} className="text-gray-400 cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Цены для высоты потолков до 3.5м. Выше — +50%</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <Icon 
-                name={expandedSections.main ? 'ChevronUp' : 'ChevronDown'} 
-                size={18} 
-                className="text-gray-500"
-              />
+
+          {constructionOptions.length > 0 && (
+            <div>
+              <button
+                onClick={() => handleSectionToggle('construction')}
+                className="w-full flex items-center justify-between p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+              >
+                <span className="font-semibold text-sm text-blue-900">
+                  Строительные работы
+                </span>
+                <Icon 
+                  name={expandedSections.construction ? 'ChevronUp' : 'ChevronDown'} 
+                  size={18} 
+                  className="text-blue-600"
+                />
+              </button>
+              {expandedSections.construction && (
+                <div className="mt-2 space-y-2">
+                  {constructionOptions.map(renderOption)}
+                </div>
+              )}
             </div>
-            
-            {expandedSections.main && otherOptions.length > 0 && (
-              <div className="space-y-2 mt-3">
-                {otherOptions.map(renderOption)}
-              </div>
-            )}
-          </div>
+          )}
 
           {panelOptions.length > 0 && (
-            <div className="bg-gray-50 rounded-xl p-4">
-              <div 
-                className="flex items-center justify-between cursor-pointer"
+            <div>
+              <button
                 onClick={() => handleSectionToggle('panel')}
+                className="w-full flex items-center justify-between p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
               >
-                <h5 className="text-sm font-bold text-gray-800">Монтаж и сборка электрощитов</h5>
+                <span className="font-semibold text-sm text-purple-900">
+                  Работы в электрощите
+                </span>
                 <Icon 
                   name={expandedSections.panel ? 'ChevronUp' : 'ChevronDown'} 
                   size={18} 
-                  className="text-gray-500"
+                  className="text-purple-600"
                 />
-              </div>
-              
+              </button>
               {expandedSections.panel && (
-                <div className="space-y-2 mt-3">
+                <div className="mt-2 space-y-2">
                   {panelOptions.map(renderOption)}
                 </div>
               )}
@@ -292,7 +337,7 @@ export default function ServiceContainerCard({
           )}
 
           {calculateContainerTotal(container) > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t-2 border-gray-200">
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-gray-800">Итого за услугу:</span>
                 <span className="text-2xl font-bold text-green-600">
