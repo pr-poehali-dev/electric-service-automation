@@ -36,14 +36,14 @@ export default function Products() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
       <PageHeader />
 
-      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto">
+      <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4">
         <PageNavigation 
           onContactClick={() => setShowContactModal(true)} 
           showContinueButton={showContinue}
           onContinueClick={handleAddToCart}
         />
 
-        <div className="p-6 space-y-6">
+        <div className="py-6 space-y-6">
 
 
           <div className="space-y-8">

@@ -14,7 +14,7 @@ export function getInitialContainers(): ServiceContainer[] {
         { id: 'install', name: 'Установить светильник', price: 1000, quantity: 1, enabled: false },
         { id: 'dismantle', name: 'Демонтаж светильника', price: 500, quantity: 1, enabled: false },
         { id: 'assemble', name: 'Сборка люстры', price: 500, quantity: 1, enabled: false },
-        { id: 'crystal', name: 'Подвес хрусталя', price: 1500, quantity: 1, enabled: false },
+        { id: 'crystal', name: 'Подвес хрусталя — 1 час', price: 1500, quantity: 1, enabled: false },
       ]
     },
     {
@@ -25,7 +25,7 @@ export function getInitialContainers(): ServiceContainer[] {
       sectionCategory: 'services',
       expanded: false,
       options: [
-        { id: 'move-switch-alt', name: 'Добавить или перенести на другую стену', price: 3500, quantity: 1, enabled: false, discount: { minQuantity: 3, percent: 30 } },
+        { id: 'move-switch-alt', name: 'Добавить или перенести изделий в другое место', price: 3500, quantity: 1, enabled: false, discount: { minQuantity: 3, percent: 30 } },
         { id: 'repair', name: 'Ремонт с учётом материалов', price: 1500, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить выключатель', price: 250, quantity: 1, enabled: false },
       ]
