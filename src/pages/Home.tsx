@@ -65,8 +65,8 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 dark:from-slate-950 dark:via-blue-950 dark:to-amber-950 pb-24">
       <header className="border-b border-border bg-card sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="w-full px-4 py-4">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
             <div className="flex items-center gap-2">
               <Icon name="Zap" className="text-primary" size={24} />
               <div>
@@ -75,24 +75,36 @@ const Home = () => {
               </div>
             </div>
             
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              onClick={handleGoToTasks}
-            >
-              <Icon name="ShoppingCart" size={24} />
-              {getTotalItems() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {getTotalItems()}
-                </span>
-              )}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-muted-foreground hover:text-primary text-xs"
+                onClick={() => toast({ title: "Идея принята", description: "Спасибо за ваше участие в развитии сервиса!" })}
+              >
+                <Icon name="Lightbulb" size={16} />
+                <span className="hidden sm:inline">Идея</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                onClick={handleGoToTasks}
+              >
+                <Icon name="ShoppingCart" size={24} />
+                {getTotalItems() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {getTotalItems()}
+                  </span>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         {!selectedCategory ? (
           <div className="max-w-2xl mx-auto space-y-6">
             <HeroSlider />

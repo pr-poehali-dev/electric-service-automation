@@ -67,8 +67,8 @@ const OrderHistory = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="w-full px-4 py-4">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
             <Button variant="ghost" onClick={() => navigate('/tasks')} className="gap-2">
               <Icon name="ArrowLeft" size={20} />
               Назад
@@ -79,7 +79,7 @@ const OrderHistory = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 py-6">
         <div className="max-w-3xl mx-auto space-y-4">
           {mockHistory.length === 0 ? (
             <Card className="p-12 text-center">
