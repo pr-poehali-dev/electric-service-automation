@@ -87,7 +87,7 @@ export default function CheckoutPage() {
       status: 'pending'
     });
 
-    navigate('/orders', { state: { newOrderId: order.id } });
+    navigate('/thank-you', { state: { newOrderId: order.id } });
   };
 
   return (
