@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import InputMask from 'react-input-mask';
+import { IMaskInput } from 'react-imask';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -103,10 +103,10 @@ export default function CheckoutPage() {
               <label className="block text-sm font-semibold mb-2">
                 Телефон <span className="text-red-500">*</span>
               </label>
-              <InputMask
-                mask="8 (999) 999-99-99"
+              <IMaskInput
+                mask="8 (000) 000-00-00"
                 value={formData.phone}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
+                onAccept={(value: string) => setFormData({ ...formData, phone: value })}
                 placeholder="8 (___) ___-__-__"
                 className={`w-full p-3 border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
                   errors.phone ? 'border-red-500 animate-shake' : 'border-gray-300'
