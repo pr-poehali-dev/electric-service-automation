@@ -37,13 +37,20 @@ export const addItemToCart = (
 };
 
 export const removeItemFromCart = (cart: CartItem[], productId: string): CartItem[] => {
-  const item = cart.find(i => i.product.id === productId);
-  if (item && item.product.id.includes('block-') && item.additionalOptions?.includes('install-blocks')) {
-    const electricalInstallId = `${productId}-electrical-install`;
-    return cart.filter(i => i.product.id !== productId && i.product.id !== electricalInstallId);
-  }
+  const updatedCart = cart.filter(item => item.product.id !== productId);
   
-  return cart.filter(item => item.product.id !== productId);
+  const ELECTRICAL_INSTALL_ID = 'electrical-install-total';
+  const totalInstalls = calculateTotalElectricalInstalls(updatedCart);
+  
+  if (totalInstalls > 0) {
+    return updatedCart.map(i => 
+      i.product.id === ELECTRICAL_INSTALL_ID 
+        ? { ...i, quantity: totalInstalls }
+        : i
+    );
+  } else {
+    return updatedCart.filter(i => i.product.id !== ELECTRICAL_INSTALL_ID);
+  }
 };
 
 export const updateItemQuantity = (cart: CartItem[], productId: string, quantity: number): CartItem[] => {
@@ -51,20 +58,13 @@ export const updateItemQuantity = (cart: CartItem[], productId: string, quantity
     item.product.id === productId ? { ...item, quantity } : item
   );
 
-  const item = updatedCart.find(i => i.product.id === productId);
-  if (item && item.product.id.includes('block-') && item.additionalOptions?.includes('install-blocks')) {
-    let outletsCount = 1;
-    if (item.product.id.includes('block-2')) outletsCount = 2;
-    else if (item.product.id.includes('block-3')) outletsCount = 3;
-    else if (item.product.id.includes('block-4')) outletsCount = 4;
-    else if (item.product.id.includes('block-5')) outletsCount = 5;
-
-    const totalOutlets = outletsCount * quantity;
-    const electricalInstallId = `${productId}-electrical-install`;
-
+  const ELECTRICAL_INSTALL_ID = 'electrical-install-total';
+  const totalInstalls = calculateTotalElectricalInstalls(updatedCart);
+  
+  if (totalInstalls > 0) {
     updatedCart = updatedCart.map(i => 
-      i.product.id === electricalInstallId 
-        ? { ...i, quantity: totalOutlets }
+      i.product.id === ELECTRICAL_INSTALL_ID 
+        ? { ...i, quantity: totalInstalls }
         : i
     );
   }
@@ -76,6 +76,25 @@ export const updateItemOption = (cart: CartItem[], productId: string, option: Se
   return cart.map(item =>
     item.product.id === productId ? { ...item, selectedOption: option } : item
   );
+};
+
+const calculateTotalElectricalInstalls = (cart: CartItem[]): number => {
+  let total = 0;
+  cart.forEach(item => {
+    if (item.additionalOptions?.includes('install-blocks')) {
+      let outletsCount = 1;
+      
+      if (item.product.id.includes('block-2')) outletsCount = 2;
+      else if (item.product.id.includes('block-3')) outletsCount = 3;
+      else if (item.product.id.includes('block-4')) outletsCount = 4;
+      else if (item.product.id.includes('block-5')) outletsCount = 5;
+      else if (item.product.name.includes('Добавить розетку')) outletsCount = 1;
+      else if (item.product.name.includes('Выключатель перенести')) outletsCount = 1;
+      
+      total += outletsCount * item.quantity;
+    }
+  });
+  return total;
 };
 
 export const toggleItemAdditionalOption = (cart: CartItem[], productId: string, optionId: string): CartItem[] => {
@@ -91,27 +110,17 @@ export const toggleItemAdditionalOption = (cart: CartItem[], productId: string, 
     return item;
   });
 
-  if (optionId === 'install-blocks' && !cart.find(i => i.product.id === productId)?.additionalOptions?.includes(optionId)) {
-    const item = updatedCart.find(i => i.product.id === productId);
-    if (item) {
-      let outletsCount = 1;
-      
-      if (item.product.id.includes('block-2')) outletsCount = 2;
-      else if (item.product.id.includes('block-3')) outletsCount = 3;
-      else if (item.product.id.includes('block-4')) outletsCount = 4;
-      else if (item.product.id.includes('block-5')) outletsCount = 5;
-      else if (item.product.name.includes('Добавить розетку')) outletsCount = 1;
-      else if (item.product.name.includes('Выключатель перенести')) outletsCount = 1;
-
-      const totalOutlets = outletsCount * item.quantity;
-
-      const electricalInstallId = `${productId}-electrical-install`;
-      const existingInstall = updatedCart.find(i => i.product.id === electricalInstallId);
+  if (optionId === 'install-blocks') {
+    const ELECTRICAL_INSTALL_ID = 'electrical-install-total';
+    const totalInstalls = calculateTotalElectricalInstalls(updatedCart);
+    
+    if (totalInstalls > 0) {
+      const existingInstall = updatedCart.find(i => i.product.id === ELECTRICAL_INSTALL_ID);
       
       if (existingInstall) {
         updatedCart = updatedCart.map(i => 
-          i.product.id === electricalInstallId 
-            ? { ...i, quantity: totalOutlets }
+          i.product.id === ELECTRICAL_INSTALL_ID 
+            ? { ...i, quantity: totalInstalls }
             : i
         );
       } else {
@@ -119,7 +128,7 @@ export const toggleItemAdditionalOption = (cart: CartItem[], productId: string, 
         if (baseProduct) {
           const virtualProduct: Product = {
             ...baseProduct,
-            id: electricalInstallId,
+            id: ELECTRICAL_INSTALL_ID,
             name: 'Электроустановка',
             description: 'Установка розеток/выключателей',
             priceInstallOnly: 250,
@@ -128,18 +137,15 @@ export const toggleItemAdditionalOption = (cart: CartItem[], productId: string, 
           };
           updatedCart = [...updatedCart, { 
             product: virtualProduct, 
-            quantity: totalOutlets, 
+            quantity: totalInstalls, 
             selectedOption: 'install-only',
             additionalOptions: []
           }];
         }
       }
+    } else {
+      updatedCart = updatedCart.filter(i => i.product.id !== ELECTRICAL_INSTALL_ID);
     }
-  }
-
-  if (optionId === 'install-blocks' && cart.find(i => i.product.id === productId)?.additionalOptions?.includes(optionId)) {
-    const electricalInstallId = `${productId}-electrical-install`;
-    updatedCart = updatedCart.filter(i => i.product.id !== electricalInstallId);
   }
 
   return updatedCart;

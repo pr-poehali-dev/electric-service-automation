@@ -25,6 +25,7 @@ export function getInitialContainers(): ServiceContainer[] {
       sectionCategory: 'services',
       expanded: false,
       options: [
+        { id: 'move-switch-alt', name: 'Добавить или перенести на другую стену', price: 3500, quantity: 1, enabled: false, discount: { minQuantity: 3, percent: 30 } },
         { id: 'repair', name: 'Ремонт с учётом материалов', price: 1500, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить выключатель', price: 250, quantity: 1, enabled: false },
       ]
@@ -50,19 +51,19 @@ export function getInitialContainers(): ServiceContainer[] {
       sectionCategory: 'wiring',
       expanded: true,
       options: [
-        { id: 'block-5', name: 'Блок из 5 розеток +закладная', price: 8000, quantity: 1, enabled: false },
-        { id: 'gas-sensor', name: 'Перенос газовых детекторов', price: 3500, quantity: 1, enabled: false },
-        { id: 'block-4', name: 'Блок из 4-х розеток', price: 3000, quantity: 1, enabled: false },
-        { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
-        { id: 'move-switch', name: 'Выключатель перенести', price: 1500, quantity: 1, enabled: false, description: 'Перенос выключателя на другую стену. Расключение коробки включено в стоимость (в подарок)' },
-        { id: 'block-2', name: 'Блок из 2-х розеток', price: 1200, quantity: 1, enabled: false },
         { id: 'add-outlet', name: 'Добавить розетку', price: 850, quantity: 1, enabled: false },
-        { id: 'box-flush', name: 'Бокс скрытого монтажа', price: 8000, quantity: 1, enabled: false, group: 'panel' },
-        { id: 'meter', name: 'Установка электросчётчика', price: 3500, quantity: 1, enabled: false, group: 'panel', voltageOptions: { '220V': 3500, '380V': 5500 }, selectedVoltage: '220V' },
-        { id: 'breaker-replace', name: 'Замена автомата с учётом материала', price: 3000, quantity: 1, enabled: false, group: 'panel' },
-        { id: 'box-surface', name: 'Бокс открытого монтажа', price: 2500, quantity: 1, enabled: false, group: 'panel' },
-        { id: 'breaker-install', name: 'Установка автомата защиты', price: 1000, quantity: 1, enabled: false, discount: { minQuantity: 10, percent: 50 }, group: 'panel' },
+        { id: 'breaker-install', name: 'Установка автомата защиты', price: 1000, quantity: 1, enabled: false, discount: { minQuantity: 10, percent: 50 }, group: 'panel', noCable: true },
+        { id: 'block-2', name: 'Блок из 2-х розеток', price: 1200, quantity: 1, enabled: false },
+        { id: 'move-switch', name: 'Выключатель перенести', price: 1500, quantity: 1, enabled: false, description: 'Перенос выключателя на другую стену. Расключение коробки включено в стоимость (в подарок)' },
+        { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
+        { id: 'box-surface', name: 'Бокс открытого монтажа', price: 2500, quantity: 1, enabled: false, group: 'panel', noCable: true },
         { id: 'input-cable', name: 'Новый вводной кабель', price: 2500, quantity: 1, enabled: false, group: 'panel' },
+        { id: 'block-4', name: 'Блок из 4-х розеток', price: 3000, quantity: 1, enabled: false },
+        { id: 'breaker-replace', name: 'Замена автомата с учётом материала', price: 3000, quantity: 1, enabled: false, group: 'panel', noCable: true },
+        { id: 'gas-sensor', name: 'Перенос газовых детекторов', price: 3500, quantity: 1, enabled: false },
+        { id: 'meter', name: 'Установка электросчётчика', price: 3500, quantity: 1, enabled: false, group: 'panel', voltageOptions: { '220V': 3500, '380V': 5500 }, selectedVoltage: '220V', noCable: true },
+        { id: 'box-flush', name: 'Бокс скрытого монтажа', price: 8000, quantity: 1, enabled: false, group: 'panel', noCable: true },
+        { id: 'block-5', name: 'Блок из 5 розеток +закладная', price: 8000, quantity: 1, enabled: false },
       ]
     }
   ];

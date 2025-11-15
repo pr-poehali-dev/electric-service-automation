@@ -58,9 +58,26 @@ export function useProductsLogic() {
       if (idx === containerIndex) {
         return {
           ...container,
-          options: container.options.map(opt => 
-            opt.id === optionId ? { ...opt, quantity: newQuantity } : opt
-          )
+          options: container.options.map(opt => {
+            if (opt.id === optionId) {
+              const updatedOpt = { ...opt, quantity: newQuantity };
+              if (opt.id === 'move-switch-alt') {
+                if (newQuantity >= 5) {
+                  updatedOpt.discount = { minQuantity: 5, percent: 50 };
+                } else if (newQuantity >= 3) {
+                  updatedOpt.discount = { minQuantity: 3, percent: 30 };
+                }
+              } else if (opt.discount) {
+                if (newQuantity >= 5) {
+                  updatedOpt.discount = { minQuantity: 5, percent: 50 };
+                } else if (newQuantity >= 3) {
+                  updatedOpt.discount = { minQuantity: 3, percent: 30 };
+                }
+              }
+              return updatedOpt;
+            }
+            return opt;
+          })
         };
       }
       return container;
@@ -213,7 +230,7 @@ export function useProductsLogic() {
     let totalPoints = 0;
     containers.forEach(container => {
       container.options.forEach(option => {
-        if (option.enabled && container.sectionCategory === 'wiring') {
+        if (option.enabled && container.sectionCategory === 'wiring' && !option.noCable) {
           totalPoints += option.quantity;
         }
       });
