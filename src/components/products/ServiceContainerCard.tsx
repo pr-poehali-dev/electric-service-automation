@@ -24,8 +24,13 @@ interface ServiceContainerCardProps {
 const iconMap: Record<string, string> = {
   'chandelier-1': 'Lightbulb',
   'sw-install': 'ToggleLeft',
-  'out-install': 'Plug',
-  'wiring-complex': 'User'
+  'out-install': 'Plug'
+};
+
+const iconColorMap: Record<string, { bg: string; icon: string }> = {
+  'chandelier-1': { bg: 'from-amber-100 to-orange-100', icon: 'text-amber-600' },
+  'sw-install': { bg: 'from-blue-100 to-cyan-100', icon: 'text-blue-600' },
+  'out-install': { bg: 'from-green-100 to-emerald-100', icon: 'text-green-600' }
 };
 
 export default function ServiceContainerCard({
@@ -197,6 +202,7 @@ export default function ServiceContainerCard({
 
   if (isSingleOption && singleOption) {
     const iconName = iconMap[container.productId] || 'Lightbulb';
+    const colors = iconColorMap[container.productId] || { bg: 'from-amber-100 to-orange-100', icon: 'text-amber-600' };
     
     return (
       <Card 
@@ -206,8 +212,8 @@ export default function ServiceContainerCard({
       >
         <div className="p-5">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center flex-shrink-0">
-              <Icon name={iconName} size={28} className="text-amber-600" />
+            <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${colors.bg} flex items-center justify-center flex-shrink-0 transition-all ${container.expanded ? 'scale-110 shadow-lg' : ''}`}>
+              <Icon name={iconName} size={28} className={`${colors.icon} transition-all`} />
             </div>
             
             <div className="flex-1">
@@ -254,7 +260,9 @@ export default function ServiceContainerCard({
   const constructionOptions = container.options.filter(opt => opt.group === 'construction');
   const panelOptions = container.options.filter(opt => opt.group === 'panel');
   const otherOptions = container.options.filter(opt => !opt.group);
-  const iconName = iconMap[container.productId] || 'Lightbulb';
+  const iconName = iconMap[container.productId];
+  const hasIcon = !!iconName;
+  const colors = iconColorMap[container.productId] || { bg: 'from-slate-100 to-blue-100', icon: 'text-slate-700' };
 
   return (
     <Card 
@@ -265,14 +273,21 @@ export default function ServiceContainerCard({
         className="p-5 flex items-center gap-4 cursor-pointer"
         onClick={() => toggleContainer(actualIndex)}
       >
-        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-slate-100 to-blue-100 flex items-center justify-center flex-shrink-0">
-          <Icon name={iconName} size={28} className="text-slate-700" />
-        </div>
+        {hasIcon && (
+          <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${colors.bg} flex items-center justify-center flex-shrink-0 transition-all ${container.expanded ? 'scale-110 shadow-lg' : ''}`}>
+            <Icon name={iconName} size={28} className={`${colors.icon} transition-all`} />
+          </div>
+        )}
         
         <div className="flex-1">
           <h4 className="font-bold text-gray-800 text-base uppercase tracking-wide">
             {container.productName}
           </h4>
+          {container.productDescription && (
+            <p className="text-xs text-gray-500 mt-1">
+              {container.productDescription}
+            </p>
+          )}
         </div>
         
         <Icon 
