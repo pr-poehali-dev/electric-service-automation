@@ -35,14 +35,14 @@ export default function Products() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
       <PageHeader />
+      
+      <PageNavigation 
+        onContactClick={() => setShowContactModal(true)} 
+        showContinueButton={showContinue}
+        onContinueClick={handleAddToCart}
+      />
 
       <div className="max-w-md md:max-w-4xl lg:max-w-6xl mx-auto px-4">
-        <PageNavigation 
-          onContactClick={() => setShowContactModal(true)} 
-          showContinueButton={showContinue}
-          onContinueClick={handleAddToCart}
-        />
-
         <div className="py-6 space-y-6">
 
 
