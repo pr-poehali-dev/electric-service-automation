@@ -6,15 +6,15 @@ export function getInitialContainers(): ServiceContainer[] {
     {
       productId: 'chandelier-1',
       productName: 'Установить светильник',
-      productDescription: 'Установка светильника, заменить люстру',
+      productDescription: 'Установка светильника / люстры',
       category: 'chandelier',
       sectionCategory: 'services',
       expanded: false,
       options: [
-        { id: 'crystal', name: 'Подвес хрусталя — 1 час', price: 1500, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить светильник', price: 1000, quantity: 1, enabled: false },
         { id: 'dismantle', name: 'Демонтаж светильника', price: 500, quantity: 1, enabled: false },
         { id: 'assemble', name: 'Сборка люстры', price: 500, quantity: 1, enabled: false },
+        { id: 'crystal', name: 'Подвес хрусталя', price: 1500, quantity: 1, enabled: false },
       ]
     },
     {
@@ -46,7 +46,7 @@ export function getInitialContainers(): ServiceContainer[] {
     {
       productId: 'wiring-complex',
       productName: 'Электромонтажные работы',
-      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки',
+      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки в Калининграде.',
       category: 'outlet',
       sectionCategory: 'wiring',
       expanded: true,

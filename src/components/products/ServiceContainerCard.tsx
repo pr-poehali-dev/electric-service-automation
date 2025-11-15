@@ -217,7 +217,7 @@ export default function ServiceContainerCard({
             </div>
             
             <div className="flex-1">
-              <h4 className="font-bold text-gray-800 text-base uppercase tracking-wide">
+              <h4 className="font-bold text-gray-800 text-sm uppercase tracking-wide truncate">
                 {container.productName}
               </h4>
             </div>
@@ -280,7 +280,7 @@ export default function ServiceContainerCard({
         )}
         
         <div className="flex-1">
-          <h4 className="font-bold text-gray-800 text-base uppercase tracking-wide">
+          <h4 className="font-bold text-gray-800 text-sm uppercase tracking-wide truncate">
             {container.productName}
           </h4>
           {container.productDescription && (
