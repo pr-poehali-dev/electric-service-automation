@@ -61,7 +61,8 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
       <Route path="/role-select" element={user ? <Navigate to="/" /> : <RoleSelection />} />
-      <Route path="/" element={<Services />} />
+      <Route path="/" element={<Navigate to="/electrical" replace />} />
+      <Route path="/home" element={<Services />} />
       <Route path="/calculator" element={<Calculator />} />
       <Route path="/electrical" element={<ElectricalHome />} />
       <Route path="/products" element={<Products />} />

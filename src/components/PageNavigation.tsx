@@ -39,7 +39,7 @@ export default function PageNavigation({ onContactClick, showContinueButton = fa
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           title="На главную"
         >
           <Icon name="Home" size={20} />
