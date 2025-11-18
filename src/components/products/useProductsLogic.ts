@@ -174,7 +174,8 @@ export function useProductsLogic() {
                 name: option.name,
                 description: option.name,
                 priceInstallOnly: finalPrice,
-                priceWithWiring: finalPrice
+                priceWithWiring: finalPrice,
+                discountApplied: option.discount !== undefined
               };
               addToCart(virtualProduct, option.quantity, 'full-wiring');
             } else if (option.id === 'install' || option.id === 'crystal') {

@@ -35,6 +35,7 @@ export interface Product {
   slots: number;
   priceInstallOnly: number;
   priceWithWiring: number;
+  discountApplied?: boolean;
   options?: {
     id: string;
     name: string;
@@ -573,6 +574,10 @@ export function calculateItemPrice(item: CartItem): number {
   
   const quantity = item.quantity || 1;
   const totalPerItem = basePrice + optionsPrice;
+  
+  if (item.product.discountApplied) {
+    return totalPerItem * quantity;
+  }
   
   if (quantity >= 20) {
     return Math.round(totalPerItem * 0.7 * quantity);
