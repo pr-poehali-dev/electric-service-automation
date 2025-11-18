@@ -9,15 +9,30 @@ export default function FeedbackButton() {
   const [feedback, setFeedback] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (feedback.trim()) {
-      console.log('Фидбек:', feedback);
-      setSubmitted(true);
-      setTimeout(() => {
-        setOpen(false);
-        setFeedback('');
-        setSubmitted(false);
-      }, 2000);
+      try {
+        const response = await fetch('https://functions.poehali.dev/5c5ceed0-7356-491d-8f3c-01e20dede751', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ feedback: feedback.trim() }),
+        });
+
+        if (response.ok) {
+          setSubmitted(true);
+          setTimeout(() => {
+            setOpen(false);
+            setFeedback('');
+            setSubmitted(false);
+          }, 2000);
+        } else {
+          console.error('Ошибка отправки фидбека');
+        }
+      } catch (error) {
+        console.error('Ошибка отправки фидбека:', error);
+      }
     }
   };
 
@@ -25,12 +40,12 @@ export default function FeedbackButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all hover:scale-110 z-50 group"
+        className="fixed bottom-6 right-6 bg-gradient-to-br from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white rounded-full p-4 shadow-xl hover:shadow-2xl transition-all hover:scale-110 z-50 group"
         title="Предложить идею"
       >
-        <Icon name="MessageSquare" size={24} />
-        <span className="absolute -top-1 -left-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          ✨
+        <Icon name="Lightbulb" size={26} className="drop-shadow-md" />
+        <span className="absolute -top-1 -right-1 text-2xl animate-pulse">
+          💡
         </span>
       </button>
 
@@ -38,11 +53,11 @@ export default function FeedbackButton() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Icon name="Lightbulb" size={20} className="text-yellow-500" />
-              Предложите идею
+              <Icon name="Sparkles" size={20} className="text-yellow-500" />
+              У вас есть идея?
             </DialogTitle>
             <DialogDescription>
-              Поделитесь своими идеями, как мы можем улучшить сервис
+              Предлагайте свои идеи по улучшению сервиса для электриков и их клиентов
             </DialogDescription>
           </DialogHeader>
 
