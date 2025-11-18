@@ -62,9 +62,7 @@ export function useProductsLogic() {
             if (opt.id === optionId) {
               const updatedOpt = { ...opt, quantity: newQuantity };
               if (opt.id === 'move-switch-alt' || opt.id === 'replace-switch' || opt.id === 'replace-outlet') {
-                if (newQuantity >= 5) {
-                  updatedOpt.discount = { minQuantity: 5, percent: 50 };
-                } else if (newQuantity >= 3) {
+                if (newQuantity >= 3) {
                   updatedOpt.discount = { minQuantity: 3, percent: 30 };
                 } else {
                   updatedOpt.discount = { minQuantity: 3, percent: 30 };
