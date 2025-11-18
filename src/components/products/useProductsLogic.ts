@@ -1,14 +1,60 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { PRODUCTS, CartItem } from '@/types/electrical';
 import { ServiceContainer } from './types';
 import { getInitialContainers } from './initialContainers';
 
+function loadContainersFromCart(cart: CartItem[]): ServiceContainer[] {
+  const containers = getInitialContainers();
+  
+  cart.forEach(cartItem => {
+    const productId = cartItem.product.id;
+    
+    if (productId === 'auto-cable-wiring') {
+      return;
+    }
+    
+    containers.forEach(container => {
+      if (productId.startsWith(container.productId + '-')) {
+        const optionId = productId.substring(container.productId.length + 1);
+        const option = container.options.find(opt => opt.id === optionId);
+        
+        if (option) {
+          option.enabled = true;
+          option.quantity = cartItem.quantity;
+          
+          if (option.id === 'replace-switch' || option.id === 'replace-outlet') {
+            const qty = cartItem.quantity;
+            if (qty >= 21) {
+              option.discount = { minQuantity: 21, percent: 20 };
+            } else if (qty >= 11) {
+              option.discount = { minQuantity: 11, percent: 15 };
+            } else if (qty >= 6) {
+              option.discount = { minQuantity: 6, percent: 10 };
+            } else if (qty >= 3) {
+              option.discount = { minQuantity: 3, percent: 5 };
+            } else {
+              option.discount = undefined;
+            }
+          }
+        }
+      }
+    });
+  });
+  
+  return containers;
+}
+
 export function useProductsLogic() {
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, cart, clearCart } = useCart();
   const [containers, setContainers] = useState<ServiceContainer[]>(getInitialContainers());
+
+  useEffect(() => {
+    const newContainers = loadContainersFromCart(cart);
+    setContainers(newContainers);
+  }, [cart.length]);
 
   const toggleContainer = (containerIndex: number) => {
     setContainers(prev => prev.map((container, idx) => {
@@ -131,6 +177,8 @@ export function useProductsLogic() {
   };
 
   const handleAddToCart = () => {
+    clearCart();
+    
     const wiringProduct = PRODUCTS.find(p => p.id === 'chandelier-1');
     
     if (hasWiringOptions && wiringProduct) {
@@ -225,7 +273,6 @@ export function useProductsLogic() {
       });
     });
     
-    setContainers(getInitialContainers());
     navigate('/cart');
   };
 
