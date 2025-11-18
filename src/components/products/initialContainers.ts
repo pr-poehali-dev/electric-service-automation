@@ -56,7 +56,7 @@ export function getInitialContainers(): ServiceContainer[] {
         { id: 'add-outlet', name: 'Добавить розетку', price: 850, quantity: 1, enabled: false },
         { id: 'breaker-install', name: 'Установка автомата защиты', price: 1000, quantity: 1, enabled: false, discount: { minQuantity: 10, percent: 50 }, group: 'panel', noCable: true },
         { id: 'block-2', name: 'Блок из 2-х розеток', price: 1200, quantity: 1, enabled: false },
-        { id: 'move-switch', name: 'Выключатель перенести', price: 1500, quantity: 1, enabled: false, description: 'Перенос выключателя на другую стену. Расключение коробки включено в стоимость (в подарок)' },
+        { id: 'move-switch', name: 'Добавить выключатель или перенести его в другое место', price: 3500, quantity: 1, enabled: false, discount: { minQuantity: 3, percent: 30 } },
         { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
         { id: 'box-surface', name: 'Бокс открытого монтажа', price: 2500, quantity: 1, enabled: false, group: 'panel', noCable: true },
         { id: 'input-cable', name: 'Новый вводной кабель', price: 2500, quantity: 1, enabled: false, group: 'panel' },

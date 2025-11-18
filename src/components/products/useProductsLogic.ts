@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { PRODUCTS, CartItem } from '@/types/electrical';
 import { ServiceContainer } from './types';
@@ -48,13 +48,14 @@ function loadContainersFromCart(cart: CartItem[]): ServiceContainer[] {
 
 export function useProductsLogic() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToCart, cart, clearCart } = useCart();
-  const [containers, setContainers] = useState<ServiceContainer[]>(getInitialContainers());
+  const [containers, setContainers] = useState<ServiceContainer[]>(() => loadContainersFromCart(cart));
 
   useEffect(() => {
     const newContainers = loadContainersFromCart(cart);
     setContainers(newContainers);
-  }, [cart.length]);
+  }, [location.pathname]);
 
   const toggleContainer = (containerIndex: number) => {
     setContainers(prev => prev.map((container, idx) => {
