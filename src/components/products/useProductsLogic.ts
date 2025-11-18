@@ -61,11 +61,17 @@ export function useProductsLogic() {
           options: container.options.map(opt => {
             if (opt.id === optionId) {
               const updatedOpt = { ...opt, quantity: newQuantity };
-              if (opt.id === 'move-switch-alt' || opt.id === 'replace-switch' || opt.id === 'replace-outlet') {
-                if (newQuantity >= 3) {
-                  updatedOpt.discount = { minQuantity: 3, percent: 30 };
+              if (opt.id === 'replace-switch' || opt.id === 'replace-outlet') {
+                if (newQuantity >= 21) {
+                  updatedOpt.discount = { minQuantity: 21, percent: 20 };
+                } else if (newQuantity >= 11) {
+                  updatedOpt.discount = { minQuantity: 11, percent: 15 };
+                } else if (newQuantity >= 6) {
+                  updatedOpt.discount = { minQuantity: 6, percent: 10 };
+                } else if (newQuantity >= 3) {
+                  updatedOpt.discount = { minQuantity: 3, percent: 5 };
                 } else {
-                  updatedOpt.discount = { minQuantity: 3, percent: 30 };
+                  updatedOpt.discount = undefined;
                 }
               }
               return updatedOpt;

@@ -27,7 +27,7 @@ export function getInitialContainers(): ServiceContainer[] {
       options: [
         { id: 'move-switch-alt', name: 'Добавить розетку или перенести выключатель в другое место', price: 3500, quantity: 1, enabled: false, discount: { minQuantity: 3, percent: 30 } },
         { id: 'repair', name: 'Ремонт с учётом материалов', price: 1500, quantity: 1, enabled: false },
-        { id: 'replace-switch', name: 'Заменить выключатель', price: 350, quantity: 1, enabled: false, discount: { minQuantity: 3, percent: 30 } },
+        { id: 'replace-switch', name: 'Заменить выключатель', price: 350, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить выключатель', price: 250, quantity: 1, enabled: false },
       ]
     },
@@ -41,7 +41,7 @@ export function getInitialContainers(): ServiceContainer[] {
       options: [
         { id: 'repair', name: 'Ремонт с учётом материалов', price: 1500, quantity: 1, enabled: false, discount: { minQuantity: 5, percent: 10 } },
         { id: 'surface-outlet', name: 'Накладная розетка', price: 500, quantity: 1, enabled: false },
-        { id: 'replace-outlet', name: 'Заменить розетку', price: 350, quantity: 1, enabled: false, discount: { minQuantity: 3, percent: 30 } },
+        { id: 'replace-outlet', name: 'Заменить розетку', price: 350, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить розетку', price: 250, quantity: 1, enabled: false },
       ]
     },
