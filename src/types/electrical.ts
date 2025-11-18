@@ -579,21 +579,24 @@ export function calculateItemPrice(item: CartItem): number {
     return totalPerItem * quantity;
   }
   
-  if (quantity >= 20) {
-    return Math.round(totalPerItem * 0.7 * quantity);
-  } else if (quantity >= 10) {
+  if (quantity >= 21) {
     return Math.round(totalPerItem * 0.8 * quantity);
-  } else if (quantity >= 5) {
+  } else if (quantity >= 11) {
+    return Math.round(totalPerItem * 0.85 * quantity);
+  } else if (quantity >= 6) {
     return Math.round(totalPerItem * 0.9 * quantity);
+  } else if (quantity >= 3) {
+    return Math.round(totalPerItem * 0.95 * quantity);
   }
   
   return totalPerItem * quantity;
 }
 
 export function getDiscount(quantity: number): number {
-  if (quantity >= 20) return 30;
-  if (quantity >= 10) return 20;
-  if (quantity >= 5) return 10;
+  if (quantity >= 21) return 20;
+  if (quantity >= 11) return 15;
+  if (quantity >= 6) return 10;
+  if (quantity >= 3) return 5;
   return 0;
 }
 

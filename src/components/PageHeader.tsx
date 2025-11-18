@@ -40,11 +40,11 @@ export default function PageHeader({ imageUrl = 'https://cdn.poehali.dev/files/4
 
   return (
     <>
-      <div className="relative">
+      <div className="relative max-w-7xl mx-auto">
         <img 
           src={imageUrl}
           alt="Калининград"
-          className="w-full h-[200px] md:h-[300px] object-cover"
+          className="w-full h-[200px] md:h-[300px] object-cover md:rounded-b-lg"
         />
         
         <div className="absolute top-4 right-4">

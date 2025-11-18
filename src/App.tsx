@@ -9,6 +9,7 @@ import { CartProvider } from "./contexts/CartContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { ReviewProvider } from "./contexts/ReviewContext";
 import { useScrollToTop } from "./hooks/useScrollToTop";
+import FeedbackButton from "./components/FeedbackButton";
 import Home from "./pages/Home";
 import Tasks from "./pages/Tasks";
 import Schedule from "./pages/Schedule";
@@ -141,6 +142,7 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <AppRoutes />
+                <FeedbackButton />
               </BrowserRouter>
             </TooltipProvider>
           </CartProvider>

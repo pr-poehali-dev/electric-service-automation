@@ -24,7 +24,7 @@ function loadContainersFromCart(cart: CartItem[]): ServiceContainer[] {
           option.enabled = true;
           option.quantity = cartItem.quantity;
           
-          if (option.id === 'replace-switch' || option.id === 'replace-outlet') {
+          if (option.id === 'replace-switch' || option.id === 'replace-outlet' || option.id === 'install') {
             const qty = cartItem.quantity;
             if (qty >= 21) {
               option.discount = { minQuantity: 21, percent: 20 };
@@ -108,7 +108,7 @@ export function useProductsLogic() {
           options: container.options.map(opt => {
             if (opt.id === optionId) {
               const updatedOpt = { ...opt, quantity: newQuantity };
-              if (opt.id === 'replace-switch' || opt.id === 'replace-outlet') {
+              if (opt.id === 'replace-switch' || opt.id === 'replace-outlet' || opt.id === 'install') {
                 if (newQuantity >= 21) {
                   updatedOpt.discount = { minQuantity: 21, percent: 20 };
                 } else if (newQuantity >= 11) {

@@ -25,7 +25,7 @@ export function getInitialContainers(): ServiceContainer[] {
       sectionCategory: 'services',
       expanded: false,
       options: [
-        { id: 'move-switch-alt', name: 'Добавить розетку или перенести выключатель в другое место', price: 3500, quantity: 1, enabled: false, discount: { minQuantity: 3, percent: 30 } },
+        { id: 'move-switch-alt', name: 'Добавить розетку или перенести выключатель в другое место', price: 3500, quantity: 1, enabled: false },
         { id: 'repair', name: 'Ремонт с учётом материалов', price: 1500, quantity: 1, enabled: false },
         { id: 'replace-switch', name: 'Заменить выключатель', price: 350, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить выключатель', price: 250, quantity: 1, enabled: false },
