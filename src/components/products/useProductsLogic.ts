@@ -66,11 +66,7 @@ export function useProductsLogic() {
                   updatedOpt.discount = { minQuantity: 5, percent: 50 };
                 } else if (newQuantity >= 3) {
                   updatedOpt.discount = { minQuantity: 3, percent: 30 };
-                }
-              } else if (opt.discount) {
-                if (newQuantity >= 5) {
-                  updatedOpt.discount = { minQuantity: 5, percent: 50 };
-                } else if (newQuantity >= 3) {
+                } else {
                   updatedOpt.discount = { minQuantity: 3, percent: 30 };
                 }
               }
