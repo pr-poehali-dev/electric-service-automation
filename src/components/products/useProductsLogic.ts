@@ -288,6 +288,11 @@ export function useProductsLogic() {
     return Math.ceil(totalPoints * 7);
   };
 
+  const clearAllOptions = () => {
+    setContainers(getInitialContainers());
+    clearCart();
+  };
+
   const hasAnyEnabledOptions = containers.some(container => 
     container.options.some(opt => opt.enabled)
   );
@@ -310,6 +315,7 @@ export function useProductsLogic() {
     calculateContainerTotal,
     calculateGrandTotal,
     handleAddToCart,
+    clearAllOptions,
     hasAnyEnabledOptions,
     hasWiringOptions,
     calculateEstimatedCableMeters

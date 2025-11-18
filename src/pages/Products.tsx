@@ -25,6 +25,7 @@ export default function Products() {
     calculateContainerTotal,
     calculateGrandTotal,
     handleAddToCart,
+    clearAllOptions,
     hasAnyEnabledOptions,
     hasWiringOptions,
     calculateEstimatedCableMeters
@@ -101,7 +102,15 @@ export default function Products() {
             <Card className="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-bold text-gray-800">ИТОГО</span>
+                  <div className="flex flex-col">
+                    <span className="text-lg font-bold text-gray-800">ИТОГО</span>
+                    <button
+                      onClick={clearAllOptions}
+                      className="text-xs text-red-600 hover:text-red-700 underline mt-1 text-left"
+                    >
+                      Очистить всё
+                    </button>
+                  </div>
                   <span className="text-3xl font-bold text-green-600">
                     {calculateGrandTotal().toLocaleString('ru-RU')} ₽
                   </span>
