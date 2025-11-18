@@ -61,7 +61,7 @@ export function useProductsLogic() {
           options: container.options.map(opt => {
             if (opt.id === optionId) {
               const updatedOpt = { ...opt, quantity: newQuantity };
-              if (opt.id === 'move-switch-alt') {
+              if (opt.id === 'move-switch-alt' || opt.id === 'replace-switch' || opt.id === 'replace-outlet') {
                 if (newQuantity >= 5) {
                   updatedOpt.discount = { minQuantity: 5, percent: 50 };
                 } else if (newQuantity >= 3) {
@@ -167,7 +167,7 @@ export function useProductsLogic() {
                 option.id === 'cable-10m' || option.id === 'cable-corrugated' || option.id === 'breaker-install' || 
                 option.id === 'breaker-replace' || option.id === 'meter' || option.id === 'input-cable' ||
                 option.id === 'box-surface' || option.id === 'box-flush' || option.id === 'drilling-porcelain' || 
-                option.id === 'electrical-install' || option.id === 'gas-sensor') {
+                option.id === 'electrical-install' || option.id === 'gas-sensor' || option.id === 'replace-switch' || option.id === 'replace-outlet') {
               const virtualProduct: typeof product = {
                 ...product,
                 id: `${container.productId}-${option.id}`,
