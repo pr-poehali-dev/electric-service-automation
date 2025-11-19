@@ -132,7 +132,7 @@ export default function Products() {
                     <p className="text-xs text-blue-600 mt-1">
                       Автоматически добавлено: Монтаж кабеля (100₽/м)
                       {getCableDiscount() > 0 && (
-                        <span className="text-green-600 font-semibold"> — скидка {getCableDiscount()}%</span>
+                        <span className="text-green-600 font-semibold"> — скидка {getCableDiscount()}% за объем работ</span>
                       )}
                     </p>
                   </div>
