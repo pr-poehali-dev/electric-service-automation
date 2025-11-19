@@ -30,6 +30,7 @@ export default function CheckoutPage() {
 
   const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
   const totalDiscount = cart.reduce((sum, item) => {
+    if (item.product.discountApplied) return sum;
     const discount = getDiscount(item.quantity);
     const basePrice = item.selectedOption === 'install-only' ? item.product.priceInstallOnly : item.product.priceWithWiring;
     const fullPrice = basePrice * item.quantity;
@@ -38,27 +39,16 @@ export default function CheckoutPage() {
 
   const cableWiringItem = cart.find(item => item.product.id === 'auto-cable-wiring');
   const cableMeters = cableWiringItem ? cableWiringItem.quantity : 0;
+  const cableCost = cableWiringItem ? calculateItemPrice(cableWiringItem) : 0;
   
   const wiringItems = cart.filter(item => 
-    item.additionalOptions?.includes('wiring') || 
-    item.selectedOption === 'full-wiring' ||
-    item.additionalOptions?.some(opt => opt.startsWith('block-'))
+    item.selectedOption === 'full-wiring' && item.product.id !== 'auto-cable-wiring'
   );
   
-  const totalFrames = wiringItems.reduce((sum, item) => {
-    let frames = 0;
-    if (item.additionalOptions?.includes('install') || item.selectedOption === 'install-only') {
-      frames += item.quantity;
-    }
-    if (item.additionalOptions?.some(opt => opt.startsWith('block-'))) {
-      frames += item.quantity * item.additionalOptions.filter(opt => opt.startsWith('block-')).length;
-    }
-    return sum + frames;
-  }, 0);
+  const totalFrames = calculateFrames(wiringItems);
   
-  const cableCost = Math.round(cableMeters * 100);
   const materialsCost = Math.round(cableMeters * 130);
-  const finalTotal = totalPrice + cableCost;
+  const finalTotal = totalPrice;
 
   const validateForm = () => {
     const newErrors = { phone: '' };
@@ -173,10 +163,6 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Расход силового кабеля:</span>
                     <span className="font-semibold">~{cableMeters} м</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Стоимость монтажа кабеля:</span>
-                    <span className="font-bold">{cableCost.toLocaleString('ru-RU')} ₽</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Кабель и расходный материал:</span>

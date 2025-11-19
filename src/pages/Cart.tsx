@@ -117,7 +117,7 @@ export default function Cart() {
                 </div>
               </div>
 
-              {cart.filter(item => item.product.id !== MASTER_VISIT_ID).map((item, index) => (
+              {cart.filter(item => item.product.id !== MASTER_VISIT_ID && item.product.id !== 'auto-cable-wiring').map((item, index) => (
                 <div key={item.product.id} className="border-b border-gray-200 pb-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
@@ -241,7 +241,7 @@ export default function Cart() {
                           item.product.name.includes('Выключатель перенести') ? 'шт' : 'ед'
                         }
                       </div>
-                      {getDiscount(item.quantity) > 0 && (
+                      {!item.product.discountApplied && getDiscount(item.quantity) > 0 && (
                         <div className="text-xs text-green-600 font-semibold">
                           Скидка {getDiscount(item.quantity)}%
                         </div>
