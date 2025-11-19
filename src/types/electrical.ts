@@ -404,7 +404,7 @@ export const PRODUCTS: Product[] = [
   {
     id: MASTER_VISIT_ID,
     type: 'switch-single',
-    name: 'Выезд мастера',
+    name: 'Вызов мастера на осмотр',
     image: 'https://cdn.poehali.dev/files/switch-single.jpg',
     description: 'Обязательная услуга при оформлении заявки',
     category: 'switch',

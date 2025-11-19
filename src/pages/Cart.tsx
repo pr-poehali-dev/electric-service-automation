@@ -91,34 +91,6 @@ export default function Cart() {
         <div className="p-6 space-y-4">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-fadeIn">
             <div className="p-6 space-y-4">
-              {cableMeters > 0 && (
-                <div className="mb-4 p-4 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-                  <div className="flex items-start gap-3">
-                    <Icon name="Cable" size={20} className="text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div className="flex-1">
-                      <div className="font-semibold text-sm text-gray-800 mb-1">
-                        Автоматически добавлен монтаж кабеля
-                      </div>
-                      <div className="text-xs text-gray-600 space-y-1">
-                        <div className="flex justify-between">
-                          <span>Ориентировочный расход:</span>
-                          <span className="font-semibold">~{cableMeters} метров</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Стоимость монтажа:</span>
-                          <span className="font-semibold">{cableCost.toLocaleString('ru-RU')} ₽</span>
-                        </div>
-                        {cableDiscount > 0 && (
-                          <div className="flex justify-between text-green-600">
-                            <span>Скидка за объем {cableDiscount}%:</span>
-                            <span className="font-bold">-{cableSavings.toLocaleString('ru-RU')} ₽</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
               
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-gray-700">Задачи</h3>
@@ -289,6 +261,32 @@ export default function Cart() {
                       <span className="font-semibold text-sm">{masterVisit.product.name}</span>
                     </div>
                     <span className="font-bold text-primary">{masterVisit.product.priceInstallOnly} ₽</span>
+                  </div>
+                </div>
+              )}
+
+              {cableMeters > 0 && (
+                <div className="mb-4 p-4 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 -mx-6 mx-6">
+                  <div className="flex-1">
+                    <div className="font-semibold text-sm text-gray-800 mb-2">
+                      Автоматически добавлен монтаж кабеля
+                    </div>
+                    <div className="text-xs text-gray-600 space-y-1">
+                      <div className="flex justify-between">
+                        <span>Ориентировочный расход:</span>
+                        <span className="font-semibold">~{cableMeters} метров</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Стоимость монтажа:</span>
+                        <span className="font-semibold">{cableCost.toLocaleString('ru-RU')} ₽</span>
+                      </div>
+                      {cableDiscount > 0 && (
+                        <div className="flex justify-between text-green-600">
+                          <span>Скидка за объем {cableDiscount}%:</span>
+                          <span className="font-bold">-{cableSavings.toLocaleString('ru-RU')} ₽</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

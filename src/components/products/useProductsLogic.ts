@@ -239,6 +239,7 @@ export function useProductsLogic() {
           : `Примерный метраж: ${cableMeters}м`,
         priceInstallOnly: finalCablePrice,
         priceWithWiring: finalCablePrice,
+        discountApplied: true,
         options: []
       };
       addToCart(cableVirtualProduct, cableMeters, 'full-wiring');
