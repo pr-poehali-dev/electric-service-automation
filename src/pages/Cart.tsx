@@ -20,22 +20,29 @@ export default function Cart() {
 
   const [editMode, setEditMode] = useState(false);
 
-  const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
+  const totalPrice = cart.reduce((sum, item) => {
+    if (item.product.id === 'auto-cable-wiring') return sum;
+    return sum + calculateItemPrice(item);
+  }, 0);
+  
   const totalDiscount = cart.reduce((sum, item) => {
+    if (item.product.id === 'auto-cable-wiring') return sum;
     const discount = getDiscount(item.quantity);
     const basePrice = item.selectedOption === 'install-only' ? item.product.priceInstallOnly : item.product.priceWithWiring;
     const fullPrice = basePrice * item.quantity;
     return sum + (fullPrice * discount / 100);
   }, 0);
 
-  const wiringItems = cart.filter(item => item.selectedOption === 'full-wiring');
-  const totalFrames = calculateFrames(wiringItems);
-  const cableMeters = totalFrames * 7;
+  const cableItem = cart.find(item => item.product.id === 'auto-cable-wiring');
+  const cableMeters = cableItem ? cableItem.quantity : 0;
+  const cableCost = cableItem ? calculateItemPrice(cableItem) : 0;
   
   const cableDiscount = getCableDiscount(cableMeters);
   const baseCableCost = cableMeters * 100;
-  const cableCost = Math.round(baseCableCost * (1 - cableDiscount / 100));
   const cableSavings = baseCableCost - cableCost;
+  
+  const wiringItems = cart.filter(item => item.selectedOption === 'full-wiring' && item.product.id !== 'auto-cable-wiring');
+  const totalFrames = calculateFrames(wiringItems);
   
   const finalTotal = totalPrice + cableCost;
   
