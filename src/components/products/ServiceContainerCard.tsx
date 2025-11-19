@@ -100,16 +100,16 @@ export default function ServiceContainerCard({
     
     if (option.isInfo) {
       return (
-        <div key={option.id} className="p-3 rounded-lg bg-orange-50 border border-orange-200">
+        <div key={option.id} className="p-3 rounded-lg bg-blue-50 border border-blue-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-1">
-              <Icon name="AlertCircle" size={16} className="text-orange-600 flex-shrink-0" />
+              <Icon name="Info" size={16} className="text-blue-500 flex-shrink-0" />
               <span className="text-xs text-gray-700 font-medium">
                 {option.name}
               </span>
             </div>
             {option.price > 0 && (
-              <span className="text-sm font-bold text-orange-700 ml-2">
+              <span className="text-sm font-bold text-blue-700 ml-2">
                 +{option.price} ₽
               </span>
             )}
@@ -159,7 +159,7 @@ export default function ServiceContainerCard({
               )}
               {option.id === 'gas-sensor' && (
                 <p className="text-xs text-blue-600 mt-1">
-                  Перенос газоанализаторов в квартире с перекладкой проводки
+                  Газоанализаторы с перекладкой проводки
                 </p>
               )}
             </label>

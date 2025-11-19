@@ -313,7 +313,8 @@ export function useProductsLogic() {
                 name: contextName,
                 description: contextName,
                 priceInstallOnly: finalPrice,
-                priceWithWiring: finalPrice
+                priceWithWiring: finalPrice,
+                discountApplied: option.discount !== undefined
               };
               addToCart(virtualProduct, option.quantity, 'full-wiring');
             } else if (option.id === 'dismantle' || option.id === 'assemble') {
@@ -340,7 +341,7 @@ export function useProductsLogic() {
         ...wiringProduct,
         id: 'equipment-fee',
         name: 'Расходы на спецоборудование и материалы',
-        description: 'Алмазные диски, мешки для пылесоса, газ',
+        description: 'Алмазные диски, мешки для пылесоса, газ и т.д.',
         priceInstallOnly: 2500,
         priceWithWiring: 2500,
         discountApplied: true,
