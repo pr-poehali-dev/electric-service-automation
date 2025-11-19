@@ -59,7 +59,6 @@ export function getInitialContainers(): ServiceContainer[] {
         { id: 'move-switch', name: 'Добавить выключатель или перенести розетку в другое место', price: 1500, quantity: 1, enabled: false },
         { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
         { id: 'box-surface', name: 'Бокс открытого монтажа', price: 2500, quantity: 1, enabled: false, group: 'panel', noCable: true },
-        { id: 'panel-info', name: 'Стоимость включает обязательные расходы на спецоборудование и расходные материалы (алмазные диски, мешки для пылесоса, газ)', price: 0, quantity: 1, enabled: false, group: 'panel', isInfo: true },
         { id: 'input-cable', name: 'Новый вводной кабель', price: 2500, quantity: 1, enabled: false, group: 'panel' },
         { id: 'block-4', name: 'Блок из 4-х розеток', price: 3000, quantity: 1, enabled: false },
         { id: 'breaker-replace', name: 'Замена автомата с учётом материала', price: 3000, quantity: 1, enabled: false, group: 'panel', noCable: true },
@@ -67,6 +66,7 @@ export function getInitialContainers(): ServiceContainer[] {
         { id: 'meter', name: 'Установка электросчётчика', price: 3500, quantity: 1, enabled: false, group: 'panel', voltageOptions: { '220V': 3500, '380V': 5500 }, selectedVoltage: '220V', noCable: true },
         { id: 'box-flush', name: 'Бокс скрытого монтажа', price: 8000, quantity: 1, enabled: false, group: 'panel', noCable: true },
         { id: 'block-5', name: 'Блок из 5 розеток +закладная', price: 8000, quantity: 1, enabled: false },
+        { id: 'equipment-fee', name: 'Обязательные расходы на спецоборудование и расходные материалы (алмазные диски, мешки для пылесоса, газ)', price: 2500, quantity: 1, enabled: false, isInfo: true },
       ]
     }
   ];

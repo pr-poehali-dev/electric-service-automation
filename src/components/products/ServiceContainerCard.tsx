@@ -83,16 +83,36 @@ export default function ServiceContainerCard({
   const renderOption = (option: ServiceOption) => {
     const hasDiscount = option.discount && option.quantity >= option.discount.minQuantity;
     
-    if (option.id === 'crystal' || option.isInfo) {
+    if (option.id === 'crystal') {
       return (
         <div key={option.id} className="p-3 rounded-lg bg-blue-50 border border-blue-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-1">
               <Icon name="Info" size={16} className="text-blue-500 flex-shrink-0" />
               <span className="text-xs text-gray-600">
-                {option.name}{option.price > 0 ? ` — ${option.price} ₽` : ''}
+                {option.name} — {option.price} ₽
               </span>
             </div>
+          </div>
+        </div>
+      );
+    }
+    
+    if (option.isInfo) {
+      return (
+        <div key={option.id} className="p-3 rounded-lg bg-orange-50 border border-orange-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 flex-1">
+              <Icon name="AlertCircle" size={16} className="text-orange-600 flex-shrink-0" />
+              <span className="text-xs text-gray-700 font-medium">
+                {option.name}
+              </span>
+            </div>
+            {option.price > 0 && (
+              <span className="text-sm font-bold text-orange-700 ml-2">
+                +{option.price} ₽
+              </span>
+            )}
           </div>
         </div>
       );
@@ -272,9 +292,10 @@ export default function ServiceContainerCard({
     );
   }
 
-  const constructionOptions = container.options.filter(opt => opt.group === 'construction');
-  const panelOptions = container.options.filter(opt => opt.group === 'panel');
-  const otherOptions = container.options.filter(opt => !opt.group);
+  const constructionOptions = container.options.filter(opt => opt.group === 'construction' && !opt.isInfo);
+  const panelOptions = container.options.filter(opt => opt.group === 'panel' && !opt.isInfo);
+  const otherOptions = container.options.filter(opt => !opt.group && !opt.isInfo);
+  const infoOptions = container.options.filter(opt => opt.isInfo);
   const iconName = iconMap[container.productId];
   const hasIcon = !!iconName;
   const colors = iconColorMap[container.productId] || { bg: 'from-slate-100 to-blue-100', icon: 'text-slate-700' };
@@ -363,6 +384,12 @@ export default function ServiceContainerCard({
                   {panelOptions.map(renderOption)}
                 </div>
               )}
+            </div>
+          )}
+
+          {infoOptions.length > 0 && (
+            <div className="space-y-2 mt-3">
+              {infoOptions.map(renderOption)}
             </div>
           )}
 

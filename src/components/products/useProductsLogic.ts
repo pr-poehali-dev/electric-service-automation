@@ -75,11 +75,22 @@ export function useProductsLogic() {
   const toggleOption = (containerIndex: number, optionId: string) => {
     setContainers(prev => prev.map((container, idx) => {
       if (idx === containerIndex) {
+        const updatedOptions = container.options.map(opt => 
+          opt.id === optionId ? { ...opt, enabled: !opt.enabled } : opt
+        );
+        
+        const hasAnyEnabled = updatedOptions.some(opt => opt.enabled && !opt.isInfo);
+        
+        const finalOptions = updatedOptions.map(opt => {
+          if (opt.id === 'equipment-fee') {
+            return { ...opt, enabled: hasAnyEnabled };
+          }
+          return opt;
+        });
+        
         return {
           ...container,
-          options: container.options.map(opt => 
-            opt.id === optionId ? { ...opt, enabled: !opt.enabled } : opt
-          )
+          options: finalOptions
         };
       }
       return container;
@@ -90,11 +101,22 @@ export function useProductsLogic() {
     if (newQuantity <= 0) {
       setContainers(prev => prev.map((container, idx) => {
         if (idx === containerIndex) {
+          const updatedOptions = container.options.map(opt => 
+            opt.id === optionId ? { ...opt, enabled: false, quantity: 1 } : opt
+          );
+          
+          const hasAnyEnabled = updatedOptions.some(opt => opt.enabled && !opt.isInfo);
+          
+          const finalOptions = updatedOptions.map(opt => {
+            if (opt.id === 'equipment-fee') {
+              return { ...opt, enabled: hasAnyEnabled };
+            }
+            return opt;
+          });
+          
           return {
             ...container,
-            options: container.options.map(opt => 
-              opt.id === optionId ? { ...opt, enabled: false, quantity: 1 } : opt
-            )
+            options: finalOptions
           };
         }
         return container;
@@ -154,7 +176,7 @@ export function useProductsLogic() {
 
   const calculateContainerTotal = (container: ServiceContainer) => {
     return container.options
-      .filter(opt => opt.enabled && !opt.customPrice && !opt.isInfo)
+      .filter(opt => opt.enabled && !opt.customPrice)
       .reduce((sum, opt) => {
         let price = opt.price * opt.quantity;
         
@@ -222,9 +244,15 @@ export function useProductsLogic() {
       addToCart(cableVirtualProduct, cableMeters, 'full-wiring');
     }
     
+    let needsEquipmentFee = false;
+    
     containers.forEach(container => {
       container.options.forEach(option => {
         if (option.enabled && !option.customPrice && !option.isInfo) {
+          if (container.productId === 'wiring-complex' || option.id === 'move-switch-alt') {
+            needsEquipmentFee = true;
+          }
+          
           let product = PRODUCTS.find(p => p.id === container.productId);
           
           if (!product) {
@@ -306,6 +334,20 @@ export function useProductsLogic() {
         }
       });
     });
+    
+    if (needsEquipmentFee && wiringProduct) {
+      const equipmentProduct: typeof wiringProduct = {
+        ...wiringProduct,
+        id: 'equipment-fee',
+        name: 'Расходы на спецоборудование и материалы',
+        description: 'Алмазные диски, мешки для пылесоса, газ',
+        priceInstallOnly: 2500,
+        priceWithWiring: 2500,
+        discountApplied: true,
+        options: []
+      };
+      addToCart(equipmentProduct, 1, 'full-wiring');
+    }
     
     navigate('/cart');
   };
