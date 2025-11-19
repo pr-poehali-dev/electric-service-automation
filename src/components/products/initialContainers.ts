@@ -48,7 +48,7 @@ export function getInitialContainers(): ServiceContainer[] {
     {
       productId: 'wiring-complex',
       productName: 'Электромонтажные работы',
-      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки в Калининграде. Стоимость включает обязательные расходы на спецоборудование и расходные материалы (алмазные диски, мешки для пылесоса, газ).',
+      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки в Калининграде.',
       category: 'outlet',
       sectionCategory: 'wiring',
       expanded: true,
@@ -59,6 +59,7 @@ export function getInitialContainers(): ServiceContainer[] {
         { id: 'move-switch', name: 'Добавить выключатель или перенести розетку в другое место', price: 1500, quantity: 1, enabled: false },
         { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
         { id: 'box-surface', name: 'Бокс открытого монтажа', price: 2500, quantity: 1, enabled: false, group: 'panel', noCable: true },
+        { id: 'panel-info', name: 'Стоимость включает обязательные расходы на спецоборудование и расходные материалы (алмазные диски, мешки для пылесоса, газ)', price: 0, quantity: 1, enabled: false, group: 'panel', isInfo: true },
         { id: 'input-cable', name: 'Новый вводной кабель', price: 2500, quantity: 1, enabled: false, group: 'panel' },
         { id: 'block-4', name: 'Блок из 4-х розеток', price: 3000, quantity: 1, enabled: false },
         { id: 'breaker-replace', name: 'Замена автомата с учётом материала', price: 3000, quantity: 1, enabled: false, group: 'panel', noCable: true },

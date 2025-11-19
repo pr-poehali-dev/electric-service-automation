@@ -154,7 +154,7 @@ export function useProductsLogic() {
 
   const calculateContainerTotal = (container: ServiceContainer) => {
     return container.options
-      .filter(opt => opt.enabled && !opt.customPrice)
+      .filter(opt => opt.enabled && !opt.customPrice && !opt.isInfo)
       .reduce((sum, opt) => {
         let price = opt.price * opt.quantity;
         
@@ -224,7 +224,7 @@ export function useProductsLogic() {
     
     containers.forEach(container => {
       container.options.forEach(option => {
-        if (option.enabled && !option.customPrice) {
+        if (option.enabled && !option.customPrice && !option.isInfo) {
           let product = PRODUCTS.find(p => p.id === container.productId);
           
           if (!product) {
@@ -243,6 +243,13 @@ export function useProductsLogic() {
                 option.id === 'breaker-replace' || option.id === 'meter' || option.id === 'input-cable' ||
                 option.id === 'box-surface' || option.id === 'box-flush' || option.id === 'drilling-porcelain' || 
                 option.id === 'electrical-install' || option.id === 'gas-sensor' || option.id === 'replace-switch' || option.id === 'replace-outlet') {
+              
+              const noAutoDiscount = option.id === 'add-outlet' || option.id.startsWith('block-') || 
+                                     option.id === 'move-switch' || option.id === 'move-switch-alt' ||
+                                     option.id === 'box-surface' || option.id === 'input-cable' ||
+                                     option.id === 'gas-sensor' || option.id === 'meter' ||
+                                     option.id === 'box-flush';
+              
               const virtualProduct: typeof product = {
                 ...product,
                 id: `${container.productId}-${option.id}`,
@@ -250,7 +257,7 @@ export function useProductsLogic() {
                 description: option.name,
                 priceInstallOnly: finalPrice,
                 priceWithWiring: finalPrice,
-                discountApplied: option.discount !== undefined
+                discountApplied: noAutoDiscount || option.discount !== undefined
               };
               addToCart(virtualProduct, option.quantity, 'full-wiring');
             } else if (option.id === 'install' || option.id === 'crystal') {

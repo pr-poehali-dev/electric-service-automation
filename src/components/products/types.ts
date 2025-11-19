@@ -18,6 +18,7 @@ export interface ServiceOption {
   };
   selectedVoltage?: '220V' | '380V';
   noCable?: boolean;
+  isInfo?: boolean;
 }
 
 export interface ServiceContainer {

@@ -83,14 +83,14 @@ export default function ServiceContainerCard({
   const renderOption = (option: ServiceOption) => {
     const hasDiscount = option.discount && option.quantity >= option.discount.minQuantity;
     
-    if (option.id === 'crystal') {
+    if (option.id === 'crystal' || option.isInfo) {
       return (
         <div key={option.id} className="p-3 rounded-lg bg-blue-50 border border-blue-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-1">
               <Icon name="Info" size={16} className="text-blue-500 flex-shrink-0" />
               <span className="text-xs text-gray-600">
-                {option.name} — {option.price} ₽
+                {option.name}{option.price > 0 ? ` — ${option.price} ₽` : ''}
               </span>
             </div>
           </div>

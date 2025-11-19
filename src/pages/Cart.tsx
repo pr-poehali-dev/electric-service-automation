@@ -282,7 +282,7 @@ export default function Cart() {
                     </div>
                     {cableDiscount > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-green-600">Скидка на монтаж кабеля {cableDiscount}%</span>
+                        <span className="text-green-600">Скидка на монтаж кабеля {cableDiscount}% за объем работ</span>
                         <span className="text-green-600 font-semibold">-{cableSavings.toLocaleString('ru-RU')} ₽</span>
                       </div>
                     )}
