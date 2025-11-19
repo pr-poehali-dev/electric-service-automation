@@ -171,7 +171,18 @@ export function useProductsLogic() {
     
     if (hasWiringOptions) {
       const cableMeters = calculateEstimatedCableMeters();
-      total += cableMeters * 100;
+      const cablePrice = cableMeters * 100;
+      
+      let cableDiscount = 0;
+      if (cableMeters > 200) {
+        cableDiscount = 0.20;
+      } else if (cableMeters > 100) {
+        cableDiscount = 0.10;
+      } else if (cableMeters > 50) {
+        cableDiscount = 0.05;
+      }
+      
+      total += cablePrice * (1 - cableDiscount);
     }
     
     return total;
@@ -184,13 +195,28 @@ export function useProductsLogic() {
     
     if (hasWiringOptions && wiringProduct) {
       const cableMeters = calculateEstimatedCableMeters();
+      const baseCablePrice = 100;
+      
+      let cableDiscount = 0;
+      if (cableMeters > 200) {
+        cableDiscount = 0.20;
+      } else if (cableMeters > 100) {
+        cableDiscount = 0.10;
+      } else if (cableMeters > 50) {
+        cableDiscount = 0.05;
+      }
+      
+      const finalCablePrice = baseCablePrice * (1 - cableDiscount);
+      
       const cableVirtualProduct: typeof wiringProduct = {
         ...wiringProduct,
         id: 'auto-cable-wiring',
         name: 'Монтаж кабеля',
-        description: `Примерный метраж: ${cableMeters}м`,
-        priceInstallOnly: 100,
-        priceWithWiring: 100,
+        description: cableDiscount > 0 
+          ? `Примерный метраж: ${cableMeters}м (скидка ${cableDiscount * 100}%)`
+          : `Примерный метраж: ${cableMeters}м`,
+        priceInstallOnly: finalCablePrice,
+        priceWithWiring: finalCablePrice,
         options: []
       };
       addToCart(cableVirtualProduct, cableMeters, 'full-wiring');

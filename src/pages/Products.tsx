@@ -33,6 +33,14 @@ export default function Products() {
   
   const showContinue = hasAnyEnabledOptions;
 
+  const getCableDiscount = () => {
+    const meters = calculateEstimatedCableMeters();
+    if (meters > 200) return 20;
+    if (meters > 100) return 10;
+    if (meters > 50) return 5;
+    return 0;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 pb-32">
       <PageHeader />
@@ -123,6 +131,9 @@ export default function Products() {
                     </p>
                     <p className="text-xs text-blue-600 mt-1">
                       Автоматически добавлено: Монтаж кабеля (100₽/м)
+                      {getCableDiscount() > 0 && (
+                        <span className="text-green-600 font-semibold"> — скидка {getCableDiscount()}%</span>
+                      )}
                     </p>
                   </div>
                 )}
