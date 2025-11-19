@@ -27,6 +27,7 @@ export default function Cart() {
   
   const totalDiscount = cart.reduce((sum, item) => {
     if (item.product.id === 'auto-cable-wiring') return sum;
+    if (item.product.discountApplied) return sum;
     const discount = getDiscount(item.quantity);
     const basePrice = item.selectedOption === 'install-only' ? item.product.priceInstallOnly : item.product.priceWithWiring;
     const fullPrice = basePrice * item.quantity;
@@ -90,6 +91,35 @@ export default function Cart() {
         <div className="p-6 space-y-4">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-fadeIn">
             <div className="p-6 space-y-4">
+              {cableMeters > 0 && (
+                <div className="mb-4 p-4 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+                  <div className="flex items-start gap-3">
+                    <Icon name="Cable" size={20} className="text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm text-gray-800 mb-1">
+                        Автоматически добавлен монтаж кабеля
+                      </div>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <div className="flex justify-between">
+                          <span>Ориентировочный расход:</span>
+                          <span className="font-semibold">~{cableMeters} метров</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Стоимость монтажа:</span>
+                          <span className="font-semibold">{cableCost.toLocaleString('ru-RU')} ₽</span>
+                        </div>
+                        {cableDiscount > 0 && (
+                          <div className="flex justify-between text-green-600">
+                            <span>Скидка за объем {cableDiscount}%:</span>
+                            <span className="font-bold">-{cableSavings.toLocaleString('ru-RU')} ₽</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-gray-700">Задачи</h3>
                 <div className="flex gap-2">
@@ -264,36 +294,31 @@ export default function Cart() {
               )}
 
               <div className="space-y-2 pt-2">
-                {totalDiscount > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Экономия</span>
-                    <span className="text-green-600 font-semibold">-{totalDiscount.toLocaleString('ru-RU')} ₽</span>
-                  </div>
-                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Работы без учёта кабеля:</span>
+                  <span className="font-semibold">{totalPrice.toLocaleString('ru-RU')} ₽</span>
+                </div>
                 
                 {cableMeters > 0 && (
                   <>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Примерный метраж кабеля</span>
-                      <span className="font-semibold">{cableMeters} м</span>
-                    </div>
-                    {totalFrames > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Потребуется рамок</span>
-                        <span className="font-semibold">{totalFrames} шт</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Стоимость монтажа кабеля</span>
+                      <span className="text-gray-600">Монтаж кабеля (~{cableMeters} м):</span>
                       <span className="font-semibold">{cableCost.toLocaleString('ru-RU')} ₽</span>
                     </div>
-                    {cableDiscount > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-green-600">Скидка на монтаж кабеля {cableDiscount}%</span>
-                        <span className="text-green-600 font-semibold">-{cableSavings.toLocaleString('ru-RU')} ₽</span>
+                    {totalFrames > 0 && (
+                      <div className="flex justify-between text-sm text-gray-500">
+                        <span>Потребуется рамок:</span>
+                        <span>{totalFrames} шт</span>
                       </div>
                     )}
                   </>
+                )}
+
+                {(totalDiscount > 0 || cableSavings > 0) && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-green-600">Общая экономия:</span>
+                    <span className="text-green-600 font-bold">-{(totalDiscount + cableSavings).toLocaleString('ru-RU')} ₽</span>
+                  </div>
                 )}
 
                 <div className="border-t-2 border-dashed border-gray-300 pt-3 mt-3">

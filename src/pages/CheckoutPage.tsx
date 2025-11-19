@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { useCart } from '@/contexts/CartContext';
-import { calculateItemPrice, getDiscount, calculateFrames } from '@/types/electrical';
+import { calculateItemPrice, getDiscount, getCableDiscount, calculateFrames } from '@/types/electrical';
 import PageHeader from '@/components/PageHeader';
 import PageNavigation from '@/components/PageNavigation';
 import ContactModal from '@/components/ContactModal';
@@ -28,8 +28,13 @@ export default function CheckoutPage() {
     phone: ''
   });
 
-  const totalPrice = cart.reduce((sum, item) => sum + calculateItemPrice(item), 0);
+  const totalPrice = cart.reduce((sum, item) => {
+    if (item.product.id === 'auto-cable-wiring') return sum;
+    return sum + calculateItemPrice(item);
+  }, 0);
+  
   const totalDiscount = cart.reduce((sum, item) => {
+    if (item.product.id === 'auto-cable-wiring') return sum;
     if (item.product.discountApplied) return sum;
     const discount = getDiscount(item.quantity);
     const basePrice = item.selectedOption === 'install-only' ? item.product.priceInstallOnly : item.product.priceWithWiring;
@@ -41,6 +46,10 @@ export default function CheckoutPage() {
   const cableMeters = cableWiringItem ? cableWiringItem.quantity : 0;
   const cableCost = cableWiringItem ? calculateItemPrice(cableWiringItem) : 0;
   
+  const cableDiscount = cableMeters > 0 ? getCableDiscount(cableMeters) : 0;
+  const baseCableCost = cableMeters * 100;
+  const cableSavings = baseCableCost - cableCost;
+  
   const wiringItems = cart.filter(item => 
     item.selectedOption === 'full-wiring' && item.product.id !== 'auto-cable-wiring'
   );
@@ -48,7 +57,7 @@ export default function CheckoutPage() {
   const totalFrames = calculateFrames(wiringItems);
   
   const materialsCost = Math.round(cableMeters * 130);
-  const finalTotal = totalPrice;
+  const finalTotal = totalPrice + cableCost;
 
   const validateForm = () => {
     const newErrors = { phone: '' };
@@ -160,9 +169,9 @@ export default function CheckoutPage() {
 
               {cableMeters > 0 && (
                 <>
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Расход силового кабеля:</span>
-                    <span className="font-semibold">~{cableMeters} м</span>
+                  <div className="flex justify-between text-sm">
+                    <span>Монтаж кабеля (~{cableMeters} м):</span>
+                    <span className="font-bold">{cableCost.toLocaleString('ru-RU')} ₽</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Кабель и расходный материал:</span>
@@ -178,10 +187,10 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {totalDiscount > 0 && (
+              {(totalDiscount > 0 || cableSavings > 0) && (
                 <div className="flex justify-between text-sm text-green-600">
-                  <span>Экономия:</span>
-                  <span className="font-bold">-{totalDiscount.toLocaleString('ru-RU')} ₽</span>
+                  <span>Общая экономия:</span>
+                  <span className="font-bold">-{(totalDiscount + cableSavings).toLocaleString('ru-RU')} ₽</span>
                 </div>
               )}
 
