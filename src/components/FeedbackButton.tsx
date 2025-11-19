@@ -56,7 +56,7 @@ export default function FeedbackButton() {
               <Icon name="Sparkles" size={20} className="text-yellow-500" />
               У вас есть идея?
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-left sm:text-center">
               Предлагайте свои идеи по улучшению сервиса для электриков и их клиентов
             </DialogDescription>
           </DialogHeader>

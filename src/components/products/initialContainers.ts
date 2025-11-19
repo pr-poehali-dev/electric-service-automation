@@ -25,7 +25,7 @@ export function getInitialContainers(): ServiceContainer[] {
       sectionCategory: 'services',
       expanded: false,
       options: [
-        { id: 'move-switch-alt', name: 'Добавить розетку или перенести выключатель в другое место', price: 3500, quantity: 1, enabled: false },
+        { id: 'move-switch-alt', name: 'Добавить выключатель или перенести розетку в другое место', price: 1500, quantity: 1, enabled: false },
         { id: 'repair', name: 'Ремонт с учётом материалов', price: 1500, quantity: 1, enabled: false },
         { id: 'replace-switch', name: 'Заменить выключатель', price: 350, quantity: 1, enabled: false },
         { id: 'install', name: 'Установить выключатель', price: 250, quantity: 1, enabled: false },
@@ -48,7 +48,7 @@ export function getInitialContainers(): ServiceContainer[] {
     {
       productId: 'wiring-complex',
       productName: 'Электромонтажные работы',
-      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки в Калининграде.',
+      productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки в Калининграде. Стоимость включает обязательные расходы на спецоборудование и расходные материалы (алмазные диски, мешки для пылесоса, газ).',
       category: 'outlet',
       sectionCategory: 'wiring',
       expanded: true,
@@ -56,7 +56,7 @@ export function getInitialContainers(): ServiceContainer[] {
         { id: 'add-outlet', name: 'Добавить розетку', price: 850, quantity: 1, enabled: false },
         { id: 'breaker-install', name: 'Установка автомата защиты', price: 1000, quantity: 1, enabled: false, discount: { minQuantity: 10, percent: 50 }, group: 'panel', noCable: true },
         { id: 'block-2', name: 'Блок из 2-х розеток', price: 1200, quantity: 1, enabled: false },
-        { id: 'move-switch', name: 'Добавить выключатель или перенести его в другое место', price: 3500, quantity: 1, enabled: false, discount: { minQuantity: 3, percent: 30 } },
+        { id: 'move-switch', name: 'Добавить выключатель или перенести розетку в другое место', price: 1500, quantity: 1, enabled: false },
         { id: 'block-3', name: 'Блок из 3-х розеток', price: 2500, quantity: 1, enabled: false },
         { id: 'box-surface', name: 'Бокс открытого монтажа', price: 2500, quantity: 1, enabled: false, group: 'panel', noCable: true },
         { id: 'input-cable', name: 'Новый вводной кабель', price: 2500, quantity: 1, enabled: false, group: 'panel' },
