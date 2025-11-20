@@ -25,6 +25,7 @@ export interface ServiceContainer {
   productId: string;
   productName: string;
   productDescription: string;
+  videoUrl?: string;
   category: string;
   sectionCategory: 'services' | 'wiring';
   options: ServiceOption[];

@@ -49,6 +49,7 @@ export function getInitialContainers(): ServiceContainer[] {
       productId: 'wiring-complex',
       productName: 'Электромонтажные работы',
       productDescription: 'Черновые работы со штроблением, сверлением и установкой подрозетника, комплексная замена проводки в Калининграде.',
+      videoUrl: 'https://vk.com/clip1166188_456239923',
       category: 'outlet',
       sectionCategory: 'wiring',
       expanded: true,

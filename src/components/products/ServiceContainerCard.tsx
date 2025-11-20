@@ -324,6 +324,18 @@ export default function ServiceContainerCard({
               {container.productDescription}
             </p>
           )}
+          {container.videoUrl && (
+            <a
+              href={container.videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white text-xs font-semibold rounded-full shadow-md hover:shadow-lg transition-all"
+            >
+              <Icon name="PlayCircle" size={14} />
+              Видео-инструкция 60 сек
+            </a>
+          )}
         </div>
         
         <Icon 
